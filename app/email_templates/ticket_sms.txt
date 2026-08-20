@@ -1,0 +1,1 @@
+NTInet ${ticket_number}: ${message} View: ${ticket_url}

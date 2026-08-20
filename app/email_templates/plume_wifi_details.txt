@@ -1,0 +1,12 @@
+Hello $customer_name,
+
+Here are the current Wi-Fi details for your Plume network:
+
+Network name (SSID): $ssid
+Wi-Fi password: $wifi_password
+
+For your security, do not forward this email or share the password with anyone who should not have access to your network.
+
+If you did not request this information, please contact NTInet support.
+
+— NTInet Support

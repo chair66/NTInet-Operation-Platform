@@ -1,0 +1,29 @@
+NTInet Operations Platform v1.6.0 - Sprint 3.2
+Live Phone Number Sync
+
+INSTALL
+1. Stop Uvicorn.
+2. Extract this ZIP into the project root.
+3. Allow the included app files to replace the existing copies.
+4. Do not replace or share your .env file.
+5. Start the application:
+
+   python -m uvicorn app.main:app --reload
+
+TEST
+1. Confirm DigiCloud domain sync works first.
+2. Open DigiCloud > Phone Numbers.
+3. Click Sync Phone Numbers.
+4. The page should report created, updated, unchanged, skipped, and unmatched-domain totals.
+
+BEHAVIOR
+- Reads GET /phonenumbers from NetSapiens using the organization reseller.
+- Imports phone numbers into digicloud_phone_numbers.
+- Matches each phone number to an already-synced DigiCloud domain.
+- Marks numbers assigned, available, or inactive.
+- Preserves locally entered Notes.
+- Records an audit-log entry.
+- Does not create, edit, assign, or delete anything in NetSapiens.
+
+DATABASE
+No migration is required. Sprint 3.2 uses the existing digicloud_phone_numbers table.

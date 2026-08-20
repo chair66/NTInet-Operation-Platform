@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}DigiCloud Phones{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
+  <div><div class="eyebrow">DigiCloud · User Management · {{ selected_domain.domain_name }}</div><h1>Phones</h1><p>Manage residential provisioned and manually configured devices.</p></div>
+  <div class="d-flex gap-2"><a class="btn btn-primary" href="/digicloud/users/{{ profile.username|urlencode }}/phones/new?domain={{ selected_domain.domain_name|urlencode }}"><i class="fa-solid fa-plus me-1"></i>Add Phone</a><a class="btn btn-outline-danger" href="/digicloud/users/{{ profile.username|urlencode }}/911?domain={{ selected_domain.domain_name|urlencode }}"><i class="fa-solid fa-location-dot me-1"></i>911 Setup</a><a class="btn btn-outline-secondary" href="/digicloud/users?domain={{ selected_domain.domain_name|urlencode }}">Back to Users</a></div>
+</div>
+{% if request.query_params.get('notice') %}<div class="alert alert-success">{{ request.query_params.get('notice') }}</div>{% endif %}
+{% if request.query_params.get('error') %}<div class="alert alert-danger">{{ request.query_params.get('error') }}</div>{% endif %}
+<ul class="nav nav-tabs mb-4">
+  <li class="nav-item"><a class="nav-link" href="/digicloud/users/{{ profile.username|urlencode }}/edit?domain={{ selected_domain.domain_name|urlencode }}">Profile</a></li>
+  <li class="nav-item"><a class="nav-link" href="/digicloud/users/{{ profile.username|urlencode }}/answering-rules?domain={{ selected_domain.domain_name|urlencode }}">Answering Rules</a></li>
+  <li class="nav-item"><a class="nav-link active" href="#">Phones</a></li>
+</ul>
+<div class="card">
+  <div class="card-header d-flex justify-content-between"><div><strong>{{ profile.display_name or profile.username }}</strong><div class="small text-muted">Extension {{ profile.extension }} · {{ devices|length }} device{{ '' if devices|length == 1 else 's' }}</div></div></div>
+  {% if devices %}<div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>Device</th><th>Setup</th><th>Registration</th><th>Server / IP</th><th>Emergency</th><th class="text-end">Actions</th></tr></thead><tbody>
+  {% for item in devices %}<tr>
+    <td><strong>{{ item.device }}</strong><div class="small text-muted">{% if item.model %}{{ item.model }}{% endif %}{% if item.mac %}<br>{{ item.mac }}{% endif %}{% if item.line is not none %}<br>Line {{ item.line }}{% endif %}</div></td>
+    <td><span class="badge text-bg-light border">{{ item.device_type }}</span><div class="small text-muted mt-1">{{ item.login }}</div></td>
+    <td><span class="d-inline-flex align-items-center gap-2 fw-semibold {% if item.state == 'registered' %}text-success{% elif item.state == 'unregistered' %}text-danger{% else %}text-warning{% endif %}"><span aria-hidden="true" style="font-size:1.2rem;line-height:1">●</span>{% if item.state == 'registered' %}Registered{% elif item.state == 'unregistered' %}Offline{% else %}Unknown{% endif %}</span>{% if item.user_agent %}<div class="small text-muted mt-1 text-break">{{ item.user_agent }}</div>{% endif %}</td>
+    <td>{{ item.server or '—' }}<div class="small text-muted">{{ item.ip or 'No current registration IP' }}</div></td>
+    <td>{{ item.emergency }}{% if item.emergency_address %}<div class="small text-muted">{{ item.emergency_address }}</div>{% endif %}</td>
+    <td class="text-end text-nowrap"><a class="btn btn-sm btn-outline-primary" href="/digicloud/users/{{ profile.username|urlencode }}/phones/{{ item.device|urlencode }}/edit?domain={{ selected_domain.domain_name|urlencode }}"><i class="fa-solid fa-pen"></i><span class="visually-hidden">Edit</span></a>{% if not item.model and not item.mac %} <form method="post" action="/digicloud/users/{{ profile.username|urlencode }}/phones/{{ item.device|urlencode }}/reset-password" class="d-inline" data-delete-confirm data-delete-subject="SIP password" data-delete-message="Reset this manual device's SIP password? The old password will stop working immediately, and the replacement will be displayed only once."><input type="hidden" name="domain" value="{{ selected_domain.domain_name }}"><button class="btn btn-sm btn-outline-warning" type="submit" title="Reset SIP password"><i class="fa-solid fa-key"></i><span class="visually-hidden">Reset SIP password</span></button></form>{% endif %} <form method="post" action="/digicloud/users/{{ profile.username|urlencode }}/phones/{{ item.device|urlencode }}/delete" class="d-inline" data-delete-confirm data-delete-subject="phone {{ item.device }}" data-delete-message="Permanently remove phone {{ item.device }} from DigiCloud and the user device list?">
+<input type="hidden" name="domain" value="{{ selected_domain.domain_name }}">
+<button class="btn btn-sm btn-outline-danger" type="submit"><i class="fa-solid fa-trash"></i><span class="visually-hidden">Delete</span></button>
+</form></td>
+  </tr>{% endfor %}</tbody></table></div>
+  {% else %}<div class="card-body text-center py-5"><i class="fa-solid fa-phone fa-2x text-muted mb-3"></i><h5>No phones found</h5><p class="text-muted">Add a provisioned or manually configured device.</p><a class="btn btn-primary" href="/digicloud/users/{{ profile.username|urlencode }}/phones/new?domain={{ selected_domain.domain_name|urlencode }}">Add Phone</a></div>{% endif %}
+</div>
+{% endblock %}

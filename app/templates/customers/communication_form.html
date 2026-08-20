@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Send {{ channel|upper }} · {{ customer.name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-start gap-3 mb-4">
+  <div><div class="eyebrow">{{ customer.customer_number }}</div><h1 class="h3 mb-1">Send {{ channel|upper }}</h1><p class="text-muted mb-0">{{ customer.name }}</p></div>
+  <a class="btn btn-outline-secondary" href="/customers/{{ customer.id }}">Cancel</a>
+</div>
+{% if communication_test_mode %}<div class="alert alert-info"><strong>Safe test mode is active.</strong> This communication will be simulated and recorded without contacting the customer.</div>{% endif %}
+<form class="card" method="post" action="/customers/{{ customer.id }}/communications">
+  <input type="hidden" name="channel" value="{{ channel }}">
+  <div class="card-body p-4"><div class="row g-3">
+    <div class="col-md-6"><label class="form-label">Contact</label><select class="form-select" name="contact_id" required><option value="">Select contact</option>{% for contact in customer.contacts if contact.active %}<option value="{{ contact.id }}" {{ 'selected' if selected_contact_id == contact.id else '' }}>{{ contact.full_name }} — {{ contact.email if channel == 'email' else (contact.mobile_phone or 'No mobile number') }}</option>{% endfor %}</select></div>
+    <div class="col-md-6"><label class="form-label">Sending profile</label><select class="form-select" name="profile_id"><option value="">Automatic organization routing</option>{% for profile in profiles %}<option value="{{ profile.id }}">{{ profile.name }} — {{ profile.sender_address }}</option>{% endfor %}</select></div>
+    <div class="col-12"><label class="form-label">Link to ticket</label><select class="form-select" name="ticket_id"><option value="">Customer conversation only</option>{% for ticket in tickets %}<option value="{{ ticket.id }}">{{ ticket.ticket_number }} — {{ ticket.subject }}</option>{% endfor %}</select><div class="form-text">You can also create a ticket from the communication later.</div></div>
+    {% if channel == 'email' %}<div class="col-12"><label class="form-label">Subject</label><input class="form-control" name="subject" required></div>{% endif %}
+    <div class="col-12"><label class="form-label">Message</label><textarea class="form-control" name="body" rows="7" maxlength="5000" required></textarea><div class="form-text">SMS messages may be split into multiple carrier segments.</div></div>
+    {% if channel == 'sms' and can('tickets.communication_override') %}<div class="col-12 border rounded p-3"><label class="form-check"><input class="form-check-input" type="checkbox" name="consent_override" id="consent_override"> Override SMS consent</label><div class="mt-2"><label class="form-label small">Required override reason</label><input class="form-control" name="consent_override_reason" id="override_reason"></div></div>{% endif %}
+  </div></div>
+  <div class="card-footer px-4 py-3 d-flex justify-content-between"><span class="text-muted small">Every attempt is recorded in customer history.</span><button class="btn btn-primary"><i class="fa-solid fa-paper-plane me-2"></i>Send {{ channel|upper }}</button></div>
+</form>
+{% endblock %}

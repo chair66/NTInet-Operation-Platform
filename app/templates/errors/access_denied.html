@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Access Denied | {{ app_name }}{% endblock %}
+{% block content %}
+<div class="access-denied-wrap">
+  <div class="panel access-denied-card">
+    <div class="access-denied-icon"><i class="fa-solid fa-shield-halved"></i></div>
+    <div class="eyebrow">Access restricted</div>
+    <h1>Access Denied</h1>
+    <p class="lead">You don't have permission to access this page.</p>
+    {% if access_detail %}<p class="muted">{{ access_detail }}</p>{% endif %}
+    <div class="d-flex flex-wrap gap-2 justify-content-center mt-4">
+      <a class="btn btn-primary" href="/"><i class="fa-solid fa-house me-2"></i>Return to Dashboard</a>
+      <button class="btn btn-outline-secondary" type="button" onclick="history.back()"><i class="fa-solid fa-arrow-left me-2"></i>Go Back</button>
+    </div>
+  </div>
+</div>
+{% endblock %}

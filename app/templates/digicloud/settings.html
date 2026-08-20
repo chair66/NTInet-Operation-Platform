@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header"><div><h1>DigiCloud Reseller Defaults</h1><p>Platform Admin controls provisioning defaults and Platypus billing ownership for each organization.</p></div></div>
+{% for org,s in rows %}
+<form method="post" action="/digicloud/admin/settings/{{ org.id }}" class="card mb-4">
+  <div class="card-header"><strong>{{ org.effective_name }}</strong></div>
+  <div class="card-body row g-3">
+    <div class="col-md-4"><label class="form-label">NetSapiens Reseller</label><input class="form-control" name="netsapiens_reseller" value="{{ s.netsapiens_reseller }}"></div>
+    <div class="col-md-2"><label class="form-label">Area Code</label><input class="form-control" name="default_area_code" value="{{ s.default_area_code }}"></div>
+    <div class="col-md-3"><label class="form-label">Time Zone</label><input class="form-control" name="default_time_zone" value="{{ s.default_time_zone }}"></div>
+    <div class="col-md-3"><label class="form-label">Email From</label><input class="form-control" name="default_email_from" value="{{ s.default_email_from }}"></div>
+    <div class="col-md-4"><label class="form-label">Provisioning / Core Server</label><input class="form-control" name="provisioning_server" value="{{ s.provisioning_server }}" placeholder="sb1geo.ntinet.com"></div>
+    <div class="col-md-2"><label class="form-label">Max Calls</label><input class="form-control" type="number" name="default_max_calls" value="{{ s.default_max_calls }}"></div>
+    <div class="col-md-2"><label class="form-label">Off-Net</label><input class="form-control" type="number" name="default_max_offnet_calls" value="{{ s.default_max_offnet_calls }}"></div>
+    <div class="col-md-3"><label class="form-label">Transcription Provider</label><input class="form-control" name="default_transcription_provider" value="{{ s.default_transcription_provider }}"></div>
+    <div class="col-md-2 form-check mt-5"><input class="form-check-input" type="checkbox" name="default_recording_enabled" {% if s.default_recording_enabled %}checked{% endif %}><label>Recording</label></div>
+    <div class="col-md-2 form-check mt-5"><input class="form-check-input" type="checkbox" name="default_transcription_enabled" {% if s.default_transcription_enabled %}checked{% endif %}><label>Transcription</label></div>
+    <div class="col-md-1 form-check mt-5"><input class="form-check-input" type="checkbox" name="active" {% if s.active %}checked{% endif %}><label>Active</label></div>
+    <div class="col-12"><hr><h2 class="h6">Platypus Billing</h2></div>
+    <div class="col-md-3"><label class="form-label">Billing model</label><select class="form-select" name="billing_model"><option value="direct" {% if s.billing_model == 'direct' %}selected{% endif %}>Direct</option><option value="referral" {% if s.billing_model == 'referral' %}selected{% endif %}>Referral</option><option value="wholesale" {% if s.billing_model == 'wholesale' %}selected{% endif %}>Wholesale / White Label</option></select></div>
+    <div class="col-md-3"><label class="form-label">Parent Platypus Customer ID</label><input class="form-control" name="platypus_parent_customer_id" value="{{ s.platypus_parent_customer_id }}"><div class="form-text">Required only for wholesale billing.</div></div>
+    <div class="col-md-3"><label class="form-label">Permitted Wholesale RGIDs</label><input class="form-control" name="wholesale_rate_group_ids" value="{{ s.wholesale_rate_group_ids or '[]' }}" placeholder="249, 98, 99"><div class="form-text">Comma-separated RGIDs are accepted.</div></div>
+    <div class="col-md-3"><label class="form-label">Default Wholesale RGID</label><input class="form-control" name="default_wholesale_rate_group_id" value="{{ s.default_wholesale_rate_group_id }}"></div>
+  </div>
+  <div class="card-footer"><button class="btn btn-primary">Save Defaults</button></div>
+</form>
+{% endfor %}
+{% endblock %}

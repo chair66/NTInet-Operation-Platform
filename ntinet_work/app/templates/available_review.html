@@ -1,0 +1,15 @@
+{% extends "base.html" %}{% block content %}
+<div class="page-head"><div><div class="eyebrow">Number acquisition</div><h1>Confirm Number Purchase</h1><p>Review the destination and telephone numbers before sending a live order to Bandwidth.</p></div></div>
+<div class="alert alert-warning"><strong>This is a live purchase.</strong> Clicking Confirm Purchase submits the order immediately. Availability is not guaranteed until Bandwidth accepts the order.</div>
+<div class="panel p-4">
+  <h2 class="h5 mb-3">Destination</h2>
+  <dl class="row mb-4"><dt class="col-sm-3">Sub Account</dt><dd class="col-sm-9">{{ site.name }}</dd><dt class="col-sm-3">Sub Account ID</dt><dd class="col-sm-9">{{ site.id }}</dd></dl>
+  <h2 class="h5 mb-3">Selected Numbers</h2>
+  <div class="table-responsive mb-4"><table class="table"><thead><tr><th>Telephone Number</th></tr></thead><tbody>{% for number in phone_numbers %}<tr><td><strong>{{ number }}</strong></td></tr>{% endfor %}</tbody></table></div>
+  <form method="post" action="/available-numbers/order">
+    <input type="hidden" name="site_id" value="{{ site.id }}">
+    {% for number in phone_numbers %}<input type="hidden" name="phone_numbers" value="{{ number }}">{% endfor %}
+    <div class="d-flex gap-2"><a class="btn btn-outline-secondary" href="javascript:history.back()">Back</a><button class="btn btn-danger" type="submit">Confirm Purchase</button></div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+NOP v1.31.1 — Legacy 911 Add User Hotfix
+
+Purpose
+-------
+Corrects the v1.31.0 installation so the actual DigiCloud residential Add User
+page contains the Legacy 911 workflow.
+
+Visible Add User workflow
+-------------------------
+1. Customer Information
+2. Caller ID
+3. Preferences
+4. Legacy 911 — Required for Residential
+   - 911 caller name
+   - service address
+   - city/state/ZIP/country
+   - location description
+   - Validate 911 Address
+   - Save Draft
+5. Device Setup
+6. Voicemail
+
+Draft behavior
+--------------
+Failed or incomplete 911 validation saves the entered subscriber and 911 data
+in digicloud_residential_user_drafts. Staff can resume the draft and correct it.
+The live DigiCloud user is not created until the address has been validated and
+legacy 911 provisioning is confirmed.
+
+Install
+-------
+1. Stop Uvicorn.
+2. Extract this ZIP anywhere.
+3. In PowerShell, cd to the active ntinet-operations-platform project root.
+4. Run the installer from the extracted patch folder, for example:
+   & "C:\Users\chair\Downloads\NOP-v1.31.1-Legacy-911-Add-User-Hotfix\Install-v1.31.1.ps1"
+5. Restart Uvicorn.
+6. Open DigiCloud -> User Management -> ntinet.com -> Add User.
+
+The installer backs up every replaced file and verifies that the live template
+contains both the Legacy 911 heading and the Validate 911 action.

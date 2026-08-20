@@ -1,0 +1,83 @@
+<div class="tab-pane fade" id="digicloud-reseller" role="tabpanel" aria-labelledby="digicloud-reseller-tab" tabindex="0">
+  <div class="row g-4">
+    <div class="col-xl-8">
+      <div class="panel">
+        <div class="panel-body">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+              <h2 class="h5 mb-1">DigiCloud Reseller</h2>
+              <p class="text-muted mb-0">Create, link, and manage the NetSapiens reseller associated with this NOP organization.</p>
+            </div>
+            {% set mapped = digicloud_settings.netsapiens_reseller if digicloud_settings else '' %}
+            {% if mapped and digicloud_reseller %}<span class="badge text-bg-success">Linked</span>{% else %}<span class="badge text-bg-warning">{{ 'Mapping not found' if mapped else 'Not linked' }}</span>{% endif %}
+          </div>
+
+          {% if digicloud_error %}<div class="alert alert-warning">Unable to read DigiCloud resellers: {{ digicloud_error }}</div>{% endif %}
+
+          {% if mapped and digicloud_reseller %}
+            <div class="border rounded p-3 mb-4 bg-light">
+              <div class="small text-muted">DIGICLOUD RESELLER ID</div>
+              <div class="fs-5 fw-semibold">{{ mapped }}</div>
+              <div class="text-muted mt-1">{{ digicloud_reseller.description or 'No description' }}</div>
+            </div>
+            <form method="post" action="/admin/organizations/{{ org.id }}/digicloud-reseller/update">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" name="description" rows="3">{{ digicloud_reseller.description or org.effective_name }}</textarea>
+              <button class="btn btn-primary mt-3">Update DigiCloud Reseller</button>
+            </form>
+          {% else %}
+            {% if mapped %}<div class="alert alert-warning">The organization is mapped to <strong>{{ mapped }}</strong>, but that reseller was not found in DigiCloud. Link another reseller or create it below.</div>{% endif %}
+
+            <div class="row g-4">
+              <div class="col-lg-6">
+                <div class="border rounded p-3 h-100">
+                  <h3 class="h6">Link Existing Reseller</h3>
+                  <p class="small text-muted">Connect this NOP organization to a reseller that already exists in DigiCloud.</p>
+                  <form method="post" action="/admin/organizations/{{ org.id }}/digicloud-reseller">
+                    <label class="form-label">Existing DigiCloud reseller</label>
+                    <select class="form-select" name="reseller_id" required>
+                      <option value="">Select reseller</option>
+                      {% for item in digicloud_resellers %}<option value="{{ item.reseller }}" {{ 'selected' if item.reseller == mapped }}>{{ item.reseller }}{% if item.description %} — {{ item.description }}{% endif %}</option>{% endfor %}
+                    </select>
+                    <input type="hidden" name="action" value="link">
+                    <button class="btn btn-outline-primary mt-3">Link Existing Reseller</button>
+                  </form>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="border rounded p-3 h-100">
+                  <h3 class="h6">Create New Reseller</h3>
+                  <p class="small text-muted">Create the reseller in DigiCloud and link it to this organization.</p>
+                  <form method="post" action="/admin/organizations/{{ org.id }}/digicloud-reseller">
+                    <label class="form-label">DigiCloud Reseller ID</label>
+                    <input class="form-control" name="reseller_id" value="{{ mapped or org.slug }}" required pattern="[A-Za-z0-9 _-]+">
+                    <div class="form-text">Letters, numbers, spaces, hyphens, and underscores only. Treat this ID as permanent.</div>
+                    <input type="hidden" name="action" value="create">
+                    <button class="btn btn-primary mt-3">Create and Link Reseller</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+        <div class="panel-body border-top">
+          <h2 class="h5 mb-1">Platypus Billing Model</h2>
+          <p class="small text-muted">Direct bills a selected customer account. Wholesale bills every DigiCloud user beneath the reseller's parent Platypus account.</p>
+          <form method="post" action="/admin/organizations/{{ org.id }}/digicloud-billing" class="row g-3">
+            {% set billing_model = digicloud_settings.platypus_billing_model if digicloud_settings else 'direct' %}
+            <div class="col-md-5"><label class="form-label">Billing Model</label><select class="form-select" name="billing_model" id="billing-model"><option value="direct" {{ 'selected' if billing_model == 'direct' }}>Direct / Referral</option><option value="wholesale" {{ 'selected' if billing_model == 'wholesale' }}>Wholesale (White Label)</option></select></div>
+            <div class="col-md-7"><label class="form-label">Reseller Platypus Customer ID</label><input class="form-control" name="platypus_parent_customer_id" value="{{ digicloud_settings.platypus_parent_customer_id if digicloud_settings else '' }}"><div class="form-text">Required for wholesale. Each user becomes a separate rate and service under this account.</div></div>
+            <div class="col-12"><button class="btn btn-primary">Save Billing Model</button></div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-4">
+      <div class="panel"><div class="panel-body">
+        <h2 class="h5">How this works</h2>
+        <p class="small text-muted mb-2">The DigiCloud reseller ID controls ownership of domains, users, hardware inventory, and reseller defaults.</p>
+        <p class="small text-muted mb-0">SMTP and provisioning defaults remain under DigiCloud Reseller Settings.</p>
+      </div></div>
+    </div>
+  </div>
+</div>

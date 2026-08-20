@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Edit DigiCloud Phone{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
+  <div><div class="eyebrow">DigiCloud · {{ selected_domain.domain_name }} · {{ profile.username }}</div><h1>Edit Phone</h1><p>Update the live DigiCloud device assignment.</p></div>
+  <a class="btn btn-outline-secondary" href="/digicloud/users/{{ profile.username|urlencode }}/phones?domain={{ selected_domain.domain_name|urlencode }}">Back to Phones</a>
+</div>
+{% if request.query_params.get('error') %}<div class="alert alert-danger">{{ request.query_params.get('error') }}</div>{% endif %}
+<form method="post" action="/digicloud/users/{{ profile.username|urlencode }}/phones/{{ phone.device|urlencode }}/edit" class="card">
+<input type="hidden" name="domain" value="{{ selected_domain.domain_name }}">
+<div class="card-header"><strong>{{ phone.model or phone.device }}</strong><div class="small text-muted">Device {{ phone.device }} · {{ phone.device_type }}</div></div>
+<div class="card-body">
+  <div class="row g-3 mb-4">
+    <div class="col-md-6"><label class="form-label">Model</label><input class="form-control" value="{{ phone.model or 'Manual Provisioning' }}" disabled><div class="form-text">Model cannot be changed.</div></div>
+    <div class="col-md-6"><label class="form-label">MAC Address</label><input class="form-control" value="{{ phone.mac or 'Not applicable' }}" disabled><div class="form-text">MAC address cannot be changed.</div></div>
+  </div>
+  {% if phone.model or phone.mac %}
+  <h5>Provisioning Assignment</h5>
+  <div class="row g-3">
+    <div class="col-12">
+      <label class="form-label">Line Assignments</label>
+      <div class="form-text mb-2">Select an extension or leave the line blank. The number of lines comes from the DigiCloud device definition.</div>
+      <datalist id="domain-user-extensions">
+        {% for user in domain_users %}
+        <option value="{{ user.extension }}">{{ user.name }}{% if user.extension %} — {{ user.extension }}{% endif %}</option>
+        {% endfor %}
+      </datalist>
+      <div class="row g-3">
+        {% for assignment in line_assignments %}
+        <div class="col-md-6">
+          <label class="form-label" for="line-{{ assignment.number }}">Line {{ assignment.number }}</label>
+          <input class="form-control" id="line-{{ assignment.number }}" name="line_{{ assignment.number }}"
+                 list="domain-user-extensions" value="{{ assignment.value }}"
+                 placeholder="Start typing an extension or leave blank" autocomplete="off">
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="col-md-6"><label class="form-label">Preferred Server</label><select class="form-select" name="preferred_server">{% set current_server = phone.raw.get('device-provisioning-registration-core-server') or phone.raw.get('core-server') or preferred_server or '' %}{% if current_server %}<option value="{{ current_server }}" selected>{{ current_server }}</option>{% endif %}{% for server in server_options %}{% if server.value != current_server %}<option value="{{ server.value }}">{{ server.label }}</option>{% endif %}{% endfor %}</select></div>
+    <div class="col-md-6"><label class="form-label">Transport Method</label><select class="form-select" name="transport">{% set current_transport = phone.raw.get('device-provisioning-sip-transport-protocol') or 'udp' %}<option value="udp" {% if current_transport == 'udp' %}selected{% endif %}>UDP</option><option value="tcp" {% if current_transport == 'tcp' %}selected{% endif %}>TCP</option><option value="tls" {% if current_transport == 'tls' %}selected{% endif %}>TLS</option></select></div>
+    <div class="col-12"><label class="form-label">Overrides</label><textarea class="form-control" rows="4" name="overrides">{{ phone.raw.get('device-provisioning-overrides') or '' }}</textarea></div>
+  </div>
+  {% else %}
+  <h5>Manual Provisioning</h5>
+  <div class="row g-3">
+    <div class="col-md-6"><label class="form-label">SIP Username</label><input class="form-control" value="{{ phone.login }}" disabled></div>
+    <div class="col-md-6"><label class="form-label">SIP Password</label><input class="form-control" value="Hidden for security" disabled><div class="form-text">Existing passwords cannot be recovered. Use the reset action below to generate and display a replacement once.</div></div>
+    <div class="col-md-6"><label class="form-label">Preferred Server</label><select class="form-select" name="preferred_server">{% set current_server = phone.server or preferred_server or '' %}{% if current_server %}<option value="{{ current_server }}" selected>{{ current_server }}</option>{% endif %}{% for server in server_options %}{% if server.value != current_server %}<option value="{{ server.value }}">{{ server.label }}</option>{% endif %}{% endfor %}</select></div>
+  </div>
+  {% endif %}
+</div>
+<div class="card-footer d-flex justify-content-between"><a class="btn btn-outline-danger" href="/digicloud/users/{{ profile.username|urlencode }}/phones/{{ phone.device|urlencode }}/delete?domain={{ selected_domain.domain_name|urlencode }}">Delete Phone</a><div class="d-flex gap-2"><a class="btn btn-outline-secondary" href="/digicloud/users/{{ profile.username|urlencode }}/phones?domain={{ selected_domain.domain_name|urlencode }}">Cancel</a><button class="btn btn-primary" type="submit">Save Changes</button></div></div>
+</form>
+{% if not phone.model and not phone.mac %}
+<form method="post" action="/digicloud/users/{{ profile.username|urlencode }}/phones/{{ phone.device|urlencode }}/reset-password" class="card border-warning mt-4" data-delete-confirm data-delete-subject="SIP password" data-delete-message="Reset this manual device's SIP password? The old password will stop working, and the replacement will be displayed only once.">
+  <input type="hidden" name="domain" value="{{ selected_domain.domain_name }}">
+  <div class="card-header"><strong>Reset Manual SIP Password</strong></div>
+  <div class="card-body"><p class="mb-0">This replaces the current device password in DigiCloud. NOP will show the new password on the next page but will not store it.</p></div>
+  <div class="card-footer"><button class="btn btn-warning" type="submit"><i class="fa-solid fa-rotate me-1"></i>Reset &amp; Show New Password</button></div>
+</form>
+{% endif %}
+{% endblock %}

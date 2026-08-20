@@ -1,0 +1,23 @@
+NOP v1.6.0 - Sprint 3.3: Live Phone Number Domain Management
+
+Adds:
+- Add a phone number to a NetSapiens domain
+- Move a phone number between domains
+- Update the route destination for a number already in a domain
+- Remove a number from a domain without releasing it from carrier inventory
+- Audit logging for each operation
+- Provider-first safety: local records change only after NetSapiens accepts the request
+- Best-effort restoration if a cross-domain move fails after removal from the old domain
+
+Install:
+1. Stop Uvicorn.
+2. Extract this ZIP into the project root and replace included files.
+3. Restart:
+   python -m uvicorn app.main:app --reload
+4. Open DigiCloud > Phone Numbers.
+
+No database migration is required.
+
+Important:
+- "Remove from Domain" does not delete/release the DID from the carrier.
+- NetSapiens requires a destination user, queue, or route when adding/moving a DID.

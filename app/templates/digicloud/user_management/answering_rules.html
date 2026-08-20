@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}DigiCloud Answering Rules{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
+  <div>
+    <div class="eyebrow">DigiCloud · User Management · {{ selected_domain.domain_name }}</div>
+    <h1>Answering Rules</h1>
+    <p>Live call-routing rules for {{ profile.display_name or ('User ' ~ profile.extension) }}.</p>
+  </div>
+  <a class="btn btn-outline-secondary" href="/digicloud/users?domain={{ selected_domain.domain_name|urlencode }}">Back to Users</a>
+</div>
+
+<ul class="nav nav-tabs mb-4">
+  <li class="nav-item"><a class="nav-link" href="/digicloud/users/{{ profile.username|urlencode }}/edit?domain={{ selected_domain.domain_name|urlencode }}">Profile</a></li>
+  <li class="nav-item"><a class="nav-link active" href="#">Answering Rules</a></li>
+  <li class="nav-item"><a class="nav-link" href="/digicloud/users/{{ profile.username|urlencode }}/phones?domain={{ selected_domain.domain_name|urlencode }}">Phones</a></li>
+</ul>
+
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div><strong>{{ profile.display_name or ('User ' ~ profile.extension) }}</strong><div class="small text-muted">Extension {{ profile.extension }} · Username {{ profile.username }}</div></div>
+    <span class="badge text-bg-light border">Live DigiCloud Data</span>
+  </div>
+  <div class="card-body">
+    {% if rules %}
+      <div class="row g-3">
+      {% for rule in rules %}
+        <div class="col-12">
+          <div class="border rounded-3 p-3 h-100">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+              <div>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                  <h5 class="mb-0">{{ rule.timeframe_label }}</h5>
+                  {% if rule.is_active is sameas true %}<span class="badge text-bg-success">Active Now</span>{% endif %}
+                  {% if rule.is_default %}<span class="badge text-bg-light border">Fallback Rule</span>{% endif %}
+                </div>
+                <div class="small text-muted mt-1">Priority {{ rule.priority }}</div>
+                <a class="btn btn-sm btn-outline-primary mt-2" href="/digicloud/users/{{ profile.username|urlencode }}/answering-rules/edit?domain={{ selected_domain.domain_name|urlencode }}&timeframe={{ rule.timeframe|urlencode }}">Edit Rule</a>
+              </div>
+              {% if rule.enabled is sameas true %}<span class="badge text-bg-success">Enabled</span>{% elif rule.enabled is sameas false %}<span class="badge text-bg-secondary">Disabled</span>{% else %}<span class="badge text-bg-light border">Status Not Reported</span>{% endif %}
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-4">
+                <div class="text-uppercase small fw-semibold text-muted mb-1">Ring Strategy</div>
+                <div class="fw-semibold">{{ rule.strategy }}</div>
+              </div>
+              <div class="col-md-3">
+                <div class="text-uppercase small fw-semibold text-muted mb-1">Ring Duration</div>
+                <div>{{ profile.ring_seconds or '60' }} seconds</div>
+              </div>
+              <div class="col-md-5">
+                <div class="text-uppercase small fw-semibold text-muted mb-1">Routing Destinations</div>
+                {% if rule.destinations %}
+                  <div class="d-flex flex-column gap-2">
+                  {% for destination in rule.destinations %}
+                    <div class="d-flex align-items-center gap-2">
+                      <span aria-hidden="true">
+                        {% if destination.type == 'devices' %}🖥️{% elif destination.type == 'voicemail' %}📬{% elif destination.type == 'reject' %}⛔{% elif destination.type == 'busy' %}☎️{% elif destination.type == 'forward' %}↪️{% elif destination.type == 'phone' %}📞{% elif destination.type == 'extension' %}👤{% elif destination.type == 'sip' %}🌐{% else %}➡️{% endif %}
+                      </span>
+                      <span class="fw-semibold">{{ destination.label }}</span>
+                      {% if destination.raw != destination.label and can_inspect %}<code class="small text-muted">{{ destination.raw }}</code>{% endif %}
+                    </div>
+                  {% endfor %}
+                  </div>
+                {% else %}
+                  <span class="text-muted">No explicit destination reported</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center p-5"><h5>No answering rules returned</h5><p class="text-muted mb-0">DigiCloud did not return any rules for this user.</p></div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="alert alert-warning"><strong>Live routing:</strong> Changes made through Edit Rule are applied directly to DigiCloud and recorded in the NOP audit log.</div>
+
+{% if can_inspect %}
+<details class="card"><summary class="card-header" style="cursor:pointer"><strong>Super Admin · Raw API Response</strong></summary><div class="card-body"><pre class="mb-0" style="white-space:pre-wrap">{{ raw_response|tojson(indent=2) }}</pre></div></details>
+{% endif %}
+{% endblock %}

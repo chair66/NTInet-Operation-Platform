@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Review Port Request | NTInet Operations{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">Porting</div><h1>Review Port Request</h1><p>Verify every item below. Nothing has been submitted yet.</p></div></div>
+<div class="alert alert-warning"><strong>Live submission safeguard:</strong> Selecting <em>Submit Port Request</em> will create a real port order.</div>
+<div class="row g-3 mb-3">
+  <div class="col-lg-6"><section class="panel p-4 h-100"><h2 class="h5 mb-3">Destination</h2><dl class="row mb-0"><dt class="col-5">Sub Account</dt><dd class="col-7">{{ site_name }}</dd><dt class="col-5">Location</dt><dd class="col-7">{{ location_name }}</dd><dt class="col-5">Losing carrier</dt><dd class="col-7">{{ values.losingCarrierName or 'Not provided' }}</dd><dt class="col-5">Port type</dt><dd class="col-7">{{ values.portType or 'Not returned' }}{% if values.phoneNumberType %} · {{ values.phoneNumberType|title }}{% endif %}</dd></dl></section></div>
+  <div class="col-lg-6"><section class="panel p-4 h-100"><h2 class="h5 mb-3">BTN workflow</h2><dl class="row mb-0"><dt class="col-5">Current BTN</dt><dd class="col-7">{{ values.billingTelephoneNumber }}</dd><dt class="col-5">Port type</dt><dd class="col-7">{{ 'Full port' if values.portingAllNumbers else 'Partial port' }}</dd><dt class="col-5">New BTN</dt><dd class="col-7">{{ values.newBillingTelephoneNumber or 'Not required' }}</dd></dl></section></div>
+</div>
+<section class="panel p-4 mb-3"><h2 class="h5 mb-3">Telephone numbers ({{ phone_numbers|length }})</h2><div class="d-flex flex-wrap gap-2">{% for number in phone_numbers %}<span class="role-pill">{{ number }}</span>{% endfor %}</div></section>
+<div class="row g-3 mb-3">
+  <div class="col-lg-6"><section class="panel p-4 h-100"><h2 class="h5 mb-3">Customer information</h2><dl class="row mb-0"><dt class="col-5">Account type</dt><dd class="col-7">{{ values.accountType|title }}</dd><dt class="col-5">Customer name</dt><dd class="col-7">{{ values.customerName }}</dd><dt class="col-5">LOA authorizer</dt><dd class="col-7">{{ values.loaAuthorizingPerson }}</dd><dt class="col-5">Account number</dt><dd class="col-7">{{ values.accountNumber or 'Not provided' }}</dd><dt class="col-5">Account PIN</dt><dd class="col-7">{{ 'Provided' if values.accountPin else 'Not provided' }}</dd></dl></section></div>
+  <div class="col-lg-6"><section class="panel p-4 h-100"><h2 class="h5 mb-3">Service address</h2><p class="mb-1">{{ values.streetNumber }} {{ values.streetName }}</p>{% if values.address2 %}<p class="mb-1">{{ values.address2 }}</p>{% endif %}<p class="mb-0">{{ values.city }}, {{ values.state }} {{ values.zip }}{% if values.zip4 %}-{{ values.zip4 }}{% endif %}</p><hr><strong>Scheduling:</strong> {% if values.useEarliest %}Use earliest available{% else %}Requested {{ values.requestedFocDate }}{% if values.portType and ((values.portType|upper).startswith('NSR') or (values.portType|upper).startswith('LSR') or 'MANUAL' in (values.portType|upper)) %} at 11:30 AM ET{% elif values.requestedFocTime %} at {{ values.requestedFocTime }} ET{% endif %}{% endif %}{% if values.earliestEstimate %}<br><strong>Earliest estimate:</strong> {{ values.earliestEstimate }}{% endif %}</section></div>
+</div>
+<form method="post" action="/ports/new/submit" class="d-flex gap-2 flex-wrap">
+<input type="hidden" name="draft_id" value="{{ draft.id }}">
+{% for key, value in values.items() %}{% if key == 'portingAllNumbers' %}{% if value %}<input type="hidden" name="portingAllNumbers" value="true">{% endif %}{% else %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endif %}{% endfor %}
+<button class="btn btn-primary" type="submit" data-confirm="This will create a live port order. Continue?">Submit Port Request</button>
+<button class="btn btn-outline-primary" type="submit" formaction="/ports/drafts/save" formnovalidate>Save Draft</button>
+</form>
+<form method="post" action="/ports/new/details" class="d-inline">
+<input type="hidden" name="draft_id" value="{{ draft.id }}">
+{% for key, value in values.items() %}{% if key == 'portingAllNumbers' %}{% if value %}<input type="hidden" name="portingAllNumbers" value="true">{% endif %}{% else %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endif %}{% endfor %}
+<input type="hidden" name="edit_notice" value="Review cancelled. Your port request information has been restored.">
+<button class="btn btn-outline-secondary" type="submit">Back and Edit</button>
+</form>
+{% endblock %}

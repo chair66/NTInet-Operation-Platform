@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}Manage Answering Rule{% endblock %}
+{% block content %}
+<div class="page-header answering-rule-page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
+  <div>
+    <div class="answering-rule-breadcrumb">
+      <span>DigiCloud</span><span>/</span><span>Users</span><span>/</span>
+      <a href="/digicloud/users/{{ profile.username|urlencode }}?domain={{ selected_domain.domain_name|urlencode }}">{{ profile.extension }}</a>
+      <span>/</span>
+      <a href="/digicloud/users/{{ profile.username|urlencode }}/answering-rules?domain={{ selected_domain.domain_name|urlencode }}">Answering Rules</a>
+      <span>/</span><span>Manage Rule</span>
+    </div>
+    <h1>Manage Answering Rule</h1>
+    <h2>{{ rule.timeframe_label }} Answering Rule</h2>
+    <p class="answering-rule-identity mb-0">{{ selected_domain.domain_name|upper }} <span>•</span> {{ profile.extension }}</p>
+  </div>
+  <a class="btn btn-outline-secondary answering-rule-back" href="/digicloud/users/{{ profile.username|urlencode }}/answering-rules?domain={{ selected_domain.domain_name|urlencode }}">←&nbsp; View Answering Rules</a>
+</div>
+
+{% if request.query_params.get('error') %}<div class="alert alert-danger">{{ request.query_params.get('error') }}</div>{% endif %}
+
+<form method="post" class="card answering-rule-editor" id="answerRuleForm">
+  <input type="hidden" name="domain" value="{{ selected_domain.domain_name }}">
+  <input type="hidden" name="timeframe" value="{{ rule.timeframe }}">
+
+  <section class="answering-rule-general-section">
+    <div class="answering-rule-general">
+      <div class="answering-rule-timeframe">
+        <label class="form-label mb-0" for="answeringRuleTimeFrame">Time Frame</label>
+        <input class="form-control" id="answeringRuleTimeFrame" value="{{ rule.timeframe_label }}" disabled>
+      </div>
+      <div class="answering-rule-ring-duration">
+        <label class="form-label mb-0" for="ring_seconds">Ring for</label>
+        <select class="form-select" name="ring_seconds" id="ring_seconds">
+          {% set selected_ring_seconds = editor.ring_seconds|int %}
+          {% for seconds in range(5, 125, 5) %}
+            <option value="{{ seconds }}" {% if seconds == selected_ring_seconds %}selected{% endif %}>{{ seconds }}</option>
+          {% endfor %}
+        </select>
+        <span>seconds</span>
+      </div>
+      <div class="answering-rule-checks">
+        <div class="form-check"><input class="form-check-input" type="checkbox" name="enabled" id="enabled" {% if editor.enabled %}checked{% endif %}><label class="form-check-label" for="enabled">Enabled</label></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="answering-rule-body">
+    <section class="answering-rule-section">
+      <h5 class="answering-rule-section-title">Call Forwarding</h5>
+      {% set forwarding = [
+        ('always','Always'),('on_active','On Active'),('busy','When Busy'),('unanswered','When Unanswered'),('offline','When Offline')
+      ] %}
+      <div class="answering-rule-forwarding">
+        <div class="answering-rule-table-heading">Forward Condition</div>
+        <div class="answering-rule-table-heading">Destination</div>
+        {% for key, label in forwarding %}
+          <div class="answering-rule-forward-label">
+            <div class="form-check mb-0"><input class="form-check-input forward-toggle" type="checkbox" name="forward_{{ key }}" id="forward_{{ key }}" data-target="forward_{{ key }}_destination" {% if editor.forwards[key].enabled %}checked{% endif %}><label class="form-check-label" for="forward_{{ key }}">{{ label }}</label></div>
+          </div>
+          <div class="input-group answering-rule-destination-control">
+            <input class="form-control destination-input" name="forward_{{ key }}_destination" id="forward_{{ key }}_destination" value="{{ editor.forwards[key].destination }}" placeholder="Extension, number or phone">
+            <button class="btn btn-outline-secondary lookup-btn" type="button" data-target="forward_{{ key }}_destination" title="Select destination" aria-label="Select destination">...</button>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="answering-rule-section answering-rule-sim-section">
+      <h5 class="answering-rule-section-title">Simultaneous Ring</h5>
+
+      <div class="answering-rule-sim-group">
+        <div class="form-check answering-rule-sim-master">
+          <input class="form-check-input" type="checkbox" name="simultaneous_enabled" id="simultaneous_enabled" {% if editor.simultaneous_enabled %}checked{% endif %}>
+          <label class="form-check-label" for="simultaneous_enabled">Simultaneous Ring</label>
+        </div>
+
+        <div class="answering-rule-destination-block" id="simultaneousDestinationBlock">
+          <div class="answering-rule-destination-heading">Destinations</div>
+          <div id="simDestinations" class="answering-rule-destinations">
+            {% for destination in editor.simultaneous_destinations %}
+            <div class="input-group destination-row">
+              <input class="form-control destination-input" name="simultaneous_destinations" value="{{ destination }}" placeholder="Extension, number or phone">
+              <button class="btn btn-outline-secondary lookup-btn" type="button" title="Select destination" aria-label="Select destination">...</button>
+              <button class="btn btn-outline-danger remove-destination" type="button" title="Remove destination" aria-label="Remove destination">−</button>
+            </div>
+            {% endfor %}
+            <div class="input-group destination-row">
+              <input class="form-control destination-input" name="simultaneous_destinations" placeholder="Extension, number or phone">
+              <button class="btn btn-outline-secondary lookup-btn" type="button" title="Select destination" aria-label="Select destination">...</button>
+              <button class="btn btn-outline-success add-destination" type="button" title="Add destination" aria-label="Add destination">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </div>
+
+  <div class="card-footer answering-rule-footer">
+    <a class="btn btn-outline-secondary" href="/digicloud/users/{{ profile.username|urlencode }}/answering-rules?domain={{ selected_domain.domain_name|urlencode }}">Cancel</a>
+    <button class="btn btn-primary" type="submit">Save Changes</button>
+  </div>
+</form>
+
+<div class="modal fade" id="destinationModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Select Destination</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input class="form-control mb-3" id="destinationSearch" placeholder="Search users or enter an extension, number or phone"><div class="list-group" id="destinationResults"></div><div class="form-text mt-2">Enter a destination and select “Use entered value.”</div></div></div></div></div>
+<script>
+let activeDestination=null;
+function modalFor(button){activeDestination=button.closest('.input-group').querySelector('.destination-input');const search=document.getElementById('destinationSearch');search.value=activeDestination.value||'';renderDestinationResults();bootstrap.Modal.getOrCreateInstance(document.getElementById('destinationModal')).show();setTimeout(()=>search.focus(),150);}
+function renderDestinationResults(){const value=document.getElementById('destinationSearch').value.trim();const results=document.getElementById('destinationResults');results.innerHTML='';if(value){const button=document.createElement('button');button.type='button';button.className='list-group-item list-group-item-action';button.textContent='Use entered value: '+value;button.onclick=()=>{activeDestination.value=value;bootstrap.Modal.getInstance(document.getElementById('destinationModal')).hide();};results.appendChild(button);}else{results.innerHTML='<div class="text-muted p-2">Type an extension, number, user, or phone.</div>';}}
+document.getElementById('destinationSearch').addEventListener('input',renderDestinationResults);
+document.addEventListener('click',e=>{const lookup=e.target.closest('.lookup-btn');if(lookup){modalFor(lookup);return;}if(e.target.closest('.add-destination')){const row=e.target.closest('.destination-row');const clone=row.cloneNode(true);clone.querySelector('input').value='';clone.querySelector('.add-destination').outerHTML='<button class="btn btn-outline-danger remove-destination" type="button" title="Remove destination" aria-label="Remove destination">−</button>';row.before(clone);}if(e.target.closest('.remove-destination'))e.target.closest('.destination-row').remove();});
+
+const alwaysToggle=document.getElementById('forward_always');
+const alwaysRow=alwaysToggle.closest('.answering-rule-forward-label');
+const alwaysDestination=document.getElementById('forward_always_destination').closest('.answering-rule-destination-control');
+const simultaneousToggle=document.getElementById('simultaneous_enabled');
+const simultaneousGroup=document.querySelector('.answering-rule-sim-group');
+
+function lockRoutingControl(element,locked){
+  element.classList.toggle('is-routing-disabled',locked);
+  element.setAttribute('aria-disabled',locked?'true':'false');
+}
+function updateRoutingMode(changed){
+  if(changed==='always'&&alwaysToggle.checked) simultaneousToggle.checked=false;
+  if(changed==='simultaneous'&&simultaneousToggle.checked) alwaysToggle.checked=false;
+
+  const alwaysEnabled=alwaysToggle.checked;
+  const simultaneousEnabled=simultaneousToggle.checked;
+
+  lockRoutingControl(alwaysRow,simultaneousEnabled);
+  lockRoutingControl(alwaysDestination,simultaneousEnabled);
+  lockRoutingControl(simultaneousGroup,alwaysEnabled);
+
+  alwaysToggle.tabIndex=simultaneousEnabled?-1:0;
+  simultaneousToggle.tabIndex=alwaysEnabled?-1:0;
+  document.getElementById('simultaneousDestinationBlock').classList.toggle('is-disabled',!simultaneousEnabled||alwaysEnabled);
+}
+
+alwaysToggle.addEventListener('change',()=>updateRoutingMode('always'));
+simultaneousToggle.addEventListener('change',()=>{
+  updateRoutingMode('simultaneous');
+});
+updateRoutingMode('load');
+</script>
+{% endblock %}

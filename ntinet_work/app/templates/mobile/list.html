@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }} | {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="eyebrow">NTI Mobile</div>
+    <h1>{{ page_title }}</h1>
+    <p>{{ page_description }}</p>
+  </div>
+
+  <div class="d-flex gap-2">
+    {% if can_sync and sync_url %}
+    <a class="btn btn-primary" href="{{ sync_url }}">
+      <i class="fa-solid fa-rotate me-2"></i>{{ sync_label }}
+    </a>
+    {% endif %}
+
+    {% if can_create and create_url %}
+    <a class="btn btn-primary" href="{{ create_url }}">
+      <i class="fa-solid fa-plus me-2"></i>{{ create_label }}
+    </a>
+    {% endif %}
+  </div>
+</div>
+
+{% if record_type == "sims" %}
+  {% if sync_error %}
+  <div class="alert alert-warning d-flex align-items-start gap-3" role="alert">
+    <i class="fa-solid fa-triangle-exclamation mt-1"></i>
+    <div>
+      <strong>BrandVNO inventory refresh was not completed.</strong>
+      <div>{{ sync_error }}</div>
+      {% if records %}<div class="small mt-1">Displaying the most recently cached inventory.</div>{% endif %}
+    </div>
+  </div>
+  {% elif sync_summary %}
+  <div class="alert alert-success d-flex align-items-center gap-3" role="status">
+    <i class="fa-solid fa-circle-check"></i>
+    <div>{{ sync_summary }}</div>
+  </div>
+  {% endif %}
+
+  <div class="small text-secondary mb-3">
+    {% if sync_state and sync_state.last_success_at %}
+      Last successful refresh: {{ sync_state.last_success_at.strftime("%m/%d/%Y %I:%M %p") }} UTC
+      · {{ sync_state.records_received }} record{{ "s" if sync_state.records_received != 1 else "" }} received
+    {% else %}
+      Inventory has not completed a successful refresh yet.
+    {% endif %}
+  </div>
+{% endif %}
+
+<section class="panel">
+  {% if records %}
+  <div class="table-responsive">
+    <table class="table align-middle mb-0">
+      {% if record_type == "orders" %}
+      <thead><tr><th>Order</th><th>Type</th><th>Status</th><th>Provider Order</th><th>Created</th></tr></thead>
+      <tbody>
+      {% for row in records %}
+      <tr>
+        <td><strong>{{ row.order_number }}</strong></td>
+        <td>{{ row.order_type|replace("_", " ")|title }}</td>
+        <td><span class="badge text-bg-light border">{{ row.status|title }}</span></td>
+        <td>{{ row.provider_order_id or "—" }}</td>
+        <td>{{ row.created_at.strftime("%m/%d/%Y %I:%M %p") if row.created_at else "" }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+
+      {% elif record_type == "customers" %}
+      <thead><tr><th>Customer</th><th>Number</th><th>Type</th><th>Email</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for row in records %}
+      <tr>
+        <td><strong>{{ row.display_name }}</strong></td>
+        <td>{{ row.customer_number }}</td>
+        <td>{{ row.customer_type|title }}</td>
+        <td>{{ row.email or "—" }}</td>
+        <td><span class="badge text-bg-light border">{{ row.status|title }}</span></td>
+      </tr>
+      {% endfor %}
+      </tbody>
+
+      {% elif record_type == "lines" %}
+      <thead><tr><th>Mobile Number</th><th>Customer ID</th><th>Plan ID</th><th>SIM ID</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for row in records %}
+      <tr>
+        <td><strong>{{ row.mobile_number or "Pending assignment" }}</strong></td>
+        <td>{{ row.customer_id }}</td>
+        <td>{{ row.plan_id or "—" }}</td>
+        <td>{{ row.sim_id or "—" }}</td>
+        <td><span class="badge text-bg-light border">{{ row.status|title }}</span></td>
+      </tr>
+      {% endfor %}
+      </tbody>
+
+      {% elif record_type == "sims" %}
+      <thead><tr><th>ICCID</th><th>Type</th><th>Provider</th><th>Status</th><th>Assigned Customer</th></tr></thead>
+      <tbody>
+      {% for row in records %}
+      <tr>
+        <td><strong>{{ row.iccid }}</strong></td>
+        <td>{{ "eSIM" if row.sim_type == "esim" else "Physical SIM" }}</td>
+        <td>{{ row.provider or "OXIO" }}</td>
+        <td><span class="badge text-bg-light border">{{ row.status|title }}</span></td>
+        <td>{{ row.assigned_customer_id or "—" }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+
+      {% elif record_type == "numbers" %}
+      <thead><tr><th>Mobile Number</th><th>Customer ID</th><th>Plan ID</th><th>Status</th><th>Activated</th></tr></thead>
+      <tbody>
+      {% for row in records %}
+      <tr>
+        <td><strong>{{ row.mobile_number }}</strong></td>
+        <td>{{ row.customer_id }}</td>
+        <td>{{ row.plan_id or "—" }}</td>
+        <td><span class="badge text-bg-light border">{{ row.status|title }}</span></td>
+        <td>{{ row.activated_at.strftime("%m/%d/%Y") if row.activated_at else "—" }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+
+      {% elif record_type == "plans" %}
+      <thead><tr><th>Plan</th><th>Data</th><th>Monthly Price</th><th>Top-Up</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for row in records %}
+      <tr>
+        <td><strong>{{ row.name }}</strong><div class="small text-secondary">{{ row.plan_code }}</div></td>
+        <td>{{ row.data_gb }} GB</td>
+        <td>${{ "%.2f"|format(row.monthly_price) }}</td>
+        <td>${{ "%.2f"|format(row.top_up_price_per_gb) }}/GB</td>
+        <td><span class="badge {{ 'text-bg-success' if row.active else 'text-bg-secondary' }}">{{ "Active" if row.active else "Inactive" }}</span></td>
+      </tr>
+      {% endfor %}
+      </tbody>
+
+      {% elif record_type == "ports" %}
+      <thead><tr><th>Port</th><th>Telephone Number</th><th>Losing Carrier</th><th>Status</th><th>Created</th></tr></thead>
+      <tbody>
+      {% for row in records %}
+      <tr>
+        <td><strong>{{ row.port_number }}</strong></td>
+        <td>{{ row.telephone_number }}</td>
+        <td>{{ row.losing_carrier or "—" }}</td>
+        <td><span class="badge text-bg-light border">{{ row.status|title }}</span></td>
+        <td>{{ row.created_at.strftime("%m/%d/%Y %I:%M %p") if row.created_at else "" }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+
+      {% elif record_type == "exceptions" %}
+      <thead><tr><th>Exception</th><th>Severity</th><th>Resource</th><th>Status</th><th>Created</th></tr></thead>
+      <tbody>
+      {% for row in records %}
+      <tr>
+        <td><strong>{{ row.title }}</strong><div class="small text-secondary">{{ row.detail }}</div></td>
+        <td>{{ row.severity|title }}</td>
+        <td>{{ row.resource_type|title if row.resource_type else "—" }} {{ row.resource_id }}</td>
+        <td><span class="badge text-bg-light border">{{ row.status|title }}</span></td>
+        <td>{{ row.created_at.strftime("%m/%d/%Y %I:%M %p") if row.created_at else "" }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+      {% endif %}
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fa-solid fa-cloud-arrow-down"></i>
+    <h2>{{ empty_title }}</h2>
+    <p>{{ empty_message }}</p>
+
+    {% if can_sync and sync_url %}
+    <a class="btn btn-primary mt-2" href="{{ sync_url }}">
+      <i class="fa-solid fa-rotate me-2"></i>{{ sync_label }}
+    </a>
+    {% elif can_create and create_url %}
+    <a class="btn btn-primary mt-2" href="{{ create_url }}">
+      <i class="fa-solid fa-plus me-2"></i>{{ create_label }}
+    </a>
+    {% endif %}
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

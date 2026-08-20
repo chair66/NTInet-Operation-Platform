@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ customer.name }} · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+  <div>
+    <div class="eyebrow">NOP Customer {{ customer.customer_number }}</div>
+    <h1>{{ customer.name }}</h1>
+    <p>Operational customer record stored in NOP.</p>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+    {% if can("tickets.create") %}<a class="btn btn-primary" href="/tickets/new?customer_id={{ customer.id }}"><i class="fa-solid fa-ticket me-2"></i>Add Ticket</a>{% endif %}
+    {% if can("jobs.create") %}<a class="btn btn-outline-primary" href="/jobs/new?customer_id={{ customer.id }}"><i class="fa-solid fa-screwdriver-wrench me-2"></i>Add Job</a>{% endif %}
+    {% if can("estimates.create") %}<a class="btn btn-outline-primary" href="/estimates/new?customer_id={{ customer.id }}"><i class="fa-solid fa-file-signature me-2"></i>Add Estimate</a>{% endif %}
+    {% if current_user.organization.is_staff %}{% if customer.platypus_link %}<a class="btn btn-outline-danger" href="/customers/{{ customer.platypus_link.external_id }}/rates/manage"><i class="fa-solid fa-tags me-2"></i>Manage Rates</a>{% endif %}<a class="btn btn-outline-danger" href="/customers/local/{{ customer.id }}/duplicate"><i class="fa-solid fa-code-merge me-2"></i>Merge / Delete</a>{% endif %}
+    <a class="btn btn-outline-secondary" href="/customers"><i class="fa-solid fa-arrow-left me-2"></i>Customers</a>
+    <span class="badge text-bg-light border align-self-center px-3 py-2">NOP</span>
+  </div>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-xl-7">
+    <section class="panel p-4 h-100">
+      <h2 class="h5 mb-3">Customer information</h2>
+      <div class="row g-3">
+        <div class="col-md-6"><div class="text-muted small">Status</div><strong>{{ customer.status|replace('_',' ')|title }}</strong></div>
+        <div class="col-md-6"><div class="text-muted small">NOP Customer ID</div><strong>{{ customer.id }}</strong></div>
+        <div class="col-md-6"><div class="text-muted small">Billing phone</div><strong>{{ customer.billing_phone or '—' }}</strong></div>
+        <div class="col-md-6"><div class="text-muted small">Billing email</div><strong>{{ customer.billing_email or '—' }}</strong></div>
+        <div class="col-md-6"><div class="text-muted small">Primary contact</div><strong>{{ customer.primary_contact.full_name if customer.primary_contact else '—' }}</strong></div>
+        <div class="col-md-6"><div class="text-muted small">Source</div><strong>NOP</strong></div>
+      </div>
+    </section>
+  </div>
+  <div class="col-xl-5">
+    <section class="panel p-4 h-100">
+      <h2 class="h5 mb-3">Locations</h2>
+      {% if customer.locations %}
+        {% for location in customer.locations if location.active %}
+        <div class="mb-3">
+          <div class="text-muted small">{{ location.name }}</div>
+          <div>{{ location.one_line_address }}</div>
+        </div>
+        {% endfor %}
+      {% else %}<div class="text-muted">No locations are stored.</div>{% endif %}
+    </section>
+  </div>
+</div>
+
+<section class="panel">
+  <div class="p-4 border-bottom"><h2 class="h5 mb-1">Services</h2><div class="text-muted small">NOP operational services for this customer.</div></div>
+  {% if customer.services %}
+  <div class="list-group list-group-flush">
+    {% for service in customer.services %}
+    <div class="list-group-item p-4 d-flex justify-content-between align-items-start">
+      <div><strong>{{ service.service_name }}</strong>{% if service.service_identifier %}<div class="small text-muted">{{ service.service_identifier }}</div>{% endif %}</div>
+      <span class="badge {{ 'text-bg-success' if service.status == 'active' else 'text-bg-secondary' }}">{{ service.status|title }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}<div class="p-5 text-center text-muted">No services are stored for this NOP-only customer.</div>{% endif %}
+</section>
+{% endblock %}

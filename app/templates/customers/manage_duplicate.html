@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Merge or delete {{ source.name }} · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex flex-wrap justify-content-between align-items-end gap-3">
+  <div>
+    <div class="eyebrow">Staff only · NOP Customer {{ source.customer_number }}</div>
+    <h1>Merge or delete duplicate</h1>
+    <p>Review every linked record before removing <strong>{{ source.name }}</strong>.</p>
+  </div>
+  <a class="btn btn-outline-secondary" href="{{ return_url }}"><i class="fa-solid fa-arrow-left me-2"></i>Back to customer</a>
+</div>
+
+{% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+{% if notice %}<div class="alert alert-success">{{ notice }}</div>{% endif %}
+
+<div class="row g-4">
+  <div class="col-xl-7">
+    <section class="panel p-4">
+      <h2 class="h5 mb-3">1. Choose the customer to keep</h2>
+      <form method="get" action="/customers/local/{{ source.id }}/duplicate">
+        <label class="form-label" for="target_id">Destination customer</label>
+        <div class="input-group">
+          <select class="form-select" id="target_id" name="target_id" required>
+            <option value="">Select a NOP customer…</option>
+            {% for customer in candidates %}
+            <option value="{{ customer.id }}" {{ 'selected' if target and target.id == customer.id else '' }}>
+              {{ customer.name }} · {{ customer.customer_number }}{% if customer.platypus_link %} · Platypus #{{ customer.platypus_link.external_id }}{% endif %}
+            </option>
+            {% endfor %}
+          </select>
+          <button class="btn btn-outline-primary" type="submit">Preview merge</button>
+        </div>
+      </form>
+
+      {% if target %}
+      <hr class="my-4">
+      <h2 class="h5 mb-3">2. Confirm merge</h2>
+      <p>Keep <strong>{{ target.name }}</strong> ({{ target.customer_number }}) and remove duplicate <strong>{{ source.name }}</strong> ({{ source.customer_number }}).</p>
+      {% if conflicts %}
+      <div class="alert alert-danger mb-3">
+        <strong>Merge blocked.</strong>
+        <ul class="mb-0 mt-2">{% for conflict in conflicts %}<li>{{ conflict }}</li>{% endfor %}</ul>
+      </div>
+      {% else %}
+      <form method="post" action="/customers/local/{{ source.id }}/merge" onsubmit="return confirm('Merge this duplicate into {{ target.name|e }}? This cannot be automatically undone.');">
+        <input type="hidden" name="target_id" value="{{ target.id }}">
+        <label class="form-label" for="merge_confirmation">Type <strong>MERGE</strong> to confirm</label>
+        <div class="input-group">
+          <input class="form-control" id="merge_confirmation" name="confirmation" autocomplete="off" required>
+          <button class="btn btn-danger" type="submit"><i class="fa-solid fa-code-merge me-2"></i>Merge duplicate</button>
+        </div>
+      </form>
+      {% endif %}
+      {% endif %}
+    </section>
+  </div>
+
+  <div class="col-xl-5">
+    <section class="panel p-4 mb-4">
+      <h2 class="h5 mb-3">Records attached to duplicate</h2>
+      <div class="list-group list-group-flush">
+        {% for label, count in counts.items() %}
+        <div class="list-group-item px-0 d-flex justify-content-between"><span>{{ label }}</span><strong>{{ count }}</strong></div>
+        {% endfor %}
+      </div>
+    </section>
+    <section class="panel p-4 border border-danger-subtle">
+      <h2 class="h5">Delete unused duplicate</h2>
+      <p class="text-muted small">Contacts, locations, and local services will be deleted with an unused NOP-only customer. External links and operational history must be merged instead.</p>
+      {% if can_delete %}
+      <form method="post" action="/customers/local/{{ source.id }}/delete" onsubmit="return confirm('Permanently delete this unused NOP customer?');">
+        <label class="form-label" for="delete_confirmation">Type <strong>DELETE</strong> to confirm</label>
+        <div class="input-group">
+          <input class="form-control" id="delete_confirmation" name="confirmation" autocomplete="off" required>
+          <button class="btn btn-outline-danger" type="submit">Delete</button>
+        </div>
+      </form>
+      {% else %}
+      <button class="btn btn-outline-danger" type="button" disabled>Delete unavailable</button>
+      <div class="small text-muted mt-2">
+        Blocking records:
+        {% for label, count in delete_blockers.items() %}{{ label }} ({{ count }}){{ ', ' if not loop.last else '' }}{% endfor %}.
+        Merge this record so its linked history is preserved.
+      </div>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}

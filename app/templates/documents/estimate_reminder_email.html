@@ -1,0 +1,10 @@
+<!doctype html>
+<html>
+<body style="margin:0;background:#f3f4f6;font-family:Arial,sans-serif;color:#111">
+<table role="presentation" width="100%"><tr><td align="center" style="padding:24px">
+<table role="presentation" width="680" style="max-width:680px;background:#fff;border:1px solid #ddd">
+<tr><td style="padding:28px;border-bottom:3px solid #111"><h1 style="margin:0;font-size:24px">{{ heading }}</h1><div>{{ estimate.estimate_number }} · {{ estimate.title }}</div></td></tr>
+<tr><td style="padding:28px"><p>{{ greeting }}</p><p>{{ reminder_text }}</p><p>If you have any questions, we would be happy to review the estimate with you.</p>{% if final_reminder %}<p><strong>This estimate will expire in 48 hours if it has not been accepted.</strong></p>{% endif %}<div style="margin:28px 0"><a href="{{ acceptance_url }}" style="display:inline-block;background:#e30613;color:#fff;text-decoration:none;font-weight:bold;padding:15px 24px;border-radius:3px">View &amp; Accept Estimate Online &rarr;</a></div><p>Thank you,<br>NTInet</p></td></tr>
+</table></td></tr></table>
+</body>
+</html>

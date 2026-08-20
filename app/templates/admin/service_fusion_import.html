@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Service Fusion Import | NOP{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+  <div><div class="eyebrow">Administration · Data Imports</div><h1 class="h3 mb-1">Service Fusion Customer Import</h1><p class="text-muted mb-0">Dry-run customer, contact and location mapping before anything is committed to NOP.</p></div>
+  <a class="btn btn-outline-secondary" href="/customers"><i class="fa-solid fa-users me-2"></i>Customers</a>
+</div>
+{% if import_error %}<div class="alert alert-danger"><strong>Import preview failed.</strong> {{ import_error }}</div>{% endif %}
+{% if result %}
+<div class="alert alert-success"><strong>Import completed.</strong> {{ result.created }} customers created, {{ result.updated }} updated, {{ result.platypus_synced }} created from live Platypus, {{ result.contacts }} contacts mapped, {{ result.locations }} locations added and {{ result.locations_merged }} locations merged. {{ result.locations_skipped }} location rows were skipped for ambiguity/mismatch.</div>
+{% endif %}
+<div class="panel p-4 mb-4">
+  <h2 class="h5">Upload exports</h2>
+  <p class="text-muted">Upload the Service Fusion <strong>Customer & Contact</strong> CSV. The Locations CSV is optional but recommended. No database changes occur until you approve the preview.</p>
+  <form method="post" action="/admin/imports/service-fusion/preview" enctype="multipart/form-data" class="row g-3">
+    <div class="col-lg-6"><label class="form-label">Customer & Contact CSV</label><input class="form-control" type="file" name="customers_file" accept=".csv,text/csv" required></div>
+    <div class="col-lg-6"><label class="form-label">Locations CSV</label><input class="form-control" type="file" name="locations_file" accept=".csv,text/csv"></div>
+    <div class="col-12"><button class="btn btn-primary"><i class="fa-solid fa-magnifying-glass me-2"></i>Build dry-run preview</button></div>
+  </form>
+</div>
+{% if preview %}
+<div class="row g-3 mb-4">
+  {% for label,value,cls in [
+    ('Customer rows',preview.customer_rows,'primary'),('Platypus linked',preview.matched_platypus + preview.platypus_no_nop,'success'),
+    ('Existing NOP matches',preview.matched_service_fusion + preview.matched_contact,'info'),('New NOP customers',preview.new_customers,'secondary'),
+    ('Needs review',preview.conflicts|length,'warning'),('Invalid',preview.invalid|length,'danger') ] %}
+  <div class="col-6 col-lg-2"><div class="panel p-3 h-100"><div class="small text-muted">{{ label }}</div><div class="h4 mb-0 text-{{ cls }}">{{ value }}</div></div></div>
+  {% endfor %}
+</div>
+<div class="panel p-4 mb-4">
+  <div class="d-flex justify-content-between align-items-center"><div><h2 class="h5 mb-1">Customer mapping</h2><p class="text-muted small mb-0">PlatCustomerID is authoritative. Service Fusion Account Number and unique phone/email are fallbacks.</p></div><span class="badge text-bg-light">{{ preview.safe_customer_rows }} safe rows</span></div>
+  <div class="table-responsive mt-3"><table class="table table-sm align-middle"><thead><tr><th>Row</th><th>Customer</th><th>Action</th><th>Platypus</th><th>Service Fusion Account</th></tr></thead><tbody>
+    {% for item in preview.customer_decisions[:100] %}<tr><td>{{ item.row_number }}</td><td class="fw-semibold">{{ item.name }}</td><td>{% if item.action=='update' %}<span class="badge text-bg-info">Update/link</span>{% elif item.action=='sync_platypus' %}<span class="badge text-bg-success">Create from Platypus</span>{% else %}<span class="badge text-bg-secondary">Create NOP-only</span>{% endif %}</td><td>{{ item.plat_id or '—' }}</td><td>{{ item.sf_id or '—' }}</td></tr>{% endfor %}
+  </tbody></table></div>{% if preview.customer_decisions|length > 100 %}<div class="small text-muted">Showing first 100 safe mapping rows.</div>{% endif %}
+</div>
+<div class="row g-3 mb-4">
+ <div class="col-lg-5"><div class="panel p-4 h-100"><h2 class="h5">Locations</h2><dl class="row mb-0"><dt class="col-7">Rows</dt><dd class="col-5">{{ preview.location_rows }}</dd><dt class="col-7">Matched to customer</dt><dd class="col-5">{{ preview.location_summary.matched }}</dd><dt class="col-7">Ambiguous</dt><dd class="col-5">{{ preview.location_summary.ambiguous }}</dd><dt class="col-7">Orphan</dt><dd class="col-5">{{ preview.location_summary.orphan }}</dd></dl><hr><div class="small text-muted">For Platypus-linked customers, Service Fusion Primary Location is merged with the matching Platypus Service Address. A different address is not silently substituted.</div></div></div>
+ <div class="col-lg-7"><div class="panel p-4 h-100"><h2 class="h5">Needs review / skipped</h2>{% if preview.conflicts or preview.invalid %}<div class="table-responsive" style="max-height:300px"><table class="table table-sm"><thead><tr><th>Row</th><th>Customer</th><th>Reason</th></tr></thead><tbody>{% for item in preview.conflicts %}<tr><td>{{ item.row }}</td><td>{{ item.customer or '—' }}</td><td>{{ item.reason }}</td></tr>{% endfor %}{% for item in preview.invalid %}<tr><td>{{ item.row }}</td><td>—</td><td>{{ item.reason }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="alert alert-success mb-0">No customer conflicts were detected in this preview.</div>{% endif %}</div></div>
+</div>
+<div class="panel p-4"><h2 class="h5">Commit import</h2><p class="text-muted">Safe rows will be imported. Conflict/invalid rows are skipped. Existing tickets, jobs, estimates and communications are preserved because linked customers are updated rather than recreated.</p><form method="post" action="/admin/imports/service-fusion/commit"><input type="hidden" name="token" value="{{ preview.token }}"><button class="btn btn-success" onclick="return confirm('Import the safe Service Fusion rows into NOP?');"><i class="fa-solid fa-file-import me-2"></i>Import safe rows</button></form></div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Numbers & LNP · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">Numbers &amp; LNP</div><h1>LNP Dashboard</h1><p>Port status, telephone-number inventory, and common number-management actions.</p></div>{% if can('ports.create') %}<a class="btn btn-primary" href="/ports/new"><i class="fa-solid fa-plus me-2"></i>New Port</a>{% endif %}</div>
+{% set hide_lnp_recent = true %}{% include "partials/lnp_dashboard_status.html" %}
+<div class="module-dashboard mt-4">
+  <a href="/sites"><span class="module-icon"><i class="fa-solid fa-phone"></i></span><div><h2>My Numbers</h2><p>Browse telephone numbers by Bandwidth sub-account and location.</p><strong>Open Numbers <i class="fa-solid fa-arrow-right"></i></strong></div></a>
+  {% if can('numbers.buy') %}<a href="/available-numbers"><span class="module-icon"><i class="fa-solid fa-cart-plus"></i></span><div><h2>Buy Numbers</h2><p>Search available telephone numbers and submit number orders.</p><strong>Search Numbers <i class="fa-solid fa-arrow-right"></i></strong></div></a>{% endif %}
+  <a href="/ports"><span class="module-icon"><i class="fa-solid fa-arrow-right-arrow-left"></i></span><div><h2>Port Orders</h2><p>Review active, completed, FOC, and exception port requests.</p><strong>Open Ports <i class="fa-solid fa-arrow-right"></i></strong></div></a>
+  <a href="/ports/drafts"><span class="module-icon"><i class="fa-solid fa-file-pen"></i></span><div><h2>Port Drafts</h2><p>Continue port requests that have not yet been submitted.</p><strong>Open Drafts <i class="fa-solid fa-arrow-right"></i></strong></div></a>
+</div>
+{% if lnp_status.recent %}<section class="card lnp-dashboard-card mt-4 mb-0"><div class="card-header"><div><span class="eyebrow">Number Portability</span><strong>Recent Activity</strong></div><a href="/ports">View All Ports</a></div><div class="lnp-recent">{% for port in lnp_status.recent %}<a href="/ports/{{ port.get('orderId') }}"><span><strong>{{ port.get('customerOrderId') or port.get('orderId') }}</strong><small>Order {{ port.get('orderId') }}{% if port.get('billingPhoneNumber') %} · Billing TN {{ port.get('billingPhoneNumber') }}{% endif %}</small></span><b>{{ (port.get('processingStatus') or 'Submitted')|replace('_',' ')|title }}</b></a>{% endfor %}</div></section>{% endif %}
+{% endblock %}

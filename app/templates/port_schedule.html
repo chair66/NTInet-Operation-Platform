@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Schedule Port | NTInet Operations{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">Porting</div><h1>Activation Date &amp; Time</h1><p>{{ 'Choose the corrected activation schedule before resubmitting this port.' if draft.bandwidth_order_id else 'Choose the final activation schedule before submitting the port.' }}</p></div></div>
+{% if verification and verification.status == 'changed' %}<div class="alert alert-warning"><strong>Bandwidth scheduling changed.</strong> {{ verification.message }} Review the current earliest date below.</div>{% endif %}
+<section class="panel p-4 mb-3">
+  <div class="small text-uppercase fw-semibold text-muted">Earliest available</div>
+  <div class="fs-4 fw-semibold">{{ earliest_display or 'Not returned by Bandwidth' }}</div>
+  <div class="form-text">Bandwidth's current portability estimate. NOP refreshes this again immediately before submission.</div>
+</section>
+<form method="post" action="/ports/new/submit" class="panel p-4">
+  <input type="hidden" name="draft_id" value="{{ draft.id }}">
+  {% for key, value in values.items() %}{% if key not in ['useEarliest','requestedFocDate','requestedFocTime','portingAllNumbers'] %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endif %}{% endfor %}
+  {% if values.portingAllNumbers %}<input type="hidden" name="portingAllNumbers" value="true">{% endif %}
+  {% set using_earliest = values.useEarliest is not defined or values.useEarliest in [true, 'true', 'True', '1', 'yes', 'on'] %}
+  <div class="form-check mb-3"><input class="form-check-input" type="radio" name="useEarliest" id="useEarliestYes" value="true" {{ 'checked' if using_earliest else '' }}><label class="form-check-label fw-semibold" for="useEarliestYes">Use earliest available (recommended)</label></div>
+  <div class="form-check mb-4"><input class="form-check-input" type="radio" name="useEarliest" id="useEarliestNo" value="false" {{ 'checked' if not using_earliest else '' }}><label class="form-check-label fw-semibold" for="useEarliestNo">Choose another date</label></div>
+  <div class="row g-3" id="laterSchedule">
+    <div class="col-lg-6"><label class="form-label fw-semibold">Requested activation date</label><input class="form-control" type="date" name="requestedFocDate" id="requestedFocDate" min="{{ earliest_date }}" value="{{ values.requestedFocDate or earliest_date }}" {{ 'disabled' if using_earliest else '' }}></div>
+    <div class="col-lg-6"><label class="form-label fw-semibold">Requested activation time (ET)</label>
+      {% if profile.kind == 'manual' %}
+      <input class="form-control" type="time" name="requestedFocTime" id="requestedFocTime" value="{{ values.requestedFocTime or earliest_time }}" readonly {{ 'disabled' if using_earliest else '' }}><div class="form-text">This port profile uses the Bandwidth-provided activation time; only the date can be moved later.</div>
+      {% else %}
+      <select class="form-select" name="requestedFocTime" id="requestedFocTime" {{ 'disabled' if using_earliest else '' }}>{% for hour in range(5,23) %}{% for minute in [0,30] %}{% set t='%02d:%02d'|format(hour,minute) %}<option value="{{ t }}" {{ 'selected' if t == (values.requestedFocTime or earliest_time) else '' }}>{{ '%d:%02d %s ET'|format((hour-1)%12+1, minute, 'AM' if hour < 12 else 'PM') }}</option>{% endfor %}{% endfor %}</select>
+      {% endif %}
+    </div>
+  </div>
+  <div class="alert alert-light border mt-4 mb-0">All scheduling is entered and displayed in Eastern Time. NOP converts the final selection to UTC only when sending the request to Bandwidth.</div>
+  <div class="d-flex justify-content-between gap-2 mt-4"><a class="btn btn-outline-secondary" href="/ports/drafts/{{ draft.id }}">Save / Review Draft</a><button class="btn btn-primary" type="submit" data-confirm="{{ 'Submit this correction to the existing port order?' if draft.bandwidth_order_id else 'This will create a live port order. Continue?' }}">{{ 'Resubmit Port Correction' if draft.bandwidth_order_id else 'Submit Port Request' }}</button></div>
+</form>
+{% endblock %}
+{% block scripts %}<script>
+const yes=document.getElementById('useEarliestYes'), no=document.getElementById('useEarliestNo');
+const date=document.getElementById('requestedFocDate'), time=document.getElementById('requestedFocTime');
+function toggleSchedule(){const later=Boolean(no?.checked); if(date){date.disabled=!later; date.required=later;} if(time && !time.readOnly){time.disabled=!later;} else if(time){time.disabled=!later;}}
+yes?.addEventListener('change',toggleSchedule); no?.addEventListener('change',toggleSchedule); toggleSchedule();
+</script>{% endblock %}

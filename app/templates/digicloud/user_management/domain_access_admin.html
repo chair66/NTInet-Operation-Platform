@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}DigiCloud User Domain Access{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><div class="eyebrow">DigiCloud · Administration</div><h1>User Domain Access</h1><p>Approve select domains and assign each one to the organization allowed to manage its users.</p></div>
+</div>
+{% if request.query_params.get('notice') %}<div class="alert alert-success">{{ request.query_params.get('notice') }}</div>{% endif %}
+{% if request.query_params.get('error') %}<div class="alert alert-danger">{{ request.query_params.get('error') }}</div>{% endif %}
+<div class="card mb-4">
+  <div class="card-header"><strong>Approve a Domain</strong></div>
+  <form method="post" action="/digicloud/admin/user-domains">
+    <div class="card-body row g-3">
+      <div class="col-md-3"><label class="form-label">Domain</label><input class="form-control" name="domain_name" placeholder="customer.example.com" required></div>
+      <div class="col-md-3"><label class="form-label">Owning Organization</label><select class="form-select" name="organization_id" required>{% for org in organizations %}<option value="{{ org.id }}">{{ org.effective_name }}</option>{% endfor %}</select></div>
+      <div class="col-md-4"><label class="form-label">Notes</label><input class="form-control" name="notes" placeholder="Residential or wholesale domain"></div>
+      <div class="col-md-1 form-check mt-5"><input class="form-check-input" type="checkbox" name="user_management_enabled" id="new-enabled" checked><label class="form-check-label" for="new-enabled">Enabled</label></div>
+      <div class="col-md-1 form-check mt-5"><input class="form-check-input" type="checkbox" name="active" id="new-active" checked><label class="form-check-label" for="new-active">Active</label></div>
+    </div>
+    <div class="card-footer"><button class="btn btn-primary">Approve Domain</button></div>
+  </form>
+</div>
+<div class="card">
+  <div class="card-header"><strong>Approved Domains</strong></div>
+  <div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>Domain</th><th>Organization</th><th>Status</th><th>Notes</th><th></th></tr></thead><tbody>
+  {% for row in rows %}
+  <tr><form method="post" action="/digicloud/admin/user-domains/{{ row.id }}"><td><strong>{{ row.domain_name }}</strong></td><td><select class="form-select form-select-sm" name="organization_id">{% for org in organizations %}<option value="{{ org.id }}" {% if org.id == row.organization_id %}selected{% endif %}>{{ org.effective_name }}</option>{% endfor %}</select></td><td><div class="form-check"><input class="form-check-input" type="checkbox" name="user_management_enabled" id="enabled-{{row.id}}" {% if row.user_management_enabled %}checked{% endif %}><label class="form-check-label" for="enabled-{{row.id}}">User Management</label></div><div class="form-check"><input class="form-check-input" type="checkbox" name="active" id="active-{{row.id}}" {% if row.active %}checked{% endif %}><label class="form-check-label" for="active-{{row.id}}">Active</label></div></td><td><input class="form-control form-control-sm" name="notes" value="{{ row.notes }}"></td><td><button class="btn btn-sm btn-primary">Save</button></td></form></tr>
+  {% else %}<tr><td colspan="5" class="text-muted">No domains have been approved.</td></tr>{% endfor %}
+  </tbody></table></div>
+</div>
+{% endblock %}

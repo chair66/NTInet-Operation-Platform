@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{{ device.name if device else 'Plume Device' }} · {{ customer.name }}{% endblock %}
+{% block content %}
+{% macro setting(value) -%}{% if value is sameas true %}Enabled{% elif value is sameas false %}Disabled{% elif value not in [none, ''] %}{{ value }}{% else %}—{% endif %}{%- endmacro %}
+<div class="page-header d-flex flex-wrap justify-content-between align-items-end gap-3">
+  <div><div class="eyebrow">{{ customer.customer_number }} · Read-only Plume Cloud</div><h1>{{ device.name if device else 'Device Details' }}</h1><p>Live identity, Wi-Fi connection, signal history, and troubleshooting information.</p></div>
+  <div class="d-flex gap-2"><a class="btn btn-outline-secondary" href="{{ return_url }}"><i class="fa-solid fa-arrow-left me-2"></i>Pod Health &amp; Devices</a><a class="btn btn-outline-secondary" href="{{ customer_return_url }}">Customer</a></div>
+</div>
+{% if error %}<div class="alert alert-danger">Unable to read Plume device: {{ error }}</div>{% endif %}
+{% if diagnostics_error %}<div class="alert alert-warning">{{ diagnostics_error }}</div>{% endif %}
+{% if device %}
+<div class="row g-4">
+  <div class="col-xl-7"><section class="panel h-100"><div class="p-4 border-bottom"><h2 class="h5 mb-1">Device information</h2><div class="text-muted small">Identification reported by Plume Cloud.</div></div><div class="p-4"><div class="row g-4">
+    <div class="col-md-6"><div class="text-muted small">Status</div><strong>{{ device.status|replace('_',' ')|title }}</strong></div>
+    <div class="col-md-6"><div class="text-muted small">Connected pod</div><strong>{{ device.pod_name or 'Unknown' }}</strong></div>
+    <div class="col-md-6"><div class="text-muted small">MAC address</div><strong>{{ device.mac_address or '—' }}</strong></div>
+    <div class="col-md-6"><div class="text-muted small">IP address</div><strong>{{ device.ip_address or '—' }}</strong></div>
+    <div class="col-md-6"><div class="text-muted small">Category</div><strong>{{ device.category or device.device_type or '—' }}</strong></div>
+    <div class="col-md-6"><div class="text-muted small">Brand</div><strong>{{ device.manufacturer or '—' }}</strong></div>
+    <div class="col-md-6"><div class="text-muted small">Model</div><strong>{{ device.model or '—' }}</strong></div>
+    <div class="col-md-6"><div class="text-muted small">Device type</div><strong>{{ device.classification_id or device.device_type or '—' }}</strong></div>
+    <div class="col-12"><div class="text-muted small">Capabilities</div><strong>{{ device.capabilities or device.wifi_standard or '—' }}</strong></div>
+    <div class="col-md-6"><div class="text-muted small">Operating system</div><strong>{{ device.operating_system or '—' }}{% if device.operating_system_version %} {{ device.operating_system_version }}{% endif %}</strong></div>
+    <div class="col-md-6"><div class="text-muted small">First connected</div><strong>{{ device.first_connected or '—' }}</strong></div>
+    <div class="col-md-6"><div class="text-muted small">Connection state changed</div><strong>{{ device.connection_state_changed or device.last_seen or '—' }}</strong></div>
+  </div></div></section></div>
+  <div class="col-xl-5"><section class="panel h-100"><div class="p-4 border-bottom"><h2 class="h5 mb-1">Wi-Fi connection</h2><div class="text-muted small">Current network association.</div></div><div class="p-4"><div class="row g-4">
+    <div class="col-6"><div class="text-muted small">Connection</div><strong>{{ device.connection_type|replace('_',' ')|title }}</strong></div>
+    <div class="col-6"><div class="text-muted small">Band</div><strong>{{ device.wifi_band or '—' }}</strong></div>
+    <div class="col-6"><div class="text-muted small">SSID</div><strong>{{ device.ssid or '—' }}</strong></div>
+    <div class="col-6"><div class="text-muted small">Current connection</div><strong>{% if device.wifi_band or device.channel or device.security %}{{ device.wifi_band or 'Wi-Fi' }}{% if device.channel %}, Ch {{ device.channel }}{% endif %}{% if device.security %}, {{ device.security }}{% endif %}{% else %}—{% endif %}</strong></div>
+    <div class="col-6"><div class="text-muted small">Interference</div><strong>{{ ('%.0f%%'|format(device.interference)) if device.interference is not none else '—' }}</strong></div>
+    <div class="col-6"><div class="text-muted small">Channel utilization</div><strong>{{ ('%.1f%%'|format(device.channel_utilization)) if device.channel_utilization is not none else '—' }}</strong></div>
+    <div class="col-6"><div class="text-muted small">Signal strength</div><strong>{{ device.signal_strength if device.signal_strength is not none else '—' }}{% if device.signal_strength is not none %} dBm{% endif %}</strong></div>
+    <div class="col-6"><div class="text-muted small">Plume health</div><strong>{{ (device.health or '—')|title }}</strong></div>
+    <div class="col-6"><div class="text-muted small">Downloaded</div><strong>{{ ('%.2f MB'|format(device.bandwidth_download)) if device.bandwidth_download is not none else '—' }}</strong></div>
+    <div class="col-6"><div class="text-muted small">Uploaded</div><strong>{{ ('%.2f MB'|format(device.bandwidth_upload)) if device.bandwidth_upload is not none else '—' }}</strong></div>
+  </div></div></section></div>
+</div>
+<section class="panel mt-4"><div class="p-4 border-bottom"><h2 class="h5 mb-1">Health &amp; controls</h2><div class="text-muted small">Read-only operational values reported by Plume.</div></div><div class="p-4"><div class="row g-4">
+  <div class="col-md-4"><div class="text-muted small">Health</div><strong>{{ (device.health or device.signal_health or '—')|title }}</strong></div>
+  <div class="col-md-4"><div class="text-muted small">Alarms</div><strong>{{ device.alarms or 'None' }}</strong></div>
+  <div class="col-md-4"><div class="text-muted small">Coverage alarm</div><strong>{{ device.coverage_alarm or 'None' }}</strong></div>
+  <div class="col-md-4"><div class="text-muted small">OpenSync steering</div><strong>{{ setting(device.opensync_steering) }}</strong></div>
+  <div class="col-md-4"><div class="text-muted small">Cloud steering</div><strong>{{ setting(device.cloud_steering) }}</strong></div>
+  <div class="col-md-4"><div class="text-muted small">QoE score</div><strong>{{ device.qoe_score if device.qoe_score is not none else '—' }}</strong></div>
+  <div class="col-md-4"><div class="text-muted small">Predicted Wi-Fi speed</div><strong>{{ device.predicted_wifi_speed if device.predicted_wifi_speed is not none else '—' }}{% if device.predicted_wifi_speed is not none %} Mbps{% endif %}</strong></div>
+  <div class="col-md-4"><div class="text-muted small">Minimum predicted speed</div><strong>{{ device.minimum_wifi_speed if device.minimum_wifi_speed is not none else '—' }}{% if device.minimum_wifi_speed is not none %} Mbps{% endif %}</strong></div>
+  <div class="col-md-4"><div class="text-muted small">MAC stitch history</div><strong>{{ device.stitch_history_count }} record{{ '' if device.stitch_history_count == 1 else 's' }}</strong>{% if device.stitch_last_seen %}<div class="small text-muted">Latest {{ device.stitch_last_seen }}</div>{% endif %}</div>
+</div></div></section>
+<section class="panel mt-4"><div class="p-4 border-bottom d-flex flex-wrap justify-content-between gap-3"><div><h2 class="h5 mb-1">Signal history</h2><div class="text-muted small">RSSI readings from the last 24 hours.</div></div>{% if device.signal_strength is not none %}<span class="badge text-bg-light border align-self-center">Current {{ device.signal_strength }} dBm</span>{% endif %}</div>
+  {% if device.rssi_history %}<div class="p-4"><div class="row g-3 mb-4"><div class="col-sm-4"><div class="border rounded-3 p-3"><div class="text-muted small">Current</div><strong>{% if device.signal_strength is not none %}{{ device.signal_strength }} dBm{% else %}Not reported{% endif %}</strong></div></div><div class="col-sm-4"><div class="border rounded-3 p-3"><div class="text-muted small">Best valid sample</div><strong>{{ device.rssi_max }} dBm</strong></div></div><div class="col-sm-4"><div class="border rounded-3 p-3"><div class="text-muted small">Weakest valid sample</div><strong>{{ device.rssi_min }} dBm</strong></div></div></div><div class="table-responsive"><table class="table table-sm align-middle mb-0"><thead><tr><th>Time</th><th>RSSI</th><th>Assessment</th></tr></thead><tbody>{% for point in device.rssi_history %}<tr><td>{{ point.timestamp or '—' }}</td><td><strong>{{ point.value }} dBm</strong></td><td>{% if point.value >= -67 %}<span class="badge text-bg-success">Excellent</span>{% elif point.value >= -75 %}<span class="badge text-bg-success">Good</span>{% elif point.value >= -80 %}<span class="badge text-bg-warning">Fair</span>{% else %}<span class="badge text-bg-danger">Poor</span>{% endif %}</td></tr>{% endfor %}</tbody></table></div></div>{% else %}<div class="p-4 text-muted">Plume did not return valid RSSI history for this device.</div>{% endif %}
+</section>
+{% endif %}
+{% endblock %}

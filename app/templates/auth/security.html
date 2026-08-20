@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Account Security · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">My Account</div><h1>Account Security</h1><p>Manage multi-factor authentication, recovery codes, and trusted browsers.</p></div><a class="btn btn-outline-secondary" href="/account"><i class="fa-solid fa-arrow-left me-2"></i>Back to account</a></div>
+{% if request.query_params.get('success') %}<div class="alert alert-success">{{ request.query_params.get('success') }}</div>{% endif %}
+{% if request.query_params.get('error') %}<div class="alert alert-danger">{{ request.query_params.get('error') }}</div>{% endif %}
+<div class="row g-4">
+  <div class="col-lg-6"><div class="panel h-100"><div class="panel-header"><div><h2><i class="fa-solid fa-mobile-screen-button me-2"></i>Authenticator app</h2><p>Add a second verification step at sign-in.</p></div></div><div class="p-4">
+    <p>Status: <span class="badge {{ 'text-bg-success' if security_user.mfa_enabled else 'text-bg-secondary' }}">{{ 'Enabled' if security_user.mfa_enabled else 'Not enabled' }}</span></p>
+    {% if security_user.mfa_enabled %}
+      <p>{{ recovery_count }} unused recovery codes remain.</p>
+      <div class="d-flex flex-wrap gap-2"><form method="post" action="/account/security/recovery-codes"><button class="btn btn-outline-primary">Generate new recovery codes</button></form></div>
+      {% if not security_user.mfa_required and security_user.organization.mfa_policy != 'required' %}<hr><form method="post" action="/account/security/mfa/disable"><label class="form-label">Confirm your password to disable MFA</label><div class="d-flex gap-2"><input class="form-control" type="password" name="password" autocomplete="current-password" required><button class="btn btn-outline-danger text-nowrap">Disable MFA</button></div></form>{% else %}<div class="alert alert-info mt-3 mb-0">MFA is required for this account and cannot be disabled.</div>{% endif %}
+    {% else %}<a class="btn btn-primary" href="/mfa/setup">Set up MFA</a>{% endif %}
+  </div></div></div>
+  <div class="col-lg-6"><div class="panel h-100"><div class="panel-header"><div><h2><i class="fa-solid fa-laptop me-2"></i>Trusted browsers</h2><p>Browsers permitted to skip MFA challenges.</p></div></div><div class="p-4">
+    {% if trusted_devices %}<div class="list-group list-group-flush">{% for device in trusted_devices %}<div class="list-group-item px-0"><div class="d-flex justify-content-between gap-3"><div><strong>{{ device.device_name }}</strong><div class="small text-muted">IP {{ device.ip_address or 'Not recorded' }} · Expires {{ device.expires_at.strftime('%Y-%m-%d') }}{% if device.last_used_at %} · Last used {{ device.last_used_at.strftime('%Y-%m-%d %H:%M') }}{% endif %}</div></div><form method="post" action="/account/security/devices/{{ device.id }}/revoke"><button class="btn btn-sm btn-outline-danger">Revoke</button></form></div></div>{% endfor %}</div>{% else %}<p class="text-muted mb-0">No trusted browsers.</p>{% endif %}
+  </div></div></div>
+</div>
+{% endblock %}

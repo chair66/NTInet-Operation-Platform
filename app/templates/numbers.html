@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Inventory</div>
+    <h1>Number Inventory</h1>
+    <p>{{ site_name }} / {{ location_name }}</p>
+  </div>
+  <a class="btn btn-outline-secondary" href="/sites">Back to locations</a>
+</div>
+
+<div class="panel mb-3">
+  <form method="get" class="row g-3 align-items-end">
+    <input type="hidden" name="site_name" value="{{ site_name }}">
+    <input type="hidden" name="location_name" value="{{ location_name }}">
+    <div class="col-md-5">
+      <label class="form-label" for="number-search">Telephone Number</label>
+      <input id="number-search" class="form-control" type="search" name="q" value="{{ q or '' }}" placeholder="Search full or partial number">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label" for="call-forward-filter">Call Forward</label>
+      <select id="call-forward-filter" class="form-select" name="call_forward">
+        <option value="all" {% if selected_call_forward == 'all' %}selected{% endif %}>All</option>
+        <option value="configured" {% if selected_call_forward == 'configured' %}selected{% endif %}>Configured</option>
+        <option value="none" {% if selected_call_forward == 'none' %}selected{% endif %}>Not configured</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label" for="sms-filter">SMS</label>
+      <select id="sms-filter" class="form-select" name="sms">
+        <option value="all" {% if selected_sms == 'all' %}selected{% endif %}>All</option>
+        <option value="enabled" {% if selected_sms == 'enabled' %}selected{% endif %}>Enabled</option>
+        <option value="disabled" {% if selected_sms == 'disabled' %}selected{% endif %}>Disabled</option>
+      </select>
+    </div>
+    <div class="col-md-2 d-flex gap-2">
+      <button class="btn btn-primary" type="submit">Filter</button>
+      <a class="btn btn-outline-secondary" href="/sites/{{ request.path_params.site_id }}/locations/{{ request.path_params.location_id }}/numbers?site_name={{ site_name|urlencode }}&location_name={{ location_name|urlencode }}">Clear</a>
+    </div>
+  </form>
+</div>
+
+<div class="panel">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <strong>{{ phone_numbers|length }} number{% if phone_numbers|length != 1 %}s{% endif %} shown</strong>
+  </div>
+  <div class="table-responsive">
+    <table class="table align-middle mb-0">
+      <thead><tr><th>Telephone Number</th><th>Call Forward</th><th>SMS</th><th></th></tr></thead>
+      <tbody>
+      {% for n in phone_numbers %}
+        <tr>
+          <td><a class="number-link" href="/sites/{{ request.path_params.site_id }}/locations/{{ request.path_params.location_id }}/numbers/{{ n.phoneNumber }}?site_name={{ site_name|urlencode }}&location_name={{ location_name|urlencode }}"><strong>{{ n.phoneNumber }}</strong></a></td>
+          <td>{{ n.callForward or '—' }}</td>
+          <td>{{ n.sms or '—' }}</td>
+          <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="/sites/{{ request.path_params.site_id }}/locations/{{ request.path_params.location_id }}/numbers/{{ n.phoneNumber }}?site_name={{ site_name|urlencode }}&location_name={{ location_name|urlencode }}">View settings</a></td>
+        </tr>
+      {% else %}
+        <tr><td colspan="4" class="empty-state">No numbers match the selected filters.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

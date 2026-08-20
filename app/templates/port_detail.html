@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+{% set terminal_statuses = ['COMPLETE', 'CANCELLED', 'REQUESTED_CANCEL'] %}
+{% set current_status = (order.processingStatus or '')|upper if order else '' %}
+<div class="page-head">
+  <div><div class="eyebrow">Porting</div><h1>Port-In Order Details</h1><p>{{ order_id }}</p></div>
+  {% if order and current_status not in terminal_statuses %}
+  <div class="d-flex gap-2 flex-wrap"><a class="btn btn-outline-primary" href="/ports/{{ order_id }}/correct">Edit Port Information</a><form method="post" action="/ports/{{ order_id }}/cancel" onsubmit="return confirm('Request cancellation?')"><button class="btn btn-outline-danger">Cancel Port</button></form></div>
+  {% endif %}
+</div>
+{% if request.query_params.get('notice') %}<div class="alert alert-success">{{ request.query_params.get('notice') }}</div>{% endif %}
+{% if error %}<div class="alert alert-danger"><strong>{{ error.message }}</strong></div>{% endif %}
+{% if order %}
+{% if order.errors %}<div class="alert alert-danger"><strong>There is an error on this order.</strong> Review the provider error details below.</div>{% endif %}
+
+<section class="panel p-4 mb-3">
+  <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-3"><div><h2 class="h4 mb-1">Order information</h2><div class="text-muted">Live data from Bandwidth</div></div><span class="badge {% if current_status == 'EXCEPTION' %}text-bg-danger{% elif current_status in ['FOC','COMPLETE'] %}text-bg-success{% else %}text-bg-warning{% endif %} fs-6">{{ order.processingStatus or 'Unknown' }}</span></div>
+  <div class="row g-4">
+    <div class="col-lg-6"><dl class="port-detail-grid mb-0"><dt>Bandwidth Order ID</dt><dd>{{ order.orderId or order_id }}</dd><dt>Customer order ID</dt><dd>{{ order.customerOrderId or '—' }}</dd><dt>Sub Account</dt><dd>{{ order.subAccountId or '—' }}</dd><dt>Location</dt><dd>{{ order.locationId or '—' }}</dd><dt>Losing carrier</dt><dd>{{ order.losingCarrierName or '—' }}</dd></dl></div>
+    <div class="col-lg-6"><dl class="port-detail-grid mb-0"><dt>Billing telephone number</dt><dd>{{ order.billingTelephoneNumber or '—' }}</dd><dt>Requested activation</dt><dd>{{ order.requestedFocDateDisplay or order.requestedFocDate or '—' }}</dd><dt>Firm Order Commitment</dt><dd>{{ order.actualFocDateDisplay or order.actualFocDate or 'Not yet assigned' }}</dd><dt>Earliest estimate</dt><dd>{{ order.earliestEstimateDisplay or order.earliestEstimate or '—' }}</dd><dt>Port type</dt><dd>{{ order.portType or order.phoneNumberType or '—' }}</dd></dl></div>
+  </div>
+</section>
+
+{% if tracked_draft %}
+<section class="panel p-4 mb-3">
+  <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+    <div><h2 class="h5 mb-1">Status notifications</h2><div class="text-muted">Bandwidth status and note updates are sent to the NOP user who submitted this order.</div></div>
+    <span class="badge {{ 'text-bg-success' if tracked_draft.notifications_enabled else 'text-bg-secondary' }}">{{ 'Enabled' if tracked_draft.notifications_enabled else 'Disabled' }}</span>
+  </div>
+  <div class="mt-3"><span class="port-detail-label">Notification email</span><strong class="d-block">{{ tracked_draft.notification_email or (tracked_draft.submitted_by.email if tracked_draft.submitted_by else tracked_draft.created_by.email) }}</strong></div>
+</section>
+{% endif %}
+
+<section class="panel p-4 mb-3">
+  <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-3"><div><h2 class="h4 mb-1">Phone Numbers ({{ order.phoneNumbers|length if order.phoneNumbers else 0 }})</h2><div class="text-muted">Numbers currently included on this Bandwidth order.</div></div>{% if current_status not in terminal_statuses %}<a class="btn btn-outline-primary" href="/ports/{{ order_id }}/numbers/edit">Edit numbers</a>{% endif %}</div>
+  {% if order.phoneNumbers %}<div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>Number</th><th>Status</th><th>Description</th></tr></thead><tbody>{% for number in order.phoneNumbers %}<tr><td><strong>{{ number }}</strong></td><td><span class="badge text-bg-warning">{{ order.processingStatus or 'Processing' }}</span></td><td class="text-muted">—</td></tr>{% endfor %}</tbody></table></div>{% else %}<p class="text-muted mb-0">No telephone numbers were returned.</p>{% endif %}
+</section>
+
+<section class="panel p-4 mb-3">
+  <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-3"><div><h2 class="h4 mb-1">Activation Date &amp; Time</h2><div class="text-muted">Current provider scheduling information.</div></div>{% if current_status not in terminal_statuses %}<a class="btn btn-outline-primary" href="/ports/{{ order_id }}/schedule/edit">Edit schedule</a>{% endif %}</div>
+  <div class="row g-4"><div class="col-md-6"><span class="port-detail-label">Requested activation date</span><strong class="d-block fs-5">{{ order.requestedFocDateDisplay or order.requestedFocDate or 'Not set' }}</strong></div><div class="col-md-6"><span class="port-detail-label">Firm Order Commitment (FOC)</span><strong class="d-block fs-5">{{ order.actualFocDateDisplay or order.actualFocDate or 'Not yet assigned' }}</strong></div></div>
+</section>
+
+<section class="panel p-4 mb-3">
+  <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-3"><div><h2 class="h4 mb-1">Port Information</h2><div class="text-muted">Information that applies to all phone numbers on the order.</div></div>{% if current_status not in terminal_statuses %}<a class="btn btn-outline-primary" href="/ports/{{ order_id }}/correct">Edit</a>{% endif %}</div>
+  <div class="row g-4">
+    <div class="col-lg-6"><h3 class="h6">Port details</h3><dl class="port-detail-grid"><dt>Order status</dt><dd>{{ order.processingStatus or '—' }}</dd><dt>Billing telephone number</dt><dd>{{ order.billingTelephoneNumber or '—' }}</dd><dt>Losing carrier</dt><dd>{{ order.losingCarrierName or '—' }}</dd><dt>Requested activation</dt><dd>{{ order.requestedFocDateDisplay or order.requestedFocDate or '—' }}</dd></dl></div>
+    <div class="col-lg-6"><h3 class="h6">End-user account information</h3><dl class="port-detail-grid"><dt>Account type</dt><dd>{{ order.subscriber.subscriberType if order.subscriber else '—' }}</dd><dt>Customer / Subscriber name</dt><dd>{% if order.subscriber %}{{ order.subscriber.businessName or order.subscriber.firstName or '—' }}{% else %}—{% endif %}</dd><dt>Service address</dt><dd>{% if order.subscriber and order.subscriber.serviceAddress %}{{ order.subscriber.serviceAddress.houseNumber or '' }} {{ order.subscriber.serviceAddress.streetName or '' }}<br>{{ order.subscriber.serviceAddress.city or '' }}, {{ order.subscriber.serviceAddress.stateCode or '' }} {{ order.subscriber.serviceAddress.zip or '' }}{% else %}—{% endif %}</dd></dl></div>
+  </div>
+</section>
+
+{% if order.errors %}<div class="alert alert-warning"><strong>Order errors</strong><pre class="json-viewer mb-0">{{ order.errors | tojson(indent=2) }}</pre></div>{% endif %}
+<section class="panel p-4"><details><summary>Technical details</summary><pre class="json-viewer">{{ order.raw | tojson(indent=2) }}</pre></details></section>
+{% endif %}
+{% endblock %}

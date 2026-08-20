@@ -1,0 +1,208 @@
+{% extends "base.html" %}{% block content %}
+<div class="page-head"><div><div class="eyebrow">Porting</div><h1>Create Port Order</h1><p>Collect the customer service record information needed for the port request.</p></div></div>
+{% if edit_notice %}<div class="alert alert-info">{{ edit_notice }}</div>{% endif %}
+{% if verification %}
+  {% if verification.status == 'ready' %}
+  <div class="alert alert-success"><strong>Portability verified.</strong> {{ verification.message }} <span class="d-block small mt-1">Last verified {{ verification.verified_at.strftime('%b %d, %Y at %I:%M %p UTC') }}.</span></div>
+  {% elif verification.status == 'changed' %}
+  <div class="alert alert-warning"><strong>Review required.</strong> {{ verification.message }}
+    {% if verification.changes %}<ul class="mb-0 mt-2">{% for change in verification.changes %}<li><strong>{{ change.field }}:</strong> {{ change.before }} → {{ change.after }}</li>{% endfor %}</ul>{% endif %}
+  </div>
+  {% else %}
+  <div class="alert alert-danger"><strong>Verification failed.</strong> {{ verification.message }}</div>
+  {% endif %}
+{% else %}
+<div class="alert alert-success"><strong>Portability checked.</strong> Complete the customer information below, then review the request before submission.</div>
+{% endif %}
+<form method="post" action="/ports/new" class="d-grid gap-3">
+  {% if draft %}<input type="hidden" name="draft_id" value="{{ draft.id }}">{% endif %}
+  <section class="panel p-4"><h2 class="h5 mb-3">Destination and telephone numbers</h2><div class="row g-3">
+    <div class="col-md-6"><label class="form-label">Sub Account</label><select class="form-select" required name="subAccountId" id="subAccountId"><option value="">Choose sub account</option>{% for s in sites %}<option value="{{ s.id }}" {{ 'selected' if form_values and form_values.subAccountId|string == s.id|string else '' }}>{{ s.name }}</option>{% endfor %}</select></div>
+    <div class="col-md-6"><label class="form-label">Location</label><select class="form-select" required name="locationId" id="locationId" disabled><option value="">Choose a Sub Account first</option></select></div>
+    <div class="col-12"><label class="form-label">Phone numbers</label><textarea class="form-control" readonly required name="phoneNumbers" rows="5">{{ phoneNumbers }}</textarea><div class="form-text">These numbers came from the completed portability check.</div></div>
+    <div class="col-12"><label class="form-label">Billing Telephone Number (BTN)</label>
+      <div class="input-group"><input class="form-control" required name="billingTelephoneNumber" id="billingTelephoneNumber" value="{{ form_values.billingTelephoneNumber if form_values else '' }}" placeholder="Current account BTN"><button class="btn btn-outline-secondary" type="button" id="checkBtnButton">Check BTN</button></div>
+      <div class="form-text" id="btnCheckResult">Enter the losing-carrier account BTN, then check whether it is included in this port.</div>
+    </div>
+    <div class="col-12"><div class="form-check"><input class="form-check-input" type="checkbox" value="true" id="portingAllNumbers" name="portingAllNumbers" {{ 'checked' if form_values and form_values.portingAllNumbers else '' }}><label class="form-check-label" for="portingAllNumbers">Porting all telephone numbers and services on the losing-carrier account</label></div></div>
+    <div class="col-md-6 d-none" id="newBtnWrap"><label class="form-label">Replacement Billing Telephone Number</label><input class="form-control" name="newBillingTelephoneNumber" id="newBillingTelephoneNumber" value="{{ form_values.newBillingTelephoneNumber if form_values else '' }}" placeholder="Active number remaining with losing carrier"><div class="form-text">Required when the current BTN is porting but other numbers or services will remain.</div></div>
+  </div></section>
+  <section class="panel p-4"><h2 class="h5 mb-3">End-user account information</h2><div class="row g-3">
+    <div class="col-md-4"><label class="form-label">Account type</label><select class="form-select" name="accountType"><option value="BUSINESS" {{ 'selected' if not form_values or form_values.accountType == 'BUSINESS' else '' }}>Business</option><option value="RESIDENTIAL" {{ 'selected' if form_values and form_values.accountType == 'RESIDENTIAL' else '' }}>Residential</option></select></div>
+    <div class="col-md-8"><label class="form-label">Customer name</label><input class="form-control" required name="customerName" maxlength="50" value="{{ form_values.customerName if form_values else '' }}"></div>
+    <div class="col-md-6"><label class="form-label">Person authorizing port (name on LOA)</label><input class="form-control" required name="loaAuthorizingPerson" maxlength="50" value="{{ form_values.loaAuthorizingPerson if form_values else '' }}"></div>
+    <div class="col-md-3"><label class="form-label">Account number</label><input class="form-control" name="accountNumber" maxlength="20" value="{{ form_values.accountNumber if form_values else '' }}"></div>
+    <div class="col-md-3"><label class="form-label">Account PIN</label><input class="form-control" name="accountPin" maxlength="15" value="{{ form_values.accountPin if form_values else '' }}"></div>
+  </div></section>
+  <section class="panel p-4"><h2 class="h5 mb-3">Service address</h2><div class="row g-3">
+    <div class="col-md-3"><label class="form-label">Street number</label><input class="form-control" required name="streetNumber" value="{{ form_values.streetNumber if form_values else '' }}"></div>
+    <div class="col-md-9"><label class="form-label">Street name</label><input class="form-control" required name="streetName" value="{{ form_values.streetName if form_values else '' }}"></div>
+    <div class="col-12"><label class="form-label">Address line 2</label><input class="form-control" name="address2" value="{{ form_values.address2 if form_values else '' }}"></div>
+    <div class="col-md-5"><label class="form-label">City</label><input class="form-control" required name="city" value="{{ form_values.city if form_values else '' }}"></div>
+    <div class="col-md-3"><label class="form-label">State / Province</label><input class="form-control" required name="state" maxlength="2" value="{{ form_values.state if form_values else '' }}"></div>
+    <div class="col-md-2"><label class="form-label">ZIP</label><input class="form-control" required name="zip" value="{{ form_values.zip if form_values else '' }}"></div>
+    <div class="col-md-2"><label class="form-label">ZIP+4</label><input class="form-control" name="zip4" value="{{ form_values.zip4 if form_values else '' }}"></div>
+  </div></section>
+  <section class="panel p-4"><h2 class="h5 mb-3">Port scheduling</h2><div class="row g-3">
+    <input type="hidden" name="earliestEstimate" id="earliestEstimate" value="{{ form_values.earliestEstimate if form_values else '' }}">
+    <input type="hidden" name="portType" id="portType" value="{{ form_values.portType if form_values else '' }}">
+    <input type="hidden" name="phoneNumberType" id="phoneNumberType" value="{{ form_values.phoneNumberType if form_values else '' }}">
+    <div class="col-12">
+      <div class="border rounded p-3 bg-light">
+        <div class="small text-uppercase fw-semibold text-muted">Earliest available FOC</div>
+        <div class="fs-5 fw-semibold" id="earliestEstimateDisplay">
+          {% if form_values and form_values.earliestEstimate %}{{ form_values.earliestEstimate }}{% else %}Available after order validation{% endif %}
+        </div>
+        <div class="form-text">This is the earliest available port date identified during the portability check.</div>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="form-check mb-2"><input class="form-check-input" type="radio" name="useEarliest" id="useEarliestYes" value="true" {{ 'checked' if not form_values or form_values.useEarliest else '' }}><label class="form-check-label fw-semibold" for="useEarliestYes">Use earliest available (recommended)</label></div>
+      <div class="form-check"><input class="form-check-input" type="radio" name="useEarliest" id="useEarliestNo" value="false" {{ 'checked' if form_values and not form_values.useEarliest else '' }}><label class="form-check-label fw-semibold" for="useEarliestNo">Choose another date</label></div>
+    </div>
+    <div class="col-md-4" id="requestedFocDateWrap"><label class="form-label">Requested port date</label><input class="form-control" type="date" name="requestedFocDate" id="requestedFocDate" value="{{ form_values.requestedFocDate if form_values else '' }}"><div class="form-text">Must be on or after the earliest available date.</div></div>
+    <div class="col-md-4" id="requestedFocTimeWrap"><label class="form-label">Activation time</label><select class="form-select" name="requestedFocTime" id="requestedFocTime">{% for hour in range(5, 23) %}{% for minute in [0, 30] %}{% set time_value = '%02d:%02d'|format(hour, minute) %}<option value="{{ time_value }}" {{ 'selected' if form_values and form_values.requestedFocTime == time_value else '' }}>{{ '%d:%02d %s ET'|format((hour-1)%12+1, minute, 'AM' if hour < 12 else 'PM') }}</option>{% endfor %}{% endfor %}</select><div class="form-text" id="focTimeHelp"></div></div>
+    <div class="col-md-4"><label class="form-label">Port handling</label><input class="form-control" id="portHandlingDisplay" readonly value="{{ form_values.portType if form_values and form_values.portType else 'Determined during processing' }}"></div>
+    <div class="col-12"><label class="form-label">Losing reseller/carrier name</label><input class="form-control" name="losingCarrierName" maxlength="60" value="{{ form_values.losingCarrierName if form_values else '' }}"></div>
+  </div><div class="form-text mt-3">Use the earliest available option for the soonest supported date. Choose another date only when a later port date is needed.</div></section>
+  <div class="d-flex gap-2 flex-wrap"><button class="btn btn-primary" type="submit">Review Port Request</button><button class="btn btn-outline-primary" type="submit" formaction="/ports/drafts/save" formnovalidate>Save Draft</button></div>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+const locationsBySite = {{ locations_by_site | tojson }};
+const siteSelect = document.getElementById('subAccountId');
+const locationSelect = document.getElementById('locationId');
+const selectedLocationId = {{ (form_values.locationId|string if form_values and form_values.locationId else '') | tojson }};
+
+function loadPortLocations() {
+  if (!siteSelect || !locationSelect) return;
+  const locations = locationsBySite[String(siteSelect.value)] || [];
+  locationSelect.innerHTML = '';
+
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = siteSelect.value ? 'Choose a Location' : 'Choose a Sub Account first';
+  locationSelect.appendChild(placeholder);
+
+  locations.forEach(location => {
+    const option = document.createElement('option');
+    option.value = location.id;
+    option.textContent = location.name;
+    option.selected = String(location.id) === String(selectedLocationId);
+    locationSelect.appendChild(option);
+  });
+
+  locationSelect.disabled = !siteSelect.value || locations.length === 0;
+}
+
+if (siteSelect && locationSelect) {
+  siteSelect.addEventListener('change', loadPortLocations);
+  loadPortLocations();
+}
+
+const phoneNumbersField = document.querySelector('[name="phoneNumbers"]');
+const btnField = document.getElementById('billingTelephoneNumber');
+const checkBtnButton = document.getElementById('checkBtnButton');
+const btnCheckResult = document.getElementById('btnCheckResult');
+const portingAllNumbers = document.getElementById('portingAllNumbers');
+const newBtnWrap = document.getElementById('newBtnWrap');
+const newBtnField = document.getElementById('newBillingTelephoneNumber');
+
+function digits(value) { return String(value || '').replace(/\D/g, '').replace(/^1(?=\d{10}$)/, ''); }
+function portNumbers() { return String(phoneNumbersField?.value || '').split(/[\s,;]+/).map(digits).filter(Boolean); }
+function btnIsPorting() { return portNumbers().includes(digits(btnField?.value)); }
+let savedReplacementBtn = newBtnField?.value || '';
+function refreshBtnFields(showResult = false) {
+  const included = btnIsPorting();
+  const isFullPort = portingAllNumbers.checked;
+  const needsReplacementBtn = included && !isFullPort;
+  newBtnWrap.classList.toggle('d-none', !needsReplacementBtn);
+  newBtnField.required = needsReplacementBtn;
+  newBtnField.disabled = !needsReplacementBtn;
+  if (needsReplacementBtn && !newBtnField.value && savedReplacementBtn) newBtnField.value = savedReplacementBtn;
+  if (showResult) {
+    btnCheckResult.textContent = included
+      ? (isFullPort ? 'BTN is included. Full port selected; a replacement BTN is not required.' : 'BTN is included. Partial port selected; enter a replacement BTN that will remain with the losing carrier.')
+      : 'BTN is not included in the telephone numbers being ported. Verify this is intentional before continuing.';
+    btnCheckResult.className = included ? 'form-text text-success' : 'form-text text-warning';
+  }
+}
+checkBtnButton?.addEventListener('click', () => {
+  portingAllNumbers.checked = false;
+  refreshBtnFields(true);
+});
+btnField?.addEventListener('input', () => refreshBtnFields(false));
+newBtnField?.addEventListener('input', () => { savedReplacementBtn = newBtnField.value; });
+portingAllNumbers?.addEventListener('change', () => {
+  if (portingAllNumbers.checked) savedReplacementBtn = newBtnField.value || savedReplacementBtn;
+  refreshBtnFields(true);
+});
+refreshBtnFields(false);
+
+const portTypeField = document.getElementById('portType');
+const phoneNumberTypeField = document.getElementById('phoneNumberType');
+const focTimeField = document.getElementById('requestedFocTime');
+const focDateField = document.getElementById('requestedFocDate');
+const focTimeHelp = document.getElementById('focTimeHelp');
+const portHandlingDisplay = document.getElementById('portHandlingDisplay');
+const earliestField = document.getElementById('earliestEstimate');
+const useEarliestYes = document.getElementById('useEarliestYes');
+const useEarliestNo = document.getElementById('useEarliestNo');
+
+function earliestDateValue() {
+  const value = String(earliestField?.value || '').trim();
+  const match = value.match(/^(\d{4}-\d{2}-\d{2})/);
+  return match ? match[1] : '';
+}
+
+function formatEarliestEstimate() {
+  const display = document.getElementById('earliestEstimateDisplay');
+  const raw = String(earliestField?.value || '').trim();
+  if (!display || !raw) return;
+  const normalized = raw.replace(/([+-]\d{2})(\d{2})$/, '$1:$2');
+  const parsed = new Date(normalized);
+  if (!Number.isNaN(parsed.getTime())) {
+    display.textContent = new Intl.DateTimeFormat('en-US', {
+      month: 'long', day: 'numeric', year: 'numeric',
+      hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York', timeZoneName: 'short'
+    }).format(parsed);
+  }
+}
+
+function refreshFocProfile() {
+  const portType = String(portTypeField?.value || '').toUpperCase();
+  const numberType = String(phoneNumberTypeField?.value || '').toUpperCase();
+  const isManual = portType.startsWith('MANUAL') || portType.startsWith('NSR') || portType.startsWith('LSR') || portType.includes('MANUAL');
+  const isWireless = numberType.includes('WIRELESS') || numberType.includes('MOBILE') || portType.includes('WIRELESS');
+  const choosingLater = Boolean(useEarliestNo?.checked);
+  const minimumDate = earliestDateValue();
+
+  if (focDateField) {
+    focDateField.disabled = !choosingLater;
+    focDateField.required = choosingLater;
+    if (minimumDate) {
+      focDateField.min = minimumDate;
+      if (!focDateField.value) focDateField.value = minimumDate;
+    }
+  }
+  if (focTimeField) focTimeField.disabled = !choosingLater || isManual;
+
+  if (!choosingLater) {
+    focTimeHelp.textContent = 'The earliest supported FOC will be assigned. No specific requested date is submitted.';
+  } else if (isManual) {
+    focTimeField.value = '11:30';
+    focTimeHelp.textContent = 'Manual port: the selected date is submitted and activation occurs at 11:30 AM ET.';
+  } else {
+    focTimeHelp.textContent = isWireless
+      ? 'Automated wireless port: the selected date and time are submitted.'
+      : 'Automated wireline port: the selected date and time are submitted.';
+  }
+  portHandlingDisplay.value = `${portType || 'Determined during processing'} · ${isManual ? 'manual' : (isWireless ? 'wireless' : 'wireline')}`;
+}
+useEarliestYes?.addEventListener('change', refreshFocProfile);
+useEarliestNo?.addEventListener('change', refreshFocProfile);
+formatEarliestEstimate();
+refreshFocProfile();
+</script>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Delete DigiCloud User{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
+  <div>
+    <div class="eyebrow">DigiCloud · User Management · {{ selected_domain.domain_name }}</div>
+    <h1>Delete User</h1>
+    <p>Permanently remove this user from DigiCloud.</p>
+  </div>
+  <a class="btn btn-outline-secondary" href="/digicloud/users/{{ profile.username|urlencode }}/edit?domain={{ selected_domain.domain_name|urlencode }}">Cancel</a>
+</div>
+{% if request.query_params.get('error') %}<div class="alert alert-danger">{{ request.query_params.get('error') }}</div>{% endif %}
+<div class="row justify-content-center">
+  <div class="col-xl-8">
+    <div class="card border-danger">
+      <div class="card-header bg-danger-subtle border-danger"><strong class="text-danger">Permanent deletion</strong></div>
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+          <div>
+            <h4 class="mb-1">{{ profile.display_name or ((profile.first_name ~ ' ' ~ profile.last_name)|trim) or ('User ' ~ profile.extension) }}</h4>
+            <div class="text-muted">Extension {{ profile.extension }} · Username {{ profile.username }}</div>
+            {% if profile.email %}<div class="text-muted">{{ profile.email }}</div>{% endif %}
+          </div>
+          <span class="badge text-bg-danger">Delete from DigiCloud</span>
+        </div>
+        <div class="alert alert-warning">
+          <strong>This action cannot be undone.</strong> The user, voicemail configuration, answering rules, and user-level assignments may be permanently removed by DigiCloud.
+        </div>
+        <form method="post" action="/digicloud/users/{{ profile.username|urlencode }}/delete" id="delete-user-form">
+          <input type="hidden" name="domain" value="{{ selected_domain.domain_name }}">
+          <label class="form-label" for="confirmation">Type <strong>{{ profile.username }}</strong> to confirm</label>
+          <input class="form-control" id="confirmation" name="confirmation" autocomplete="off" required autofocus>
+          <div class="form-text">The confirmation must exactly match the DigiCloud username.</div>
+          <div class="d-flex justify-content-end gap-2 mt-4">
+            <a class="btn btn-outline-secondary" href="/digicloud/users/{{ profile.username|urlencode }}/edit?domain={{ selected_domain.domain_name|urlencode }}">Cancel</a>
+            <button class="btn btn-danger" id="delete-user-submit" type="submit" disabled>Delete User Permanently</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function () {
+  const input = document.getElementById('confirmation');
+  const button = document.getElementById('delete-user-submit');
+  const expected = {{ profile.username|tojson }};
+  if (!input || !button) return;
+  function updateState() { button.disabled = input.value.trim().toLowerCase() !== String(expected).trim().toLowerCase(); }
+  input.addEventListener('input', updateState);
+  updateState();
+})();
+</script>
+{% endblock %}

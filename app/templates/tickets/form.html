@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block title %}New Support Ticket · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4"><div><div class="eyebrow">Support Tickets</div><h1 class="h3 mb-1">Create Ticket</h1><p class="text-muted mb-0">Link the request to the customer, contact, location, and affected service.</p></div><a class="btn btn-outline-secondary" href="/tickets"><i class="fa-solid fa-arrow-left me-2"></i>Tickets</a></div>
+{% if error %}<div class="alert alert-danger d-flex align-items-start gap-2 mb-3" role="alert"><i class="fa-solid fa-circle-exclamation mt-1"></i><div><strong>Ticket not submitted.</strong><div>{{ error }}</div></div></div>{% endif %}
+<form method="post" action="/tickets" class="card">
+  <div class="card-header px-4 py-3"><strong>Ticket Information</strong></div>
+  <div class="card-body p-4"><div class="row g-3">
+    <div class="col-md-5 position-relative"><label class="form-label">Search customer</label><div class="input-group"><span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span><input class="form-control" id="customer_search" type="search" placeholder="Name, customer number, email, or phone" autocomplete="off"></div><div class="list-group position-absolute start-0 end-0 mt-1 shadow-sm d-none" id="customer_search_matches" style="z-index:1020;max-height:280px;overflow-y:auto"></div></div>
+    <div class="col-md-7"><label class="form-label">Customer</label><select class="form-select" id="customer_id" name="customer_id" required><option value="">Select customer</option>{% for customer in customers %}<option value="{{ customer.id }}" data-search="{{ customer.customer_number }} {{ customer.name }} {{ customer.billing_email or '' }} {{ customer.billing_phone or '' }}" {{ 'selected' if (form_data.customer_id|string == customer.id|string) or (not form_data and selected_customer and selected_customer.id == customer.id) else '' }}>{{ customer.customer_number }} · {{ customer.name }}</option>{% endfor %}</select><div class="form-text" id="customer_search_result">Start typing to narrow the customer list.</div></div>
+    <div class="col-md-4"><label class="form-label">Contact</label><select class="form-select linked-select" id="contact_id" name="contact_id"><option value="">Not specified</option>{% for customer in customers %}{% for contact in customer.contacts %}<option data-customer="{{ customer.id }}" data-email="{{ contact.email or '' }}" data-mobile="{{ contact.mobile_phone or '' }}" data-primary="{{ 'true' if contact.is_primary else 'false' }}" value="{{ contact.id }}" {{ 'selected' if form_data.contact_id|string == contact.id|string else '' }}>{{ contact.full_name }}{% if contact.is_primary %} · Primary{% endif %}</option>{% endfor %}{% endfor %}</select><div class="border rounded bg-light p-2 mt-2 small" id="selected_contact_details"><span class="text-muted">Select a customer contact to review their email and mobile number.</span></div></div>
+    <div class="col-md-4"><label class="form-label">Service location</label><select class="form-select linked-select" id="location_id" name="location_id"><option value="">Not specified</option>{% for customer in customers %}{% for location in customer.locations %}<option data-customer="{{ customer.id }}" value="{{ location.id }}" {{ 'selected' if form_data.location_id|string == location.id|string else '' }}>{{ location.name }} · {{ location.address_line_1 }}{% if location.address_line_2 %} {{ location.address_line_2 }}{% endif %} · {{ location.city }}, {{ location.state }} {{ location.postal_code }}</option>{% endfor %}{% endfor %}</select></div>
+    <div class="col-md-4"><label class="form-label">Callback number <span class="text-muted fw-normal">(optional)</span></label><input class="form-control" type="tel" name="callback_number" inputmode="tel" autocomplete="tel" placeholder="(803) 555-0123" value="{{ form_data.callback_number or '' }}"><div class="form-text">Use when the caller wants a different number than the account contact.</div></div>
+    <div class="col-12"><div class="border rounded p-3"><div class="row g-3"><div class="col-md-4"><label class="form-label">Ticket correspondence</label><select class="form-select" name="correspondence_mode" id="correspondence_mode"><option value="account" {{ 'selected' if (form_data.correspondence_mode or 'account') == 'account' else '' }}>Use selected/account contact</option><option value="additional" {{ 'selected' if form_data.correspondence_mode == 'additional' else '' }}>Use an additional email or mobile number</option></select><div class="form-text">Verified additional information can remain ticket-only or, with permission, be saved to the selected account contact.</div></div><div class="col-md-8 d-none" id="additional_correspondence"><div class="alert alert-secondary py-2 small" id="verification_status">Enter an email address, mobile number, or both. The recipient confirms each destination by clicking the link in the message.</div><div class="row g-3"><div class="col-md-6"><label class="form-label">Additional email <span class="text-muted fw-normal">(optional)</span></label><div class="input-group"><input class="form-control" type="email" name="correspondence_email" id="correspondence_email" autocomplete="email" value="{{ form_data.correspondence_email or '' }}"><button class="btn btn-outline-primary verification-send" type="button" data-channel="email">Send verification email</button></div><input type="hidden" name="correspondence_email_code" id="correspondence_email_verification_id" value="{{ form_data.correspondence_email_code or '' }}"><div class="mt-2 d-none" id="email_confirmation_group"><button class="btn btn-sm btn-outline-secondary verification-check" type="button" data-channel="email"><i class="fa-solid fa-rotate me-1"></i>Check confirmation</button><span class="small text-muted ms-2" id="email_confirmation_state">Waiting for recipient</span></div></div><div class="col-md-6"><label class="form-label">Additional mobile <span class="text-muted fw-normal">(optional)</span></label><div class="input-group"><input class="form-control" type="tel" name="correspondence_mobile" id="correspondence_mobile" inputmode="tel" autocomplete="tel" value="{{ form_data.correspondence_mobile or '' }}"><button class="btn btn-outline-primary verification-send" type="button" data-channel="mobile">Send verification text</button></div><input type="hidden" name="correspondence_mobile_code" id="correspondence_mobile_verification_id" value="{{ form_data.correspondence_mobile_code or '' }}"><div class="mt-2 d-none" id="mobile_confirmation_group"><button class="btn btn-sm btn-outline-secondary verification-check" type="button" data-channel="mobile"><i class="fa-solid fa-rotate me-1"></i>Check confirmation</button><span class="small text-muted ms-2" id="mobile_confirmation_state">Waiting for recipient</span></div></div>{% if can('customers.manage') %}<div class="col-12"><div class="form-check border rounded p-3 ps-5 bg-light"><input class="form-check-input" type="checkbox" name="save_to_account_contact" id="save_to_account_contact" {{ 'checked' if form_data.save_to_account_contact else '' }}><label class="form-check-label fw-semibold" for="save_to_account_contact">Also add/update this verified information on the selected account contact</label><div class="form-text">A contact must be selected above. Existing email/mobile values will be replaced only for the verified fields entered here.</div></div></div>{% endif %}</div></div></div></div></div>
+    <div class="col-12"><label class="form-label">Subject</label><input class="form-control" name="subject" maxlength="240" required placeholder="Brief summary of the issue" value="{{ form_data.subject or '' }}"></div>
+    <div class="col-12"><label class="form-label">Problem description</label><textarea class="form-control" name="description" rows="6" required placeholder="Describe the symptoms, impact, troubleshooting already performed, and desired result.">{{ form_data.description or '' }}</textarea></div>
+    <div class="col-md-3"><label class="form-label">Affected service</label><select class="form-select" id="affected_service" name="affected_service" required>{% for category in affected_service_issues %}<option value="{{ category }}" {{ 'selected' if form_data.affected_service == category else '' }}>{{ category|title }}</option>{% endfor %}</select></div>
+    <div class="col-md-3"><label class="form-label">Issue</label><select class="form-select" id="ticket_type" name="ticket_type" required>{% for category,issues in affected_service_issues.items() %}{% for value,label in issues %}<option data-category="{{ category }}" value="{{ value }}" {{ 'selected' if form_data.ticket_type == value else '' }}>{{ label }}</option>{% endfor %}{% endfor %}</select></div>
+    <div class="col-md-3"><label class="form-label">Priority</label><select class="form-select" name="priority">{% for value,label in priority_labels.items() %}<option value="{{ value }}" {{ 'selected' if (form_data.priority or 'normal') == value else '' }}>{{ label }}</option>{% endfor %}</select></div>
+    <div class="col-md-3"><label class="form-label">Assign to</label><select class="form-select" name="assigned_user_id"><option value="">Unassigned queue</option>{% for user in users %}<option value="{{ user.id }}" {{ 'selected' if form_data.assigned_user_id|string == user.id|string else '' }}>{{ user.full_name }}</option>{% endfor %}</select></div>
+  </div></div>
+  <div class="card-footer d-flex justify-content-end gap-2 px-4 py-3"><a class="btn btn-outline-secondary" href="/tickets">Cancel</a><button class="btn btn-primary"><i class="fa-solid fa-ticket me-2"></i>Create Ticket</button></div>
+</form>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const customer = document.getElementById('customer_id');
+  const customerSearch = document.getElementById('customer_search');
+  const customerResult = document.getElementById('customer_search_result');
+  const customerMatches = document.getElementById('customer_search_matches');
+  const linked = [...document.querySelectorAll('.linked-select')];
+  const contact = document.getElementById('contact_id');
+  const contactDetails = document.getElementById('selected_contact_details');
+  function refreshContactDetails() {
+    const option = contact.selectedOptions[0];
+    if (!option || !option.value) {
+      contactDetails.innerHTML = '<span class="text-muted">No contact selected. Choose a contact to review the account email and mobile number.</span>';
+      return;
+    }
+    const email = option.dataset.email || '';
+    const mobile = option.dataset.mobile || '';
+    contactDetails.replaceChildren();
+    const name = document.createElement('div'); name.className = 'fw-semibold mb-1'; name.textContent = option.textContent.trim();
+    const emailLine = document.createElement('div'); emailLine.innerHTML = `<i class="fa-solid fa-envelope me-2 text-muted"></i>${email ? '' : '<span class="text-danger">No email on account</span>'}`;
+    if (email) { const link=document.createElement('a'); link.href=`mailto:${email}`; link.textContent=email; emailLine.appendChild(link); }
+    const mobileLine = document.createElement('div'); mobileLine.innerHTML = `<i class="fa-solid fa-mobile-screen me-2 text-muted"></i>${mobile ? '' : '<span class="text-danger">No mobile number on account</span>'}`;
+    if (mobile) { const link=document.createElement('a'); link.href=`tel:${mobile}`; link.textContent=mobile; mobileLine.appendChild(link); }
+    contactDetails.append(name, emailLine, mobileLine);
+  }
+  function refresh() {
+    linked.forEach(select => {
+      [...select.options].forEach((option, index) => { if (index) { option.hidden = option.dataset.customer !== customer.value; option.disabled = option.hidden; } });
+      if (select.selectedOptions[0]?.hidden) select.value = '';
+    });
+    if (!contact.value && customer.value) {
+      const primary = [...contact.options].find(option => option.dataset.customer === customer.value && option.dataset.primary === 'true');
+      if (primary) contact.value = primary.value;
+    }
+    refreshContactDetails();
+  }
+  function searchCustomers() {
+    const query = customerSearch.value.trim().toLowerCase(); const matches = [];
+    [...customer.options].forEach((option, index) => {
+      if (!index) return;
+      const visible = !query || (option.dataset.search || option.textContent).toLowerCase().includes(query);
+      option.hidden = !visible; option.disabled = !visible; if (visible) matches.push(option);
+    });
+    if (customer.selectedOptions[0]?.disabled) { customer.value = ''; refresh(); }
+    customerMatches.replaceChildren();
+    if (query) {
+      matches.slice(0, 12).forEach(option => {
+        const button = document.createElement('button'); button.type = 'button';
+        button.className = 'list-group-item list-group-item-action py-2';
+        button.textContent = option.textContent.trim();
+        button.addEventListener('click', () => {
+          customer.value = option.value; customerSearch.value = option.textContent.trim();
+          [...customer.options].forEach((item,index) => { if (index) { item.hidden=false; item.disabled=false; } });
+          customerMatches.classList.add('d-none'); customerResult.textContent = `Selected: ${option.textContent.trim()}`;
+          refresh(); customer.dispatchEvent(new Event('change'));
+        });
+        customerMatches.appendChild(button);
+      });
+      if (!matches.length) { const empty=document.createElement('div'); empty.className='list-group-item text-muted'; empty.textContent='No customers found.'; customerMatches.appendChild(empty); }
+      customerMatches.classList.remove('d-none');
+    } else customerMatches.classList.add('d-none');
+    customerResult.textContent = query ? `${matches.length} customer${matches.length === 1 ? '' : 's'} found.` : 'Start typing to search customers.';
+  }
+  const affectedService = document.getElementById('affected_service');
+  const issue = document.getElementById('ticket_type');
+  function refreshIssues() {
+    let first = '';
+    [...issue.options].forEach(option => { const visible = option.dataset.category === affectedService.value; option.hidden = !visible; option.disabled = !visible; if (visible && !first) first = option.value; });
+    if (!issue.value || issue.selectedOptions[0]?.disabled) issue.value = first;
+  }
+  customerSearch.addEventListener('input', searchCustomers);
+  customerSearch.addEventListener('focus', () => { if (customerSearch.value.trim()) searchCustomers(); });
+  document.addEventListener('click', event => { if (!event.target.closest('#customer_search') && !event.target.closest('#customer_search_matches')) customerMatches.classList.add('d-none'); });
+  customer.addEventListener('change', refresh); refresh();
+  contact.addEventListener('change', refreshContactDetails);
+  affectedService.addEventListener('change', refreshIssues); refreshIssues(); searchCustomers();
+  const correspondenceMode = document.getElementById('correspondence_mode');
+  const additionalCorrespondence = document.getElementById('additional_correspondence');
+  const verificationStatus = document.getElementById('verification_status');
+  async function readApiResponse(response) {
+    const text = await response.text();
+    if (!text) return {};
+    try { return JSON.parse(text); }
+    catch (_) {
+      const detail = text.trim().replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+      return {detail: detail || `Server returned HTTP ${response.status}`};
+    }
+  }
+  const syncCorrespondence = () => additionalCorrespondence.classList.toggle('d-none', correspondenceMode.value !== 'additional');
+  correspondenceMode.addEventListener('change', syncCorrespondence); syncCorrespondence();
+  ['email','mobile'].forEach(channel => { const id=document.getElementById(`correspondence_${channel}_verification_id`); if (id && id.value) document.getElementById(`${channel}_confirmation_group`).classList.remove('d-none'); });
+  function resetVerification(channel) {
+    document.getElementById(`correspondence_${channel}_verification_id`).value='';
+    document.getElementById(`${channel}_confirmation_group`).classList.add('d-none');
+  }
+  customer.addEventListener('change', () => {
+    resetVerification('email'); resetVerification('mobile');
+    verificationStatus.className = 'alert alert-secondary py-2 small';
+    verificationStatus.textContent = 'Customer changed. Send new verification requests for any additional destinations.';
+  });
+  ['email','mobile'].forEach(channel => document.getElementById(`correspondence_${channel}`).addEventListener('input', () => resetVerification(channel)));
+  async function refreshDestinationVerification(channel) {
+    const verificationId=document.getElementById(`correspondence_${channel}_verification_id`);
+    const confirmationState=document.getElementById(`${channel}_confirmation_state`);
+    if (!customer.value) return true;
+    const data = new FormData(); data.set('verification_id', verificationId.value); data.set('customer_id', customer.value); data.set('destination', document.getElementById(`correspondence_${channel}`).value.trim());
+    try {
+      const response = await fetch(`/tickets/contact-verification/${channel}/status`, {method:'POST', body:data});
+      const result = await readApiResponse(response);
+      if (!response.ok) throw new Error(result.detail || 'Unable to check confirmation.');
+      if (result.verification_id) verificationId.value=result.verification_id;
+      if (result.confirmed) {
+        confirmationState.className='small text-success fw-semibold ms-2'; confirmationState.textContent=`${channel === 'email' ? 'Email' : 'Text'} received and confirmed`;
+        verificationStatus.className='alert alert-success py-2 small'; verificationStatus.textContent=`${result.destination} has been confirmed by the recipient.`;
+        return true;
+      }
+      confirmationState.className='small text-muted ms-2'; confirmationState.textContent=result.status === 'expired' ? 'Confirmation expired' : 'Waiting for recipient';
+      if (result.status === 'expired' || result.status === 'failed') return true;
+    } catch (error) {
+      verificationStatus.className='alert alert-danger py-2 small'; verificationStatus.textContent=error.message;
+      return true;
+    }
+    return false;
+  }
+  document.querySelectorAll('.verification-check').forEach(button => button.addEventListener('click', () => refreshDestinationVerification(button.dataset.channel)));
+  document.querySelectorAll('.verification-send').forEach(button => button.addEventListener('click', async () => {
+    const channel = button.dataset.channel;
+    const destination = document.getElementById(`correspondence_${channel}`).value.trim();
+    if (!customer.value) { verificationStatus.className='alert alert-danger py-2 small'; verificationStatus.textContent='Select a customer before sending verification.'; return; }
+    if (!destination) { verificationStatus.className='alert alert-danger py-2 small'; verificationStatus.textContent=`Enter an additional ${channel === 'email' ? 'email address' : 'mobile number'} first.`; return; }
+    button.disabled = true; button.textContent = 'Sending…';
+    const data = new FormData(); data.set('customer_id', customer.value); data.set('channel', channel); data.set('destination', destination);
+    try {
+      const response = await fetch('/tickets/contact-verification/send', {method:'POST', body:data});
+      const result = await readApiResponse(response);
+      if (!response.ok) throw new Error(result.detail || 'Unable to send verification.');
+      if (!Number.isInteger(Number(result.verification_id)) || Number(result.verification_id) < 1) throw new Error('The server sent the message but did not return a verification request ID. Restart NOP and try again.');
+      document.getElementById(`correspondence_${channel}_verification_id`).value=result.verification_id;
+      document.getElementById(`${channel}_confirmation_group`).classList.remove('d-none');
+      const confirmationState=document.getElementById(`${channel}_confirmation_state`); confirmationState.className='small text-muted ms-2'; confirmationState.textContent='Waiting for recipient';
+      setTimeout(async function poll(){ if (!(await refreshDestinationVerification(channel))) setTimeout(poll, 5000); }, 5000);
+      verificationStatus.className='alert alert-success py-2 small'; verificationStatus.textContent=result.message;
+      button.textContent=channel === 'email' ? 'Email sent' : 'Text sent';
+      setTimeout(() => { button.disabled=false; button.textContent=channel === 'email' ? 'Resend verification email' : 'Resend verification text'; }, 60000);
+    } catch (error) {
+      verificationStatus.className='alert alert-danger py-2 small'; verificationStatus.textContent=error.message;
+      button.disabled=false; button.textContent=channel === 'email' ? 'Send verification email' : 'Send verification text';
+    }
+  }));
+});
+</script>
+{% endblock %}

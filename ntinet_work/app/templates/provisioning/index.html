@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Provisioning · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-start">
+  <div><div class="eyebrow">Platform Operations</div><h1>Provisioning</h1><p>Track organization onboarding and provider resource workflows.</p></div>
+  {% if can("provisioning.manage") %}<button class="btn btn-primary" disabled title="Available in Sprint 2"><i class="fa-solid fa-plus me-2"></i>New Organization</button>{% endif %}
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-4"><div class="card p-4"><div class="text-muted small">Running Jobs</div><div class="display-6">{{ jobs|selectattr('status','equalto','running')|list|length }}</div></div></div>
+  <div class="col-md-4"><div class="card p-4"><div class="text-muted small">Failed Jobs</div><div class="display-6">{{ jobs|selectattr('status','equalto','failed')|list|length }}</div></div></div>
+  <div class="col-md-4"><div class="card p-4"><div class="text-muted small">Foundation</div><div class="fw-semibold mt-2">Sprint 1 active</div><div class="text-muted small">Execution workflows arrive in Sprint 2.</div></div></div>
+</div>
+<div class="card"><div class="card-header d-flex justify-content-between"><strong>Recent Jobs</strong><a href="/provisioning/jobs">View all</a></div><div class="card-body">
+{% if jobs %}<div class="table-responsive"><table class="table align-middle"><thead><tr><th>Job</th><th>Organization</th><th>Status</th><th>Created</th></tr></thead><tbody>{% for job in jobs %}<tr><td>{{ job.name }}</td><td>{{ job.organization.name if job.organization else '—' }}</td><td><span class="badge text-bg-secondary">{{ job.status|title }}</span></td><td>{{ job.created_at.strftime('%b %d, %Y %I:%M %p') }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="empty-state py-5 text-center"><i class="fa-solid fa-gears fa-2x mb-3"></i><h5>No provisioning jobs yet</h5><p class="text-muted mb-0">The organization wizard will create the first job in Sprint 2.</p></div>{% endif %}
+</div></div>
+{% endblock %}

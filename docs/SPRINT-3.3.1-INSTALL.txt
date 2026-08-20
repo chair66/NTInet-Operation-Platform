@@ -1,0 +1,19 @@
+NOP v1.6.0 Sprint 3.3.1 - Phone Number Move/Remove Fix
+
+Fixes:
+- NetSapiens phone number resource paths now use 11-digit US E.164 format (1NXXNXXXXXX).
+- Move and Remove from Domain now address the correct remote resource.
+- Destination User / Queue / Route is optional.
+- Leaving destination blank removes an assigned number from its domain and places it in Available Numbers.
+- Domain is only required when a destination is entered.
+
+Install:
+1. Stop Uvicorn.
+2. Extract this ZIP into the NOP project root and replace included files.
+3. Restart: python -m uvicorn app.main:app --reload
+4. Test Manage Phone Number:
+   - Select another domain and enter destination to move.
+   - Leave destination blank and submit to make Available.
+   - Remove from Domain button also makes the number Available.
+
+No database migration is required.

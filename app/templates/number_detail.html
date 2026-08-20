@@ -1,0 +1,74 @@
+{% extends "base.html" %}{% block content %}
+<div class="page-head"><div><div class="eyebrow">Number settings</div><h1>{{ tn }}</h1><p>{{ site_name }} / {{ location_name }}</p></div><a class="btn btn-outline-secondary" href="/sites/{{ site_id }}/locations/{{ location_id }}/numbers?site_name={{ site_name }}&location_name={{ location_name }}">Back to inventory</a></div>
+{% if notice %}<div class="alert alert-success">{{ notice }}</div>{% endif %}
+{% if error %}<div class="alert alert-danger"><strong>{{ error.message }}</strong><details><summary>Diagnostics</summary><pre>{{ error.payload }}</pre></details></div>{% endif %}
+<div class="alert alert-info">Changes are submitted to Bandwidth as asynchronous orders and may not appear immediately.</div>
+<div class="row g-3">
+  <div class="col-xl-6"><section class="panel p-4 h-100"><h2 class="h5">Routing</h2>
+    <form method="post" action="/sites/{{site_id}}/locations/{{location_id}}/numbers/{{tn}}/routing">
+      <input type="hidden" name="site_name" value="{{site_name}}"><input type="hidden" name="location_name" value="{{location_name}}">
+      <div class="mb-3"><label class="form-label">Call forwarding number</label><input class="form-control" name="callForward" placeholder="Blank uses location default"></div>
+      <div class="mb-3"><label class="form-label">Failover URI</label><input class="form-control" name="failoverUri" placeholder="3332221111 or name@ip-address:port"></div>
+      <div class="mb-3"><label class="form-label">NetNumber ID (NNID)</label><input class="form-control" name="nnid"></div>
+      <button class="btn btn-primary">Submit routing order</button>
+    </form>
+  </section></div>
+
+  <div class="col-xl-6"><section class="panel p-4 h-100"><h2 class="h5">SMS and A2P campaign</h2>
+    <div class="row g-2 mb-3 small">
+      <div class="col-sm-6"><span class="text-muted">SMS Active</span><br><strong>{{ 'Yes' if current_sms_active else 'No' }}</strong></div>
+      <div class="col-sm-6"><span class="text-muted">Provisioned Campaign</span><br><strong>{{ current_campaign or 'None' }}</strong></div>
+      <div class="col-sm-6"><span class="text-muted">Message Class</span><br><strong>{{ current_message_class or 'None returned' }}</strong></div>
+      <div class="col-sm-6"><span class="text-muted">Provisioning Status</span><br><strong>{{ 'Fully Provisioned' if campaign_fully_provisioned else 'Not fully provisioned' }}</strong></div>
+      <div class="col-sm-6"><span class="text-muted">A2P Assignment</span><br><strong>{{ a2p_state|replace('_', ' ')|title if a2p_state else 'Not returned' }}</strong></div>
+    </div>
+    {% if assigned_route_name or assigned_nnid %}<details class="mb-3"><summary class="small text-muted">Technical routing details</summary><div class="small mt-2">Assigned NN route: <strong>{{ assigned_route_name or 'Not returned' }}</strong>{% if assigned_nnid %} ({{ assigned_nnid }}){% endif %}</div></details>{% endif %}
+    {% if campaign_error %}<div class="alert alert-secondary py-2">Bandwidth did not make the available campaign list accessible to this API credential. The current TN assignment above is still authoritative.<details><summary>Details</summary><pre>{{campaign_error.payload}}</pre></details></div>{% elif not campaigns %}<div class="alert alert-secondary py-2">Available campaign choices were not returned for this API credential. You can still view the number's current provisioned campaign.</div>{% endif %}
+    <form method="post" action="/sites/{{site_id}}/locations/{{location_id}}/numbers/{{tn}}/sms">
+      <input type="hidden" name="site_name" value="{{site_name}}"><input type="hidden" name="location_name" value="{{location_name}}">
+      <div class="mb-3"><label class="form-label d-block">SMS Active</label><div class="btn-group" role="group"><input class="btn-check" type="radio" name="sms_active" id="sms-yes" value="yes" {% if current_sms_active %}checked{% endif %}><label class="btn btn-outline-primary" for="sms-yes">Yes</label><input class="btn-check" type="radio" name="sms_active" id="sms-no" value="no" {% if not current_sms_active %}checked{% endif %}><label class="btn btn-outline-primary" for="sms-no">No</label></div></div>
+      <div class="mb-3"><label class="form-label">A2P campaign</label><select class="form-select" name="campaign_id" id="campaign-id" {% if not campaigns %}disabled{% endif %}><option value="">Use current assignment</option><option value="__remove__">Delete campaign from phone number</option>{% if current_campaign and not campaigns|selectattr('id','equalto',current_campaign)|list %}<option selected value="{{current_campaign}}" data-message-class="{{current_message_class}}">Current campaign — {{current_campaign}}</option>{% endif %}{% for c in campaigns %}<option value="{{c.id}}" data-message-class="{{c.messageClass}}" {% if c.id == current_campaign %}selected{% endif %}>{{c.description or c.id}} — {{c.id}}{% if c.status %} ({{c.status}}){% endif %}</option>{% endfor %}</select></div>
+      <div class="mb-3"><label class="form-label">A2PLC message class</label><input class="form-control" id="message-class" value="{{ current_message_class }}" readonly></div>
+      <button class="btn btn-primary" {% if not campaigns %}disabled title="Available campaigns were not returned by Bandwidth"{% endif %}>Save SMS settings</button>
+    </form>
+  </section></div>
+
+  <div class="col-xl-6"><section class="panel p-4 h-100"><h2 class="h5">Outbound calling name (LIDB)</h2><form method="post" action="/sites/{{site_id}}/locations/{{location_id}}/numbers/{{tn}}/lidb"><input type="hidden" name="site_name" value="{{site_name}}"><input type="hidden" name="location_name" value="{{location_name}}"><div class="mb-3"><label class="form-label">Display name</label><input required maxlength="15" class="form-control" name="subscriberInformation"></div><div class="row g-3 mb-3"><div class="col"><label class="form-label">Service type</label><select class="form-select" name="useType"><option>BUSINESS</option><option>RESIDENTIAL</option></select></div><div class="col"><label class="form-label">Visibility</label><select class="form-select" name="visibility"><option>PUBLIC</option><option>PRIVATE</option></select></div></div><button class="btn btn-primary">Submit LIDB order</button></form></section></div>
+
+  <div class="col-xl-6"><section class="panel p-4 h-100"><h2 class="h5">Port-out passcode</h2><p class="text-muted">Protect this number from unauthorized port-out requests. Enter 4–10 alphanumeric characters. Submit a blank value to remove the passcode.</p><form method="post" action="/sites/{{site_id}}/locations/{{location_id}}/numbers/{{tn}}/portout-passcode"><input type="hidden" name="site_name" value="{{site_name}}"><input type="hidden" name="location_name" value="{{location_name}}"><div class="mb-3"><label class="form-label">Passcode</label><input class="form-control" name="passcode" minlength="4" maxlength="10" pattern="[A-Za-z0-9]{4,10}" placeholder="4-10 letters or numbers"></div><button class="btn btn-primary me-2">Save passcode</button><button class="btn btn-outline-danger" type="submit" onclick="this.form.passcode.value=''">Remove passcode</button></form></section></div>
+
+  <div class="col-12"><section class="panel p-4"><h2 class="h5">Directory listing / directory assistance</h2><form method="post" action="/sites/{{site_id}}/locations/{{location_id}}/numbers/{{tn}}/dlda"><input type="hidden" name="site_name" value="{{site_name}}"><input type="hidden" name="location_name" value="{{location_name}}"><div class="row g-3"><div class="col-md-3"><label class="form-label">Listing type</label><select class="form-select" name="ListingType"><option value="LISTED">Listed</option><option value="NON_LISTED">Directory assistance only</option><option value="NON_PUBLISHED">Not published</option></select></div><div class="col-md-3"><label class="form-label">Subscriber type</label><select class="form-select" name="SubscriberType"><option>BUSINESS</option><option>RESIDENTIAL</option></select></div><div class="col-md-3"><label class="form-label">Sorted / last name</label><input required class="form-control" name="LastName"></div><div class="col-md-3"><label class="form-label">Extended / first name</label><input class="form-control" name="FirstName"></div><div class="col-md-2"><label class="form-label">Street number</label><input class="form-control" name="HouseNumber"></div><div class="col-md-6"><label class="form-label">Street name</label><input class="form-control" name="StreetName"></div><div class="col-md-4"><label class="form-label">Address line 2</label><input class="form-control" name="AddressLine2"></div><div class="col-md-4"><label class="form-label">City</label><input class="form-control" name="City"></div><div class="col-md-2"><label class="form-label">State</label><input maxlength="2" class="form-control" name="StateCode"></div><div class="col-md-3"><label class="form-label">ZIP</label><input class="form-control" name="Zip"></div><div class="col-md-3"><label class="form-label">ZIP+4</label><input class="form-control" name="PlusFour"></div></div><button class="btn btn-primary mt-3">Submit directory order</button></form></section></div>
+
+  <div class="col-12"><section class="panel p-4"><h2 class="h5">Move number</h2><p class="text-muted">Move this telephone number to another Sub Account and Location. You will review the destination before the live order is submitted.</p>
+    <div class="row g-3 mb-3">
+      <div class="col-md-6"><div class="current-assignment"><span>Current Sub Account</span><strong>{{ site_name or site_id }}</strong></div></div>
+      <div class="col-md-6"><div class="current-assignment"><span>Current Location</span><strong>{{ location_name or location_id }}</strong></div></div>
+    </div>
+    <form method="post" action="/sites/{{site_id}}/locations/{{location_id}}/numbers/{{tn}}/move/review"><input type="hidden" name="site_name" value="{{site_name}}"><input type="hidden" name="location_name" value="{{location_name}}"><div class="row g-3"><div class="col-md-4"><label class="form-label">Destination Sub Account</label><select required class="form-select" id="move-site" name="destination_site_id"><option value="">Choose a Sub Account</option>{% for s in sites %}<option value="{{s.id}}">{{s.name}}</option>{% endfor %}</select></div><div class="col-md-4"><label class="form-label">Destination Location</label><select required class="form-select" id="move-location" name="destination_location_id" disabled><option value="">Select a Sub Account first</option></select></div><div class="col-md-4"><label class="form-label">Customer order ID</label><input required maxlength="40" class="form-control" name="customer_order_id" value="MOVE-{{tn|replace('+','')}}"></div></div><button class="btn btn-primary mt-3">Review move</button></form></section></div>
+  <div class="col-12"><section class="panel p-4"><h2 class="h5">Current raw Bandwidth details</h2><details><summary>Show API response</summary><pre class="json-viewer">{{ details | tojson(indent=2) }}</pre></details></section></div>
+</div>
+<script>
+const moveLocations = {{ locations_by_site | tojson }};
+const moveSite = document.getElementById('move-site');
+const moveLocation = document.getElementById('move-location');
+function loadMoveLocations() {
+  if (!moveSite || !moveLocation) return;
+  const locations = moveLocations[String(moveSite.value)] || [];
+  moveLocation.innerHTML = '<option value="">' + (moveSite.value ? 'Choose a Location' : 'Select a Sub Account first') + '</option>';
+  locations.forEach(location => {
+    const option = document.createElement('option');
+    option.value = location.id;
+    option.textContent = location.name;
+    moveLocation.appendChild(option);
+  });
+  moveLocation.disabled = !moveSite.value || locations.length === 0;
+}
+if (moveSite && moveLocation) {
+  moveSite.addEventListener('change', loadMoveLocations);
+  loadMoveLocations();
+}
+const campaign = document.getElementById('campaign-id');
+const messageClass = document.getElementById('message-class');
+if (campaign && messageClass) campaign.addEventListener('change', () => { messageClass.value = campaign.selectedOptions[0]?.dataset.messageClass || ''; });
+</script>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ managed_organization.effective_name }}{% endblock %}
+{% block content %}
+{% set org = managed_organization %}
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <div>
+    <a class="small text-decoration-none" href="/admin/organizations">← Organizations</a>
+    <h1 class="h3 mb-1 mt-2">{{ org.effective_name }}</h1>
+    <div class="text-muted">{{ org.name }} · {{ org.slug }}</div>
+  </div>
+  <div class="d-flex gap-2">
+    {% set status_class={'active':'success','suspended':'warning','disabled':'secondary','deleted':'dark'}.get(org.status,'secondary') %}
+    <span class="badge text-bg-{{ status_class }} align-self-center">{{ org.status|title }}</span>
+    {% set health_class={'healthy':'success','warning':'warning','critical':'danger'}.get(summary.health,'secondary') %}
+    <span class="badge text-bg-{{ health_class }} align-self-center" title="{{ summary.health_detail }}">{{ summary.health|title }}</span>
+  </div>
+</div>
+
+{% if request.query_params.get('notice') %}<div class="alert alert-success">{{ request.query_params.get('notice') }}</div>{% endif %}
+{% if request.query_params.get('error') %}<div class="alert alert-danger">{{ request.query_params.get('error') }}</div>{% endif %}
+
+<ul class="nav nav-tabs mb-4" id="organizationTabs" role="tablist">
+  <li class="nav-item" role="presentation"><button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab" aria-controls="general" aria-selected="true">General</button></li>
+  {% if org.is_reseller %}<li class="nav-item" role="presentation"><button class="nav-link" id="digicloud-reseller-tab" data-bs-toggle="tab" data-bs-target="#digicloud-reseller" type="button" role="tab" aria-controls="digicloud-reseller" aria-selected="false">DigiCloud Reseller</button></li>{% endif %}
+  <li class="nav-item" role="presentation"><button class="nav-link" id="modules-tab" data-bs-toggle="tab" data-bs-target="#modules" type="button" role="tab" aria-controls="modules" aria-selected="false">Modules</button></li>
+  <li class="nav-item" role="presentation"><button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">Security &amp; Defaults</button></li>
+  <li class="nav-item" role="presentation"><button class="nav-link" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity" type="button" role="tab" aria-controls="activity" aria-selected="false">Activity</button></li>
+</ul>
+
+<div class="tab-content" id="organizationTabsContent">
+  {% include "admin/organization/_general.html" %}
+  {% if org.is_reseller %}{% include "admin/organization/_digicloud_reseller.html" %}{% endif %}
+  {% include "admin/organization/_modules.html" %}
+  {% include "admin/organization/_settings.html" %}
+  {% include "admin/organization/_activity.html" %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const hash = window.location.hash;
+  if (hash && window.bootstrap) {
+    const trigger = document.querySelector(`[data-bs-target="${hash}"]`);
+    if (trigger) {
+      bootstrap.Tab.getOrCreateInstance(trigger).show();
+    }
+  }
+
+  document.querySelectorAll('#organizationTabs [data-bs-toggle="tab"]').forEach((trigger) => {
+    trigger.addEventListener('shown.bs.tab', (event) => {
+      const target = event.target.getAttribute('data-bs-target');
+      if (target) history.replaceState(null, '', target);
+    });
+  });
+});
+</script>
+{% endblock %}

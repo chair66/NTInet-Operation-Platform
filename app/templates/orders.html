@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Number Order History | {{ app_name }}{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">Numbers</div><h1>Order History</h1><p>Review number purchase and activation orders.</p></div>{% if can("numbers.buy") %}<a class="btn btn-primary" href="/available-numbers"><i class="fa-solid fa-cart-plus me-2"></i>Buy Numbers</a>{% endif %}</div>
+<form class="panel panel-body mb-3" method="get"><div class="input-group"><input class="form-control" type="search" name="q" value="{{ q }}" placeholder="Search order or customer order ID"><button class="btn btn-primary">Search</button></div></form>
+<div class="panel"><div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>Order ID</th><th>Status</th><th>Customer Order ID</th><th>Completed Numbers</th><th>Created</th></tr></thead><tbody>{% for order in orders %}<tr><td><code>{{ order.orderId }}</code></td><td><span class="status-badge neutral">{{ order.status }}</span></td><td>{{ order.customerOrderId or '—' }}</td><td>{{ order.completedNumbers or '—' }}</td><td>{{ order.createdDate or '—' }}</td></tr>{% else %}<tr><td colspan="5" class="empty-state">No number orders were returned.</td></tr>{% endfor %}</tbody></table></div></div>
+{% endblock %}

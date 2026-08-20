@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}Users | NTInet Operations{% endblock %}
+{% block content %}
+<div class="page-heading user-page-heading">
+  <div>
+    <div class="eyebrow">Administration</div>
+    <h1>User Management</h1>
+    <p>Search, filter, and manage access across your organizations.</p>
+  </div>
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newUser"><i class="fa-solid fa-user-plus me-2"></i>Add user</button>
+</div>
+
+{% if request.query_params.get('notice') %}<div class="alert alert-success">{{ request.query_params.get('notice') }}</div>{% endif %}
+{% if request.query_params.get('error') %}<div class="alert alert-danger">{{ request.query_params.get('error') }}</div>{% endif %}
+
+<div class="row g-3 mb-3">
+  <div class="col-sm-6 col-xl-3"><div class="metric-card compact"><div class="metric-icon"><i class="fa-solid fa-users"></i></div><div><span>Visible users</span><strong>{{ user_page.total }}</strong><small>Within your access scope</small></div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="metric-card compact"><div class="metric-icon"><i class="fa-solid fa-user-check"></i></div><div><span>Active on this page</span><strong>{{ users|selectattr('active')|list|length }}</strong><small>Of {{ users|length }} displayed</small></div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="metric-card compact"><div class="metric-icon"><i class="fa-solid fa-shield-halved"></i></div><div><span>MFA enabled</span><strong>{{ users|selectattr('mfa_enabled')|list|length }}</strong><small>On this page</small></div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="metric-card compact"><div class="metric-icon"><i class="fa-solid fa-building"></i></div><div><span>Organizations</span><strong>{{ organizations|length }}</strong><small>Available to manage</small></div></div></div>
+</div>
+
+<div class="panel user-console">
+  <form id="user-filter-form" method="get" action="/admin/users" class="user-toolbar">
+    <input type="hidden" name="sort" id="sort-field" value="{{ filters.sort }}">
+    <input type="hidden" name="direction" id="direction-field" value="{{ filters.direction }}">
+    <div class="user-search-wrap">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input class="form-control" type="search" name="q" value="{{ filters.q }}" placeholder="Search name, email, organization, or role" aria-label="Search users">
+    </div>
+    <select class="form-select" name="status_filter" aria-label="Account status">
+      <option value="all" {{ 'selected' if filters.status_filter == 'all' else '' }}>All statuses</option>
+      <option value="active" {{ 'selected' if filters.status_filter == 'active' else '' }}>Active</option>
+      <option value="disabled" {{ 'selected' if filters.status_filter == 'disabled' else '' }}>Disabled</option>
+      <option value="locked" {{ 'selected' if filters.status_filter == 'locked' else '' }}>Locked</option>
+      <option value="deleted" {{ 'selected' if filters.status_filter == 'deleted' else '' }}>Deleted</option>
+    </select>
+    <select class="form-select" name="mfa" aria-label="MFA status">
+      <option value="all" {{ 'selected' if filters.mfa == 'all' else '' }}>All MFA</option>
+      <option value="enabled" {{ 'selected' if filters.mfa == 'enabled' else '' }}>MFA enabled</option>
+      <option value="required" {{ 'selected' if filters.mfa == 'required' else '' }}>MFA required</option>
+      <option value="not_enabled" {{ 'selected' if filters.mfa == 'not_enabled' else '' }}>MFA not enabled</option>
+    </select>
+    {% if organizations|length > 1 %}
+    <select class="form-select" name="organization_id" aria-label="Organization">
+      <option value="">All organizations</option>
+      {% for org in organizations %}<option value="{{ org.id }}" {{ 'selected' if filters.organization_id == org.id else '' }}>{{ org.name }}</option>{% endfor %}
+    </select>
+    {% endif %}
+    <select class="form-select" name="role_id" aria-label="Role">
+      <option value="">All roles</option>
+      {% for role in roles %}<option value="{{ role.id }}" {{ 'selected' if filters.role_id == role.id else '' }}>{{ role.name }}</option>{% endfor %}
+    </select>
+    <button class="btn btn-primary" type="submit">Apply</button>
+    <a class="btn btn-outline-secondary" href="/admin/users" title="Clear filters"><i class="fa-solid fa-rotate-left"></i></a>
+  </form>
+
+  <form id="bulk-user-form" method="post" action="/admin/users/bulk" data-bulk-delete-confirm>
+  <div class="bulk-user-toolbar border rounded p-2 mb-3 d-flex flex-wrap gap-2 align-items-center">
+    <strong><span id="bulk-count">0</span> selected</strong>
+    <select class="form-select form-select-sm" name="action" style="max-width:220px" required><option value="">Choose bulk action</option><option value="enable">Enable</option><option value="disable">Disable</option><option value="force_password_change">Force password change</option><option value="assign_role">Assign role</option><option value="remove_role">Remove role</option><option value="delete">Soft delete</option><option value="restore">Restore</option></select>
+    <select class="form-select form-select-sm" name="role_id" style="max-width:220px"><option value="">Role when required</option>{% for role in roles %}<option value="{{ role.id }}">{{ role.name }}</option>{% endfor %}</select>
+    <button class="btn btn-sm btn-primary" type="submit">Apply</button>
+    <a class="btn btn-sm btn-outline-secondary ms-auto" href="/admin/users/export.csv?{{ request.url.query }}"><i class="fa-solid fa-file-csv me-1"></i>Export CSV</a>
+  </div>
+
+  <div class="active-filter-row">
+    <span>Showing {{ user_page.first_item }}–{{ user_page.last_item }} of {{ user_page.total }}</span>
+    <label>Rows
+      <select class="form-select form-select-sm" name="per_page" form="user-filter-form" onchange="this.form.submit()">
+        {% for size in [10,25,50,100] %}<option value="{{ size }}" {{ 'selected' if user_page.per_page == size else '' }}>{{ size }}</option>{% endfor %}
+      </select>
+    </label>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table align-middle user-table mb-0">
+      <thead><tr>
+        <th style="width:38px"><input class="form-check-input" type="checkbox" id="select-all-users" aria-label="Select all visible users"></th>
+        <th><button class="sort-button" type="button" data-sort="name">User {% if filters.sort == 'name' %}<i class="fa-solid fa-arrow-{{ 'down' if filters.direction == 'desc' else 'up' }}"></i>{% endif %}</button></th>
+        <th><button class="sort-button" type="button" data-sort="organization">Organization {% if filters.sort == 'organization' %}<i class="fa-solid fa-arrow-{{ 'down' if filters.direction == 'desc' else 'up' }}"></i>{% endif %}</button></th>
+        <th>Roles</th>
+        <th><button class="sort-button" type="button" data-sort="status">Status {% if filters.sort == 'status' %}<i class="fa-solid fa-arrow-{{ 'down' if filters.direction == 'desc' else 'up' }}"></i>{% endif %}</button></th>
+        <th>MFA</th>
+        <th><button class="sort-button" type="button" data-sort="last_login">Last login {% if filters.sort == 'last_login' %}<i class="fa-solid fa-arrow-{{ 'down' if filters.direction == 'desc' else 'up' }}"></i>{% endif %}</button></th>
+        <th class="text-end">Actions</th>
+      </tr></thead>
+      <tbody>
+      {% for user in users %}
+      <tr>
+        <td><input class="form-check-input user-select" type="checkbox" name="user_ids" value="{{ user.id }}" aria-label="Select {{ user.full_name }}"></td>
+        <td><div class="user-identity"><div class="user-avatar">{{ user.full_name[:1]|upper }}</div><div><strong>{{ user.full_name }}</strong><span>{{ user.email }}</span></div></div></td>
+        <td><strong class="organization-name">{{ user.organization.name }}</strong><span class="organization-type">{{ user.organization.organization_type|replace('_',' ')|title }}</span></td>
+        <td><div class="role-stack">{% if user.is_superuser %}<span class="role-pill role-pill-primary">Super Admin</span>{% endif %}{% for role in user.roles %}<span class="role-pill">{{ role.name }}</span>{% else %}{% if not user.is_superuser %}<span class="text-muted small">No roles</span>{% endif %}{% endfor %}</div></td>
+        <td>{% if user.deleted_at %}<span class="status-badge disabled"><i class="fa-solid fa-trash"></i>Deleted</span>{% elif user.locked_at %}<span class="status-badge mfa-required"><i class="fa-solid fa-lock"></i>Locked</span>{% else %}<span class="status-badge {{ 'active' if user.active else 'disabled' }}"><i class="fa-solid fa-circle"></i>{{ 'Active' if user.active else 'Disabled' }}</span>{% endif %}</td>
+        <td>{% if user.mfa_enabled %}<span class="status-badge mfa-enabled"><i class="fa-solid fa-shield"></i>Enabled</span>{% elif user.mfa_required or user.organization.mfa_policy == 'required' %}<span class="status-badge mfa-required"><i class="fa-solid fa-triangle-exclamation"></i>Required</span>{% else %}<span class="status-badge neutral"><i class="fa-regular fa-circle"></i>Optional</span>{% endif %}</td>
+        <td><strong class="last-login">{{ user.last_login_at.strftime('%b %d, %Y') if user.last_login_at else 'Never' }}</strong>{% if user.last_login_at %}<span>{{ user.last_login_at.strftime('%I:%M %p') }}</span>{% endif %}</td>
+        <td class="text-end">
+          <div class="dropdown">
+            <button class="btn btn-sm btn-light action-menu" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User actions"><i class="fa-solid fa-ellipsis"></i></button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+              <li><a class="dropdown-item" href="/admin/users/{{ user.id }}/edit"><i class="fa-solid fa-pen-to-square"></i>Edit user</a></li>
+              {% if user.id != current_user.id %}<li><form method="post" action="/admin/users/{{ user.id }}/toggle"><button class="dropdown-item"><i class="fa-solid {{ 'fa-user-slash' if user.active else 'fa-user-check' }}"></i>{{ 'Disable account' if user.active else 'Enable account' }}</button></form></li>{% endif %}
+              <li><form method="post" action="/admin/users/{{ user.id }}/mfa-required"><button class="dropdown-item"><i class="fa-solid fa-shield-halved"></i>{{ 'Make MFA optional' if user.mfa_required else 'Require MFA' }}</button></form></li>
+              {% if user.mfa_enabled %}<li><hr class="dropdown-divider"></li><li><form method="post" action="/admin/users/{{ user.id }}/mfa-reset" data-confirm="Reset MFA and revoke trusted devices for {{ user.full_name }}?"><button class="dropdown-item text-danger"><i class="fa-solid fa-rotate"></i>Reset MFA</button></form></li>{% endif %}
+            </ul>
+          </div>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="8"><div class="empty-user-state"><div><i class="fa-solid fa-users-slash"></i></div><h3>No users found</h3><p>Try changing your search or filters.</p><a href="/admin/users" class="btn btn-outline-secondary btn-sm">Clear filters</a></div></td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  </form>
+
+  {% if user_page.pages > 1 %}
+  <div class="user-pagination">
+    <div>Page {{ user_page.page }} of {{ user_page.pages }}</div>
+    <nav aria-label="User pages"><ul class="pagination pagination-sm mb-0">
+      <li class="page-item {{ 'disabled' if user_page.page <= 1 else '' }}"><button class="page-link page-jump" data-page="{{ user_page.page - 1 }}">Previous</button></li>
+      {% set start_page = [1, user_page.page - 2]|max %}{% set end_page = [user_page.pages, user_page.page + 2]|min %}
+      {% for number in range(start_page, end_page + 1) %}<li class="page-item {{ 'active' if number == user_page.page else '' }}"><button class="page-link page-jump" data-page="{{ number }}">{{ number }}</button></li>{% endfor %}
+      <li class="page-item {{ 'disabled' if user_page.page >= user_page.pages else '' }}"><button class="page-link page-jump" data-page="{{ user_page.page + 1 }}">Next</button></li>
+    </ul></nav>
+  </div>
+  {% endif %}
+</div>
+
+<div class="modal fade" id="newUser" tabindex="-1" aria-labelledby="newUserLabel" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><form method="post" action="/admin/users" class="modal-content user-modal"><div class="modal-header"><div><div class="eyebrow">User administration</div><h5 class="modal-title" id="newUserLabel">Add user</h5></div><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body">
+  <div class="row g-3"><div class="col-12"><label class="form-label">Full name</label><input class="form-control" name="full_name" autocomplete="name" required></div><div class="col-12"><label class="form-label">Email</label><input class="form-control" type="email" name="email" autocomplete="email" required></div><div class="col-12"><label class="form-label">Temporary password</label><input class="form-control" type="password" name="password" minlength="12" autocomplete="new-password" required><div class="form-text">At least 12 characters. The user must change it at first sign-in.</div></div><div class="col-12"><label class="form-label">Organization</label><select class="form-select" name="organization_id">{% for org in organizations %}<option value="{{ org.id }}">{{ org.name }}</option>{% endfor %}</select></div><div class="col-12"><label class="form-label">Roles</label><select class="form-select" name="role_ids" multiple size="6">{% for role in roles %}<option value="{{ role.id }}">{{ role.name }}</option>{% endfor %}</select><div class="form-text">Hold Ctrl to select multiple roles.</div></div></div>
+</div><div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary">Create user</button></div></form></div></div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', path='user-management.js') }}"></script>
+<script>
+(() => {
+  const all = document.getElementById("select-all-users");
+  const boxes = [...document.querySelectorAll(".user-select")];
+  const count = document.getElementById("bulk-count");
+  if (!count) return;
+
+  const refresh = () => {
+    const checked = boxes.filter((box) => box.checked).length;
+    count.textContent = checked;
+    if (all) {
+      all.indeterminate = checked > 0 && checked < boxes.length;
+      all.checked = boxes.length > 0 && checked === boxes.length;
+    }
+  };
+
+  if (all) {
+    all.addEventListener("change", () => {
+      boxes.forEach((box) => { box.checked = all.checked; });
+      refresh();
+    });
+  }
+  boxes.forEach((box) => box.addEventListener("change", refresh));
+  refresh();
+})();
+</script>
+{% endblock %}

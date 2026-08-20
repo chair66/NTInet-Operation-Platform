@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Confirm Corrected 911 Address{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><div class="eyebrow">DigiCloud · User Management · {{ selected_domain.domain_name }}</div><h1>Confirm Corrected 911 Address</h1><p>Review the standardized address returned by DigiCloud before assigning it to the user.</p></div>
+</div>
+<div class="row g-4">
+  <div class="col-xl-8">
+    {% if error %}<div class="alert alert-danger"><strong>The address was not marked assigned.</strong> {{ error }}</div>{% endif %}
+    <div class="alert alert-warning"><strong>Validated by DigiCloud — Not Provisioned Yet.</strong> Validation does not provision 911. Saving will create or update the legacy 911 endpoint for this callback DID using the corrected address below.</div>
+    <section class="card mb-3">
+      <div class="card-header d-flex justify-content-between align-items-center"><h2 class="h5 mb-0">DigiCloud Corrected Address</h2><span class="badge text-bg-warning">Pending Assignment</span></div>
+      <div class="card-body">
+        <dl class="row mb-0">
+          <dt class="col-sm-4">Caller Name</dt><dd class="col-sm-8"><strong>{{ values.caller_name }}</strong></dd>
+          <dt class="col-sm-4">Street Address</dt><dd class="col-sm-8">{{ values.address_line_1 }}{% if values.address_line_2 %}<br>{{ values.address_line_2 }}{% endif %}</dd>
+          <dt class="col-sm-4">City / State / ZIP</dt><dd class="col-sm-8">{{ values.city }}, {{ values.state }} {{ values.postal_code }}</dd>
+          <dt class="col-sm-4">Emergency DID</dt><dd class="col-sm-8">{{ emergency_did }}</dd>
+          <dt class="col-sm-4">DigiCloud User</dt><dd class="col-sm-8">{{ username }}@{{ selected_domain.domain_name }}</dd>
+        </dl>
+      </div>
+    </section>
+    <div class="alert alert-danger"><strong>911 service notice:</strong> Confirm this is the phone's actual physical service location. Do not treat 911 as provisioned until the save succeeds and NOP finds the exact callback DID in DigiCloud's emergency address endpoints.</div>
+    <form method="post" action="/digicloud/users/{{ username|urlencode }}/911/assign" class="d-flex flex-wrap gap-2">
+      <input type="hidden" name="domain" value="{{ selected_domain.domain_name }}">
+      <input type="hidden" name="return_to" value="{{ return_to }}">
+      <input type="hidden" name="emergency_address_id" value="{{ emergency_address_id }}">
+      <input type="hidden" name="existing_address_id" value="{{ existing_address_id }}">
+      <input type="hidden" name="caller_name" value="{{ values.caller_name }}">
+      <input type="hidden" name="address_line_1" value="{{ values.address_line_1 }}">
+      <input type="hidden" name="address_line_2" value="{{ values.address_line_2 }}">
+      <input type="hidden" name="city" value="{{ values.city }}">
+      <input type="hidden" name="state" value="{{ values.state }}">
+      <input type="hidden" name="postal_code" value="{{ values.postal_code }}">
+      <button class="btn btn-primary" type="submit">{% if existing_address_id %}Save Updated 911 Endpoint{% else %}Save &amp; Provision in DigiCloud{% endif %}</button>
+      <button class="btn btn-outline-secondary" type="button" onclick="history.back()">Back to Edit</button>
+    </form>
+  </div>
+  <div class="col-xl-4"><div class="card"><div class="card-header"><strong>Provisioning Status</strong></div><div class="card-body small"><ol class="mb-0"><li class="mb-2 text-success">Address validated</li><li class="mb-2"><strong>Review corrected address</strong></li><li>Save and verify the legacy 911 callback endpoint</li></ol></div></div></div>
+</div>
+{% endblock %}

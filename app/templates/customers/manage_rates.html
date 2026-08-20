@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Manage Rates · {{ customer.name }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex flex-wrap justify-content-between align-items-end gap-3">
+  <div><div class="eyebrow">NTInet staff only · Platypus Customer #{{ profile.platypus_customer_id }}</div><h1>Manage Rates</h1><p>Add or remove live Platypus billing rates for {{ customer.name }}.</p></div>
+  <div class="d-flex flex-wrap gap-2"><form method="post" action="/customers/{{ profile.platypus_customer_id }}/rates/reconcile-digicloud"><button class="btn btn-outline-danger" type="submit"><i class="fa-solid fa-arrows-rotate me-2"></i>Check DigiCloud Users</button></form><a class="btn btn-outline-secondary" href="/customers/{{ profile.platypus_customer_id }}"><i class="fa-solid fa-arrow-left me-2"></i>Customer</a></div>
+</div>
+{% if message %}<div class="alert alert-success">{{ message }}</div>{% endif %}
+{% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+{% set assigned_plume_rates = assigned_rates|selectattr('is_plume')|list %}
+{% if has_plume_network and not assigned_plume_rates %}<div class="alert alert-warning d-flex flex-wrap justify-content-between align-items-center gap-3"><div><strong>Unbilled Plume account detected.</strong><div class="small">NOP still has a Plume customer/location for this customer, but no Plume billing rate is assigned. Use Manage Plume to remove orphaned hardware or inspect the account.</div></div><a class="btn btn-outline-danger" href="/customers/{{ profile.local_customer_id }}/plume/manage"><i class="fa-solid fa-wifi me-2"></i>Manage Plume</a></div>{% endif %}
+
+<section class="panel mb-4">
+  <div class="p-4 border-bottom"><h2 class="h5 mb-1">Assigned Rates</h2><div class="text-muted small">Deleting a rate also deletes services attached to that CRID in Platypus.</div></div>
+  <div class="list-group list-group-flush">
+  {% for rate in assigned_rates %}{% set crid = rate.crid or rate.cr_id %}
+    <div class="list-group-item p-4">
+      <div class="row g-3 align-items-end">
+        <div class="col-lg-5"><strong>{{ rate.rg_name or rate.name or ('Rate ' ~ (rate.rgid or rate.rg_id)) }}</strong>{% if rate.digicloud_subscribers %}{% for subscriber in rate.digicloud_subscribers %}<div class="mt-1"><span class="fw-semibold">{{ subscriber.phone_number }}</span>{% if subscriber.extension and subscriber.phone_number != subscriber.extension %}<span class="small text-muted"> · Ext {{ subscriber.extension }}</span>{% endif %}{% if subscriber.domain %}<span class="small text-muted"> · {{ subscriber.domain }}</span>{% endif %}{% if subscriber.status == 'missing_from_digicloud' %}<span class="badge text-bg-danger ms-1">Missing from DigiCloud</span>{% elif subscriber.status == 'billing_cleanup_required' %}<span class="badge text-bg-warning text-dark ms-1">Billing cleanup required</span>{% elif subscriber.status == 'external_delete_ignored' %}<span class="badge text-bg-secondary ms-1">Deletion acknowledged</span>{% elif subscriber.presence == 'verification_pending' %}<span class="badge text-bg-warning text-dark ms-1">Verifying DigiCloud status</span>{% else %}<span class="badge text-bg-success ms-1">Active</span>{% endif %}</div>{% endfor %}{% elif rate.is_digital_voice %}<div class="small text-danger mt-1"><i class="fa-solid fa-triangle-exclamation me-1"></i>Phone number not linked in NOP</div>{% endif %}<div class="small text-muted">RGID {{ rate.rgid or rate.rg_id }} · CRID {{ crid }} · Qty {{ rate.cr_quantity or rate.quantity or 1 }}</div>{% if rate.cr_overridden == 'Y' and rate.cr_override_price %}<div class="small">${{ '%.2f'|format(rate.cr_override_price|float) }}</div>{% endif %}</div>
+        <div class="col-lg-3">{% if rate.is_plume %}<a class="btn btn-outline-primary w-100" href="/customers/{{ profile.local_customer_id }}/plume/manage{% if rate.plume_service_id %}?service_id={{ rate.plume_service_id|urlencode }}{% endif %}"><i class="fa-solid fa-wifi me-2"></i>Manage Plume</a>{% else %}<a class="btn btn-outline-secondary w-100" href="/customers/{{ profile.platypus_customer_id }}/rates/{{ crid }}">View Services</a>{% endif %}</div>
+        <div class="col-lg-4"><form method="post" action="/customers/{{ profile.platypus_customer_id }}/rates/{{ crid }}/delete" onsubmit="return confirm('Delete CRID {{ crid }} and all of its attached services from Platypus?');"><input type="hidden" name="confirmation" value="DELETE {{ crid }}"><button class="btn btn-outline-danger w-100" type="submit"><i class="fa-solid fa-trash me-2"></i>Delete Rate</button><div class="form-text text-danger">This also deletes services attached to CRID {{ crid }}.</div></form></div>
+      </div>
+      {% for subscriber in rate.digicloud_subscribers if subscriber.status in ['missing_from_digicloud', 'billing_cleanup_required', 'external_delete_ignored'] %}
+      <div class="alert alert-warning mt-3 mb-0">
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+          <div><strong>Billing review required for {{ subscriber.phone_number }}</strong><div class="small">This subscriber is not present in DigiCloud. Platypus CRID {{ crid }} remains billed until staff recreates the user, acknowledges the mismatch, or removes billing.</div></div>
+          <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-sm btn-outline-primary" href="/digicloud/users/new?domain={{ subscriber.domain|urlencode }}&extension={{ subscriber.extension|urlencode }}&first_name={{ subscriber.first_name|urlencode }}&last_name={{ subscriber.last_name|urlencode }}&email={{ subscriber.email|urlencode }}&platypus_customer_id={{ profile.platypus_customer_id|urlencode }}&rate_group_id={{ (rate.rgid or rate.rg_id)|urlencode }}&return_to={{ ('/customers/' ~ profile.platypus_customer_id ~ '/rates/manage')|urlencode }}"><i class="fa-solid fa-user-plus me-1"></i>Recreate User</a>
+            <form method="post" action="/customers/{{ profile.platypus_customer_id }}/rates/digicloud/{{ subscriber.service_id }}/ignore"><button class="btn btn-sm btn-outline-secondary" type="submit">Keep Billing</button></form>
+          </div>
+        </div>
+        <form class="row g-2 align-items-end mt-2" method="post" action="/customers/{{ profile.platypus_customer_id }}/rates/digicloud/{{ subscriber.service_id }}/remove-billing" onsubmit="return confirm('Remove Platypus CRID {{ crid }} for {{ subscriber.phone_number }}?');"><div class="col-md-5"><label class="form-label small text-danger">Type REMOVE {{ subscriber.extension }} to stop billing</label><input class="form-control form-control-sm" name="confirmation" autocomplete="off" required></div><div class="col-md-auto"><button class="btn btn-sm btn-danger" type="submit"><i class="fa-solid fa-trash me-1"></i>Remove Service &amp; Billing</button></div></form>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}<div class="p-4 text-muted">No rates are assigned.</div>{% endfor %}
+  </div>
+</section>
+
+<section class="panel mb-4">
+  <div class="p-4 border-bottom"><h2 class="h5 mb-1">Add Rate</h2><div class="text-muted small">Live rates available to this customer and store through Platypus.</div></div>
+  <form class="p-4" method="post" action="/customers/{{ profile.platypus_customer_id }}/rates/manage/add" onsubmit="return confirm('Add this recurring rate to the customer?');">
+    <div class="row g-3 align-items-end">
+      <div class="col-lg-6"><label class="form-label">Billing rate</label><select class="form-select" id="rateSelection" name="rate_selection" required onchange="toggleRateFields()"><option value="">Choose a rate…</option>{% for rate in available_rates %}{% set role = 'digicloud' if rate.digicloud_role else rate.plume_role %}<option value="{{ rate.rgid }}:{{ rate.frequency }}:{{ role }}" data-plume-role="{{ rate.plume_role }}" data-digicloud-role="{{ rate.digicloud_role }}">{{ rate.name }} · RGID {{ rate.rgid }}{% if rate.price %} · ${{ '%.2f'|format(rate.price|float) }}{% endif %}{% if rate.frequency != '1' %} · Frequency {{ rate.frequency }}{% else %} / month{% endif %}</option>{% endfor %}</select></div>
+      <div class="col-lg-2"><label class="form-label">Quantity</label><input class="form-control" type="number" min="1" name="quantity" value="1" required></div>
+      <div class="col-lg-2"><label class="form-label">Type ADD RATE</label><input class="form-control" name="confirmation" autocomplete="off" required></div>
+      <div class="col-lg-2"><button class="btn btn-danger w-100" type="submit">Add Rate</button></div>
+    </div>
+    <div class="row g-3 mt-1 d-none" id="plumeRateFields">
+      <div class="col-md-6"><label class="form-label">Plume pod ID / serial</label><input class="form-control text-uppercase" id="plumeSerial" name="serial_number"><div class="form-text">The physical pod or integrated gateway serial claimed in Plume.</div></div>
+      <div class="col-md-6"><label class="form-label">Pod name / room</label><input class="form-control" id="plumePodName" name="pod_name" placeholder="Example: ROOM 2"></div>
+      <div class="col-12"><div class="alert alert-info mb-0">Adding this Plume rate will also claim the entered hardware and create its Pod ID and Account ID service values in Platypus.</div></div>
+    </div>
+    <div class="alert alert-info mt-3 mb-0 d-none" id="digicloudRateFields"><strong>DigiCloud subscriber setup required.</strong> Continue to enter the phone number, subscriber identity, device MAC, voicemail, and 911 information. The customer and selected billing rate will remain locked to this account.</div>
+  </form>
+</section>
+<div class="alert alert-secondary small"><i class="fa-solid fa-shield-halved me-2"></i>Rate additions and deletions are restricted to NTInet staff and recorded in the audit log.</div>
+{% endblock %}
+{% block scripts %}{{ super() }}<script>
+function toggleRateFields() {
+  const select = document.getElementById('rateSelection');
+  const option = select.options[select.selectedIndex];
+  const isPlume = Boolean(option && option.dataset.plumeRole);
+  const isDigiCloud = Boolean(option && option.dataset.digicloudRole);
+  document.getElementById('plumeRateFields').classList.toggle('d-none', !isPlume);
+  document.getElementById('plumeSerial').required = isPlume;
+  document.getElementById('plumePodName').required = isPlume;
+  document.getElementById('digicloudRateFields').classList.toggle('d-none', !isDigiCloud);
+}
+document.addEventListener('DOMContentLoaded', toggleRateFields);
+</script>{% endblock %}

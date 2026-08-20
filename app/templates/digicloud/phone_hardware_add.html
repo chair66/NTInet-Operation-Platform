@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Add DigiCloud Hardware{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3"><div><div class="eyebrow">DigiCloud · Hardware Inventory</div><h1>Add Phone Hardware</h1><p>Add an unassigned physical device to DigiCloud inventory. Assignment happens later during user creation or from the hardware inventory.</p></div><a class="btn btn-outline-secondary" href="/digicloud/phone-hardware?domain={{ selected_domain.domain_name|urlencode }}">Back to Hardware</a></div>
+{% if request.query_params.get('error') %}<div class="alert alert-danger">{{ request.query_params.get('error') }}</div>{% endif %}
+<form method="post" class="card"><div class="card-body">
+<div class="row g-3">
+<div class="col-md-6"><label class="form-label">Domain</label><select class="form-select" name="domain" required>{% for d in domains %}<option value="{{ d.domain_name }}" {% if d.domain_name == selected_domain.domain_name %}selected{% endif %}>{{ d.domain_name }}</option>{% endfor %}</select></div>
+<div class="col-md-6"><label class="form-label">Model</label><input class="form-control" name="model_name" list="inventory-models" required placeholder="Grandstream HT801"><datalist id="inventory-models">{% for model in models %}<option value="{{ model }}">{% endfor %}</datalist><div class="form-text">Existing model names are read from live DigiCloud inventory. Enter the exact DigiCloud model name for new hardware.</div></div>
+<div class="col-md-6"><label class="form-label">MAC Address</label><input class="form-control font-monospace" name="mac" required placeholder="EC:74:D7:C8:74:4E"><div class="form-text">Colons, hyphens, and spaces are removed automatically.</div></div>
+<div class="col-md-6"><label class="form-label">Preferred Server</label><select class="form-select" name="server"><option value="{{ preferred_server }}">{{ preferred_server or 'Select a server' }}</option>{% for server in servers %}{% if server.value != preferred_server %}<option value="{{ server.value }}">{{ server.label }}</option>{% endif %}{% endfor %}</select></div>
+<div class="col-md-4"><label class="form-label">Transport</label><select class="form-select" name="transport"><option value="udp">UDP</option><option value="tcp">TCP</option><option value="tls">TLS</option></select></div>
+<div class="col-md-8"><label class="form-label">Notes</label><input class="form-control" name="notes" placeholder="Residential ATA, stock location, or technician notes"></div>
+</div></div><div class="card-footer d-flex gap-2"><button class="btn btn-primary">Add to Inventory</button><a class="btn btn-outline-secondary" href="/digicloud/phone-hardware?domain={{ selected_domain.domain_name|urlencode }}">Cancel</a></div></form>
+{% endblock %}

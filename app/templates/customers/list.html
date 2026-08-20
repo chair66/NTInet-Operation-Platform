@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Customers · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="customer-page-head d-flex justify-content-between align-items-start gap-3 mb-4">
+  <div>
+    <div class="eyebrow">Customer Management</div>
+    <h1 class="mb-1">Customers</h1>
+    <p class="text-muted mb-0">Operational customer accounts, contacts, locations, services, and external links.</p>
+  </div>
+  {% if current_user.organization.is_staff and can("customers.manage") %}
+  <a class="btn btn-primary" href="/customers/new"><i class="fa-solid fa-plus me-2"></i>New Customer</a>
+  {% endif %}
+</div>
+
+<div class="customer-metric-grid mb-4">
+  <div class="customer-metric"><i class="fa-solid fa-address-book"></i><span><small>Visible Customers</small><strong>{{ metrics.total }}</strong></span></div>
+  <div class="customer-metric"><i class="fa-solid fa-circle-check"></i><span><small>Active</small><strong>{{ metrics.active }}</strong></span></div>
+  <div class="customer-metric"><i class="fa-solid fa-link"></i><span><small>Platypus Links in Results</small><strong>{{ metrics.linked }}</strong></span></div>
+</div>
+
+<section class="panel customer-directory">
+  <div class="panel-header"><h2>Customer Directory</h2></div>
+  <form class="customer-filter-grid" method="get" action="/customers">
+    <div class="customer-search-field">
+      <label class="visually-hidden" for="customer-search">Search</label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+        <input id="customer-search" class="form-control" name="q" value="{{ filters.q }}" placeholder="Name, customer number, email, or phone">
+      </div>
+    </div>
+    <select class="form-select" name="status" aria-label="Status">
+      <option value="">All statuses</option>
+      {% for value, label in status_labels.items() %}<option value="{{ value }}" {{ 'selected' if filters.status == value else '' }}>{{ label }}</option>{% endfor %}
+    </select>
+    <select class="form-select" name="customer_type" aria-label="Customer type">
+      <option value="">All customer types</option>
+      {% for value, label in type_labels.items() %}<option value="{{ value }}" {{ 'selected' if filters.customer_type == value else '' }}>{{ label }}</option>{% endfor %}
+    </select>
+    <select class="form-select" name="source_type" aria-label="Source">
+      <option value="">All sources</option>
+      <option value="manual" {{ 'selected' if filters.source_type == 'manual' else '' }}>NOP / Manual</option>
+      <option value="platypus" {{ 'selected' if filters.source_type == 'platypus' else '' }}>Platypus</option>
+      <option value="imported" {{ 'selected' if filters.source_type == 'imported' else '' }}>Imported</option>
+    </select>
+    {% if current_user.organization.is_staff %}
+    <select class="form-select" name="organization_id" aria-label="Organization">
+      <option value="">All organizations</option>
+      {% for organization in organizations %}<option value="{{ organization.id }}" {{ 'selected' if filters.organization_id == organization.id else '' }}>{{ organization.name }}</option>{% endfor %}
+    </select>
+    {% endif %}
+    <button class="btn btn-outline-secondary" type="submit">Apply</button>
+    <a class="btn btn-link" href="/customers">Clear</a>
+  </form>
+
+  <div class="table-responsive">
+    <table class="table customer-table align-middle mb-0">
+      <thead><tr><th>Customer</th><th>Type</th><th>Primary Contact</th><th>Primary Location</th><th>Owner</th><th>Billing Link</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for customer in customers %}
+      <tr>
+        <td><a class="customer-name" href="/customers/{{ customer.id }}">{{ customer.name }}</a><small>{{ customer.customer_number }}</small></td>
+        <td>{{ type_labels.get(customer.customer_type, customer.customer_type|replace('_',' ')|title) }}</td>
+        <td>{% if customer.primary_contact %}<strong>{{ customer.primary_contact.full_name }}</strong><small>{{ customer.primary_contact.email or customer.primary_contact.mobile_phone or 'No contact method' }}</small>{% else %}<span class="text-muted">Not added</span>{% endif %}</td>
+        <td>{% if customer.primary_location %}<strong>{{ customer.primary_location.name }}</strong><small>{{ customer.primary_location.city }}, {{ customer.primary_location.state }}</small>{% else %}<span class="text-muted">Not added</span>{% endif %}</td>
+        <td>{{ customer.owner_organization.name }}</td>
+        <td>{% if customer.platypus_link %}<span class="badge text-bg-light border"><i class="fa-solid fa-link me-1"></i>{{ customer.platypus_link.link_status|title }}</span>{% else %}<span class="text-muted">NOP only</span>{% endif %}</td>
+        <td><span class="customer-status customer-status-{{ customer.status }}">{{ status_labels.get(customer.status, customer.status|title) }}</span></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="customer-empty"><i class="fa-regular fa-address-book"></i><strong>No customers found</strong><span>Adjust the filters or create a customer account.</span></td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="customer-directory-footer">Showing {{ customers|length }} customer{{ '' if customers|length == 1 else 's' }}</div>
+</section>
+{% endblock %}

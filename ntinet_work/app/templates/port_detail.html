@@ -1,0 +1,23 @@
+{% extends "base.html" %}{% block content %}
+{% set terminal_statuses = ['COMPLETE', 'CANCELLED', 'REQUESTED_CANCEL'] %}
+{% set current_status = (order.processingStatus or '')|upper if order else '' %}
+<div class="page-head"><div><div class="eyebrow">Porting</div><h1>Port Order</h1><p>{{ order_id }}</p></div>
+{% if order and current_status not in terminal_statuses %}
+<div class="d-flex gap-2"><a class="btn btn-primary" href="/ports/{{ order_id }}/correct">Correct and Resubmit</a><form method="post" action="/ports/{{ order_id }}/cancel" onsubmit="return confirm('Request cancellation?')"><button class="btn btn-outline-danger">Cancel Port</button></form></div>
+{% endif %}</div>
+{% if error %}<div class="alert alert-danger"><strong>{{ error.message }}</strong></div>{% endif %}
+{% if order %}
+<div class="row g-3">
+  <div class="col-md-3"><div class="cardx"><span>Status</span><strong>{{ order.processingStatus or '—' }}</strong></div></div>
+  <div class="col-md-3"><div class="cardx"><span>Requested FOC</span><strong>{{ order.requestedFocDate or '—' }}</strong></div></div>
+  <div class="col-md-3"><div class="cardx"><span>Actual FOC</span><strong>{{ order.actualFocDate or '—' }}</strong></div></div>
+  <div class="col-md-3"><div class="cardx"><span>Losing Carrier</span><strong>{{ order.losingCarrierName or '—' }}</strong></div></div>
+</div>
+<div class="row g-3 mt-1">
+  <div class="col-lg-8"><section class="panel p-4 h-100"><h2 class="h5">Telephone Numbers</h2>{% if order.phoneNumbers %}<div class="d-flex flex-wrap gap-2">{% for number in order.phoneNumbers %}<span class="badge text-bg-light border fs-6">{{ number }}</span>{% endfor %}</div>{% else %}<p class="text-muted mb-0">No telephone numbers were returned.</p>{% endif %}</section></div>
+  <div class="col-lg-4"><section class="panel p-4 h-100"><h2 class="h5">Order Information</h2><dl class="mb-0"><dt>Customer order ID</dt><dd>{{ order.customerOrderId or '—' }}</dd><dt>BTN</dt><dd>{{ order.billingTelephoneNumber or '—' }}</dd><dt>Sub Account</dt><dd>{{ order.subAccountId or '—' }}</dd><dt>Location</dt><dd>{{ order.locationId or '—' }}</dd><dt>Earliest estimate</dt><dd>{{ order.earliestEstimate or '—' }}</dd></dl></section></div>
+</div>
+{% if order.errors %}<div class="alert alert-warning mt-3"><strong>Order errors</strong><pre class="json-viewer mb-0">{{ order.errors | tojson(indent=2) }}</pre></div>{% endif %}
+<section class="panel p-4 mt-3"><details><summary>Technical details</summary><pre class="json-viewer">{{ order.raw | tojson(indent=2) }}</pre></details></section>
+{% endif %}
+{% endblock %}

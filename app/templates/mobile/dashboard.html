@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}NTI Mobile | {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="eyebrow">Staff Operations</div>
+    <h1>{{ page_title }}</h1>
+    <p>{{ page_description }}</p>
+  </div>
+  {% if can("nti_mobile.orders.create") %}
+  <div>
+    <a class="btn btn-primary" href="/mobile/orders/new">
+      <i class="fa-solid fa-plus me-2"></i>New Mobile Order
+    </a>
+  </div>
+  {% endif %}
+</div>
+
+<div class="row g-3 mb-4">
+  {% set cards = [
+    ("fa-signal", metrics.active_lines, "Active Lines", "/mobile/lines"),
+    ("fa-spinner", metrics.pending_activations, "Pending Activations", "/mobile/lines"),
+    ("fa-arrow-right-arrow-left", metrics.port_requests, "Open Port Requests", "/mobile/ports"),
+    ("fa-sim-card", metrics.physical_sims, "Available SIMs", "/mobile/sims"),
+    ("fa-mobile-screen-button", metrics.esims, "Available eSIMs", "/mobile/sims"),
+    ("fa-triangle-exclamation", metrics.exceptions, "Exceptions", "/mobile/exceptions")
+  ] %}
+  {% for icon, value, label, url in cards %}
+  <div class="col-sm-6 col-xl-4 col-xxl-2">
+    <a class="text-decoration-none text-reset" href="{{ url }}">
+      <div class="metric-card h-100">
+        <div class="metric-icon"><i class="fa-solid {{ icon }}"></i></div>
+        <div class="metric-value">{{ value }}</div>
+        <div class="metric-label">{{ label }}</div>
+      </div>
+    </a>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="row g-4">
+  <div class="col-xl-8">
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Recent Orders</h2>
+          <p>Latest activation and service requests.</p>
+        </div>
+        <a href="/mobile/orders">View all</a>
+      </div>
+
+      {% if recent_orders %}
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Order</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in recent_orders %}
+            <tr>
+              <td><strong>{{ order.order_number }}</strong></td>
+              <td>{{ order.order_type|replace("_", " ")|title }}</td>
+              <td><span class="badge text-bg-light border">{{ order.status|title }}</span></td>
+              <td>{{ order.created_at.strftime("%m/%d/%Y %I:%M %p") if order.created_at else "" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <i class="fa-solid fa-mobile-screen-button"></i>
+        <h3>No mobile orders yet</h3>
+        <p>New activations and service changes will appear here.</p>
+      </div>
+      {% endif %}
+    </section>
+  </div>
+
+  <div class="col-xl-4">
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Exceptions</h2>
+          <p>Items requiring attention.</p>
+        </div>
+        <a href="/mobile/exceptions">View all</a>
+      </div>
+
+      {% if recent_exceptions %}
+      <div class="list-group list-group-flush">
+        {% for item in recent_exceptions %}
+        <a class="list-group-item list-group-item-action" href="/mobile/exceptions">
+          <div class="d-flex justify-content-between gap-2">
+            <strong>{{ item.title }}</strong>
+            <span class="badge text-bg-warning">{{ item.severity|title }}</span>
+          </div>
+          <div class="small text-secondary mt-1">{{ item.detail }}</div>
+        </a>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state compact">
+        <i class="fa-solid fa-circle-check"></i>
+        <h3>No exceptions</h3>
+        <p>There are currently no mobile workflow exceptions.</p>
+      </div>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+NTInet Operations Platform v1.5.5 - BrandVNO / OXIO Setup
+==========================================================
+
+The provider framework and Refresh Inventory workflow are installed.
+
+Add ONE authentication method to your existing .env file:
+
+Preferred (key and secret separately):
+
+OXIO_API_KEY=your_api_key
+OXIO_API_SECRET=your_api_secret
+
+OR, if you already stored the Base64 Basic Authentication value:
+
+OXIO_BASIC_AUTH=your_base64_value_without_the_word_Basic
+
+Environment selection:
+
+OXIO_ENV=staging
+OXIO_STAGING_BASE_URL=https://api-staging.brandvno.com
+OXIO_PRODUCTION_BASE_URL=https://api.brandvno.com
+
+Required inventory endpoint:
+
+OXIO_SIM_INVENTORY_PATH=/replace-with-the-brandvno-sim-inventory-path
+
+Optional pagination settings:
+
+OXIO_SIM_PAGE_SIZE=500
+OXIO_SIM_PAGE_SIZE_PARAMETER=limit
+
+Important:
+The Base URL and authentication are configured, but the SIM inventory endpoint
+path was not included in the supplied API details. Until OXIO_SIM_INVENTORY_PATH
+is set, the SIM Management page will safely display a configuration warning and
+continue showing cached inventory.
+
+Behavior after the endpoint is configured:
+- Opening SIM Management refreshes inventory from BrandVNO.
+- Refresh Inventory performs the same live refresh.
+- New SIMs are added to the local cache.
+- Existing SIM details and statuses are updated.
+- API failures display cached inventory and the last successful refresh.
+- SIMs cannot be manually created in NTInet Operations.

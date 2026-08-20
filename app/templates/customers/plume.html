@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Plume Wi-Fi · {{ customer.name }}{% endblock %}
+{% block content %}
+{% macro status_badge(value) -%}{% set normalized=(value or 'unknown')|lower %}{% if normalized in ['active','online','healthy','excellent','good'] %}{% set color='success' %}{% elif normalized in ['warning','fair','degraded'] %}{% set color='warning' %}{% elif normalized in ['inactive','offline','critical','poor','failed','error'] %}{% set color='danger' %}{% else %}{% set color='secondary' %}{% endif %}<span class="badge text-bg-{{ color }}">{{ normalized|replace('_',' ')|title }}</span>{%- endmacro %}
+{% macro signal_badge(device) -%}{% if device.signal_strength is none %}<span class="text-muted">—</span>{% elif device.signal_strength >= -67 %}<span class="badge text-bg-success">{{ device.signal_strength }} dBm</span>{% elif device.signal_strength >= -75 %}<span class="badge text-bg-warning">{{ device.signal_strength }} dBm</span>{% else %}<span class="badge text-bg-danger">{{ device.signal_strength }} dBm</span>{% endif %}{% if device.signal_strength is not none and not device.signal_is_current %}<div class="small text-muted mt-1"{% if device.signal_timestamp %} title="{{ device.signal_timestamp }}"{% endif %}>Last valid</div>{% endif %}{%- endmacro %}
+
+<div class="page-header d-flex flex-wrap justify-content-between align-items-end gap-3">
+  <div><div class="eyebrow">{{ customer.customer_number }} · Read-only Plume Cloud</div><h1>Pod Health & Devices</h1><p>{{ customer.name }} · Live pod, health, device connectivity, and signal information.</p></div>
+  <div class="d-flex gap-2">{% if can_manage_plume %}<a class="btn btn-outline-danger" href="/customers/{{ customer.id }}/plume/manage?service_id={{ service_id|urlencode }}"><i class="fa-solid fa-screwdriver-wrench me-2"></i>Manage Plume</a>{% endif %}<a class="btn btn-outline-secondary" href="{{ return_url }}"><i class="fa-solid fa-arrow-left me-2"></i>Customer</a><span class="badge text-bg-light border align-self-center px-3 py-2">Read only</span></div>
+</div>
+
+{% if message %}<div class="alert alert-info">{{ message }}</div>{% endif %}
+{% if live_snapshot %}
+{% set online_pods=live_snapshot.pods|selectattr('status','equalto','online')|list|length %}
+<div class="row g-3 mb-4 dashboard-metrics">
+  <div class="col-sm-6 col-xl-3"><div class="metric-card compact"><div class="metric-icon"><i class="fa-solid fa-location-dot"></i></div><div><span>Location</span><strong class="fs-6 mt-1 text-break">{{ live_snapshot.location_name or live_snapshot.location_id }}</strong><small>{{ live_snapshot.service_id or 'Direct location link' }}</small></div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="metric-card compact"><div class="metric-icon"><i class="fa-solid fa-tower-broadcast"></i></div><div><span>Pods Online</span><strong>{{ online_pods }}/{{ live_snapshot.pods|length }}</strong><small>Gateways and extenders</small></div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="metric-card compact"><div class="metric-icon"><i class="fa-solid fa-wifi"></i></div><div><span>Connected</span><strong>{{ live_snapshot.connected_devices|length }}</strong><small>Devices online now</small></div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="metric-card compact"><div class="metric-icon"><i class="fa-solid fa-link-slash"></i></div><div><span>Unconnected</span><strong>{{ live_snapshot.offline_devices|length }}</strong><small>Offline or unknown</small></div></div></div>
+</div>
+
+<section class="panel mb-4">
+  <div class="p-4 border-bottom"><h2 class="h5 mb-1">Network &amp; Customer Information</h2><div class="text-muted small">Read-only account and network values reported by Plume.</div></div>
+  <div class="p-4"><div class="row g-4">
+    <div class="col-sm-6 col-lg-3"><div class="text-muted small">SSID</div><strong>{{ live_snapshot.network_ssid or '—' }}</strong>{% if can_email_wifi and live_snapshot.customer_email and live_snapshot.network_ssid %}<form class="mt-2" method="post" action="/customers/{{ customer.id }}/plume/email-wifi-details" onsubmit="return confirm('Email the current Wi-Fi name and password to {{ live_snapshot.customer_email|e }}?');"><input type="hidden" name="service_id" value="{{ service_id }}"><button class="btn btn-sm btn-outline-primary" type="submit"><i class="fa-solid fa-envelope me-1"></i>Email Wi-Fi Details</button></form>{% endif %}</div>
+    <div class="col-sm-6 col-lg-3"><div class="text-muted small">Customer name</div><strong>{{ live_snapshot.customer_name or customer.name or '—' }}</strong></div>
+    <div class="col-sm-6 col-lg-3"><div class="text-muted small">Email</div><strong class="text-break">{{ live_snapshot.customer_email or '—' }}</strong></div>
+    <div class="col-sm-6 col-lg-3"><div class="text-muted small">Account ID</div><strong class="text-break">{{ live_snapshot.account_id or '—' }}</strong></div>
+  </div></div>
+</section>
+
+<section class="panel mb-4"><div class="p-4 border-bottom d-flex justify-content-between align-items-center"><div><h2 class="h5 mb-1">Pods & Gateways</h2><div class="text-muted small">Live node status and health.</div></div><span class="badge text-bg-light border">{{ live_snapshot.pods|length }}</span></div>
+  {% if live_snapshot.pods %}
+  <div class="list-group list-group-flush">
+    {% for pod in live_snapshot.pods %}
+    <div class="list-group-item p-4">
+      <div class="row g-3 align-items-center">
+        <div class="col-lg-4"><strong class="d-block">{{ pod.name }}</strong><span class="small text-muted">{{ pod.role|replace('_',' ')|title }}{% if pod.model %} · {{ pod.model }}{% endif %}</span><span class="small text-muted d-block">{{ pod.mac_address or pod.serial_number or pod.id }}</span></div>
+        <div class="col-6 col-lg-2"><div class="text-muted small">Status</div>{{ status_badge(pod.status) }}</div>
+        <div class="col-6 col-lg-3"><div class="text-muted small">Health</div>{{ status_badge(pod.health) }}</div>
+        <div class="col-6 col-lg-3"><div class="text-muted small">Connected devices</div><strong>{{ pod.connected_device_count }}</strong></div>
+      </div>
+      <details class="mt-3 border rounded-3 bg-light">
+        <summary class="p-3 fw-semibold"><i class="fa-solid fa-gauge-high me-2 text-danger"></i>Speed Test History{% if pod.speed_test %}<span class="fw-normal text-muted ms-2">Latest: {{ '%.2f'|format(pod.speed_test.download) if pod.speed_test.download is not none else '—' }} Mbps down / {{ '%.2f'|format(pod.speed_test.upload) if pod.speed_test.upload is not none else '—' }} Mbps up</span>{% endif %}</summary>
+        <div class="p-3 border-top bg-white">
+          {% if pod.speed_tests %}
+          <div class="row g-3 mb-3">
+            <div class="col-md-6"><div class="border rounded-3 p-3 h-100"><h3 class="h6">Download</h3><div class="small text-muted">Most Recent <strong class="float-end text-body">{{ '%.2f Mbps'|format(pod.speed_summary.download_recent) if pod.speed_summary.download_recent is not none else '—' }}</strong></div><div class="small text-muted">Max Speed <strong class="float-end text-body">{{ '%.2f Mbps'|format(pod.speed_summary.download_max) if pod.speed_summary.download_max is not none else '—' }}</strong></div><div class="small text-muted">Min Speed <strong class="float-end text-body">{{ '%.2f Mbps'|format(pod.speed_summary.download_min) if pod.speed_summary.download_min is not none else '—' }}</strong></div></div></div>
+            <div class="col-md-6"><div class="border rounded-3 p-3 h-100"><h3 class="h6">Upload</h3><div class="small text-muted">Most Recent <strong class="float-end text-body">{{ '%.2f Mbps'|format(pod.speed_summary.upload_recent) if pod.speed_summary.upload_recent is not none else '—' }}</strong></div><div class="small text-muted">Max Speed <strong class="float-end text-body">{{ '%.2f Mbps'|format(pod.speed_summary.upload_max) if pod.speed_summary.upload_max is not none else '—' }}</strong></div><div class="small text-muted">Min Speed <strong class="float-end text-body">{{ '%.2f Mbps'|format(pod.speed_summary.upload_min) if pod.speed_summary.upload_min is not none else '—' }}</strong></div></div></div>
+          </div>
+          <div class="table-responsive"><table class="table table-sm align-middle mb-3"><thead><tr><th>Date</th><th>Download</th><th>Upload</th><th>Latency</th><th>Status</th></tr></thead><tbody>{% for test in pod.speed_tests %}<tr><td>{{ test.tested_at or '—' }}</td><td>{{ '%.2f'|format(test.download) if test.download is not none else '—' }}{% if test.download is not none %} Mbps{% endif %}</td><td>{{ '%.2f'|format(test.upload) if test.upload is not none else '—' }}{% if test.upload is not none %} Mbps{% endif %}</td><td>{{ test.latency if test.latency is not none else '—' }}{% if test.latency is not none %} ms{% endif %}</td><td>{{ status_badge(test.status) }}</td></tr>{% endfor %}</tbody></table></div>
+          {% else %}<p class="text-muted mb-2">No completed speed-test history was returned for this {{ 'gateway' if pod.role == 'gateway' else 'pod' }}.</p>{% if pod.speed_history_note %}<div class="alert alert-warning small py-2 mb-3"><strong>History diagnostic:</strong> {{ pod.speed_history_note }}</div>{% endif %}{% endif %}
+          {% if can_run_speed_test %}<form method="post" action="/customers/{{ customer.id }}/plume/pods/{{ pod.id }}/speed-test" onsubmit="return confirm('Run an internet speed test from {{ pod.name|e }}? This may briefly use customer bandwidth.');"><input type="hidden" name="service_id" value="{{ service_id }}"><button class="btn btn-sm btn-outline-danger" type="submit" {{ 'disabled' if pod.status != 'online' }}><i class="fa-solid fa-gauge-high me-1"></i>Run Speed Test</button></form>{% endif %}
+        </div>
+      </details>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}<div class="p-4 text-muted">No pods were returned for this location.</div>{% endif %}
+</section>
+
+{% macro device_table(devices, empty_text) -%}
+<div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead><tr><th>Device</th><th>MAC / IP</th><th>Connection</th><th>Pod</th><th>Signal</th><th>Status</th></tr></thead><tbody>{% for device in devices %}<tr><td><strong><a class="link-body-emphasis" href="/customers/{{ customer.id }}/plume/devices/{{ device.mac_address|urlencode }}?service_id={{ service_id|urlencode }}">{{ device.name }}</a></strong></td><td>{{ device.mac_address or '—' }}<div class="small text-muted">{{ device.ip_address or 'IP not reported' }}</div></td><td>{{ device.connection_type|replace('_',' ')|title }}{% if device.wifi_band %}<div class="small text-muted">{{ device.wifi_band }}</div>{% endif %}</td><td>{{ device.pod_name }}</td><td>{{ signal_badge(device) }}</td><td>{{ status_badge(device.status) }}</td></tr>{% else %}<tr><td colspan="6" class="p-4 text-center text-muted">{{ empty_text }}</td></tr>{% endfor %}</tbody></table></div>
+{%- endmacro %}
+
+<section class="panel mb-4"><div class="p-4 border-bottom d-flex justify-content-between"><div><h2 class="h5 mb-1">Connected Devices</h2><div class="text-muted small">Devices Plume currently reports online.</div></div><span class="badge text-bg-success">{{ live_snapshot.connected_devices|length }}</span></div>{{ device_table(live_snapshot.connected_devices, 'No connected devices were returned.') }}</section>
+<section class="panel mb-4"><div class="p-4 border-bottom d-flex justify-content-between"><div><h2 class="h5 mb-1">Unconnected Devices</h2><div class="text-muted small">Devices reported offline or with unknown connectivity.</div></div><span class="badge text-bg-secondary">{{ live_snapshot.offline_devices|length }}</span></div>{{ device_table(live_snapshot.offline_devices, 'No unconnected devices were returned.') }}</section>
+{% elif not error %}
+<div class="alert alert-info">Open this page from a Plume rate containing a service ID, or configure a Plume location association for this NOP customer.</div>
+{% endif %}
+{% endblock %}

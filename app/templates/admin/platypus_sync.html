@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Platypus Customer Sync | NOP{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+  <div><div class="eyebrow">Administration · Customer Sync</div><h1 class="h3 mb-1">Platypus Customer Bootstrap & Sync</h1><p class="text-muted mb-0">Initialize NOP customer IDs from Platypus, then keep newly-created billing customers linked into NOP automatically.</p></div>
+  <a class="btn btn-outline-secondary" href="/customers"><i class="fa-solid fa-users me-2"></i>Customers</a>
+</div>
+{% if sync_error %}<div class="alert alert-danger"><strong>Platypus discovery failed.</strong> {{ sync_error }}</div>{% endif %}
+{% if request.query_params.get('sync') == 'started' %}<div class="alert alert-success"><strong>Bootstrap started.</strong> It runs in the background; refresh this page to see progress.</div>{% elif request.query_params.get('sync') == 'running' %}<div class="alert alert-warning">A Platypus synchronization is already running.</div>{% endif %}
+<div class="row g-3 mb-4">
+  <div class="col-md-4"><div class="panel p-3 h-100"><div class="small text-muted">NOP customers linked to Platypus</div><div class="h3 mb-0">{{ linked_count }}</div></div></div>
+  <div class="col-md-4"><div class="panel p-3 h-100"><div class="small text-muted">Last customer sync</div><div class="fw-semibold">{{ last_sync or 'Never' }}</div></div></div>
+  <div class="col-md-4"><div class="panel p-3 h-100"><div class="small text-muted">Background watcher</div>{% if sync_settings.platypus_customer_watcher_enabled %}<div class="fw-semibold text-success"><i class="fa-solid fa-circle-check me-1"></i>Enabled · {{ sync_settings.platypus_customer_watcher_seconds }} sec</div>{% else %}<div class="fw-semibold text-secondary"><i class="fa-solid fa-circle-pause me-1"></i>Disabled</div>{% endif %}<div class="small text-muted">Enable after the initial bootstrap with <code>PLATYPUS_CUSTOMER_WATCHER_ENABLED=true</code>.</div></div></div>
+</div>
+<div class="panel p-4 mb-4">
+  <h2 class="h5">Customer population</h2>
+  <p class="text-muted">Choose which Platypus account statuses should be initialized in NOP. Active and On Hold are the default. Suspended and Inactive can be included when needed.</p>
+  <form method="get" action="/admin/sync/platypus" class="row g-3 align-items-end">
+    <input type="hidden" name="discover" value="1">
+    <div class="col-lg-9"><label class="form-label d-block">Statuses</label><div class="d-flex flex-wrap gap-3">
+      {% for value,label,cls in [('active','Active','success'),('on_hold','On Hold','warning'),('suspended','Suspended','danger'),('inactive','Inactive','secondary')] %}
+      <label class="form-check form-check-inline mb-0"><input class="form-check-input" type="checkbox" name="status" value="{{ value }}" {{ 'checked' if value in selected_statuses else '' }}><span class="form-check-label"><span class="badge text-bg-{{ cls }}">{{ label }}</span></span></label>
+      {% endfor %}
+    </div></div>
+    <div class="col-lg-3"><button class="btn btn-primary w-100"><i class="fa-solid fa-magnifying-glass me-2"></i>Discover / Dry Run</button></div>
+    <div class="col-12"><div class="border rounded p-3 bg-light-subtle">
+      <div class="d-flex flex-wrap align-items-center gap-3">
+        <input type="hidden" name="exclude_old_inactive" value="0"><label class="form-check mb-0"><input class="form-check-input" type="checkbox" name="exclude_old_inactive" value="1" {{ 'checked' if exclude_old_inactive else '' }}><span class="form-check-label fw-semibold">Exclude older inactive customers</span></label>
+        <div class="d-flex align-items-center gap-2"><span class="small text-muted">Inactive more than</span><input class="form-control form-control-sm" style="width:90px" type="number" min="1" max="240" name="inactive_months" value="{{ inactive_months }}"><span class="small text-muted">months</span></div>
+      </div>
+      <div class="small text-muted mt-2">Default is 36 months. This only affects Inactive accounts; Active, On Hold, and Suspended customers are never age-filtered.</div>
+    </div></div>
+  </form>
+</div>
+{% if preview %}
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg"><div class="panel p-3 h-100"><div class="small text-muted">Discovered</div><div class="h4 mb-0">{{ preview.discovered }}</div></div></div>
+  <div class="col-6 col-lg"><div class="panel p-3 h-100"><div class="small text-muted">Selected for bootstrap</div><div class="h4 mb-0">{{ preview.eligible }}</div></div></div>
+  <div class="col-6 col-lg"><div class="panel p-3 h-100"><div class="small text-muted">Already linked</div><div class="h4 mb-0 text-info">{{ preview.already_linked }}</div></div></div>
+  <div class="col-6 col-lg"><div class="panel p-3 h-100"><div class="small text-muted">New NOP customers</div><div class="h4 mb-0 text-success">{{ preview.new_to_nop }}</div></div></div>
+</div>
+<div class="panel p-4 mb-4">
+  <div class="d-flex flex-wrap justify-content-between gap-3 align-items-center"><div><h2 class="h5 mb-1">Dry-run result</h2><div class="small text-muted">No customer records have been changed.</div></div>
+  <form method="post" action="/admin/sync/platypus/start">{% for value in selected_statuses %}<input type="hidden" name="status" value="{{ value }}">{% endfor %}<input type="hidden" name="exclude_old_inactive" value="{{ 1 if exclude_old_inactive else 0 }}"><input type="hidden" name="inactive_months" value="{{ inactive_months }}"><button class="btn btn-success" onclick="return confirm('Create/update the selected Platypus customers in NOP? This will assign NOP customer IDs and external links.');"><i class="fa-solid fa-arrows-rotate me-2"></i>Start Bootstrap</button></form></div>
+  <hr>
+  <div class="row g-3 mb-3">
+    <div class="col-6 col-md-3"><div class="border rounded p-3 h-100"><div><span class="badge text-bg-success">Active</span></div><div class="h5 mb-0 mt-2">{{ preview.status_counts.active }}</div></div></div>
+    <div class="col-6 col-md-3"><div class="border rounded p-3 h-100"><div><span class="badge text-bg-warning">On Hold</span></div><div class="h5 mb-0 mt-2">{{ preview.status_counts.on_hold }}</div></div></div>
+    <div class="col-6 col-md-3"><div class="border rounded p-3 h-100"><div><span class="badge text-bg-danger">Suspended</span></div><div class="h5 mb-0 mt-2">{{ preview.status_counts.suspended }}</div></div></div>
+    <div class="col-6 col-md-3"><div class="border rounded p-3 h-100"><div><span class="badge text-bg-secondary">Inactive</span></div><div class="h5 mb-0 mt-2">{{ preview.status_counts.inactive }}</div></div></div>
+  </div>
+  {% if 'inactive' in selected_statuses %}
+  <div class="border rounded p-3 mt-3">
+    <div class="d-flex flex-wrap justify-content-between gap-2 align-items-center"><div><div class="fw-semibold">Inactive age policy</div><div class="small text-muted">Uses Platypus <code>deactivatedate</code>, with <code>closeoutdate</code> as a fallback.</div></div><span class="badge text-bg-{{ 'success' if preview.inactive_policy.enabled else 'secondary' }}">{{ 'Filtering enabled' if preview.inactive_policy.enabled else 'Filtering disabled' }}</span></div>
+    <div class="row g-3 mt-1">
+      <div class="col-6 col-md-3"><div class="small text-muted">Cutoff</div><strong>{{ preview.inactive_policy.cutoff.strftime('%b %d, %Y') if preview.inactive_policy.cutoff else '—' }}</strong></div>
+      <div class="col-6 col-md-3"><div class="small text-muted">Inactive ≤ {{ preview.inactive_policy.months }} months</div><strong class="text-success">{{ preview.inactive_policy.recent }}</strong></div>
+      <div class="col-6 col-md-3"><div class="small text-muted">Inactive &gt; {{ preview.inactive_policy.months }} months</div><strong class="text-secondary">{{ preview.inactive_policy.old }}</strong></div>
+      <div class="col-6 col-md-3"><div class="small text-muted">No inactive date</div><strong class="text-warning">{{ preview.inactive_policy.unknown }}</strong></div>
+    </div>
+    {% if preview.inactive_policy.enabled and preview.inactive_policy.old %}<div class="alert alert-info py-2 mt-3 mb-0"><i class="fa-solid fa-filter me-2"></i>{{ preview.inactive_policy.old }} old inactive customer{{ '' if preview.inactive_policy.old == 1 else 's' }} excluded from bootstrap. Platypus records are not deleted.</div>{% endif %}
+    {% if preview.inactive_policy.unknown %}<div class="small text-muted mt-2">Customers without an inactive date remain eligible if Inactive is selected; NOP does not guess their age.</div>{% endif %}
+  </div>
+  {% endif %}
+  <details class="mt-3">
+    <summary class="fw-semibold">Discovery diagnostics</summary>
+    <div class="row g-2 small mt-2">
+      <div class="col-md-4"><span class="text-muted">Strategy:</span> {{ preview.diagnostics.strategy }}</div>
+      <div class="col-md-4"><span class="text-muted">Empty search:</span> {{ preview.diagnostics.empty_search_count }}</div>
+      <div class="col-md-4"><span class="text-muted">Numeric probe unique:</span> {{ preview.diagnostics.probe_unique_count }}</div>
+      <div class="col-md-4"><span class="text-muted">Missing from empty search:</span> {{ preview.diagnostics.probe_missing_from_empty }}</div>
+      <div class="col-md-4"><span class="text-muted">Range queries:</span> {{ preview.diagnostics.range_queries }}</div>
+      <div class="col-md-4"><span class="text-muted">Highest customer ID:</span> {{ preview.diagnostics.highest_customer_id or '—' }}</div>
+    </div>
+    {% if preview.diagnostics.verified_complete %}<div class="alert alert-success py-2 mt-3 mb-0"><i class="fa-solid fa-circle-check me-2"></i>Customer discovery passed the completeness cross-check.</div>{% endif %}
+  </details>
+</div>
+{% endif %}
+<div class="panel p-4">
+  <div class="d-flex justify-content-between align-items-center"><div><h2 class="h5 mb-1">Current sync activity</h2><div class="small text-muted">Refresh to update progress.</div></div>{% if progress.running %}<span class="badge text-bg-primary">Running · {{ progress.mode|title }}</span>{% else %}<span class="badge text-bg-light border">Idle</span>{% endif %}</div>
+  <div class="row g-3 mt-1"><div class="col-6 col-md-2"><div class="small text-muted">Processed</div><strong>{{ progress.processed }} / {{ progress.eligible }}</strong></div><div class="col-6 col-md-2"><div class="small text-muted">Created</div><strong class="text-success">{{ progress.created }}</strong></div><div class="col-6 col-md-2"><div class="small text-muted">Updated</div><strong class="text-info">{{ progress.updated }}</strong></div><div class="col-6 col-md-2"><div class="small text-muted">Skipped</div><strong>{{ progress.skipped }}</strong></div><div class="col-6 col-md-2"><div class="small text-muted">Failed</div><strong class="text-danger">{{ progress.failed }}</strong></div><div class="col-6 col-md-2"><div class="small text-muted">Last Plat ID</div><strong>{{ progress.last_customer_id or '—' }}</strong></div></div>
+  {% if progress.excluded_old_inactive or progress.inactive_date_unknown %}<div class="small text-muted mt-3">Inactive age filter: {{ progress.excluded_old_inactive }} excluded as older than the cutoff; {{ progress.inactive_date_unknown }} had no usable inactive date.</div>{% endif %}
+  {% if progress.last_error %}<div class="alert alert-danger mt-3 mb-0"><strong>Last error:</strong> {{ progress.last_error }}</div>{% endif %}
+</div>
+{% endblock %}

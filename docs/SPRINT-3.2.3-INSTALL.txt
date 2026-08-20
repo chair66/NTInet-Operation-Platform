@@ -1,0 +1,22 @@
+NTInet Operations Platform v1.6.0
+Sprint 3.2.3 - Phone Number Reassignment Sync Fix
+
+PURPOSE
+Fixes phone numbers that remain assigned to the old NOP organization after their
+NetSapiens domain has moved to another reseller and the local domain has been reassigned.
+
+CHANGES
+- Phone-number sync may transfer an existing local number to another organization only
+  when the live NetSapiens number is assigned to a domain already owned by the target
+  organization.
+- Unassigned/available numbers are still protected from silent cross-organization moves.
+- Sync results now include a reassigned count.
+
+INSTALL
+1. Stop Uvicorn.
+2. Extract this ZIP into the project root and replace the included files.
+3. Start the application:
+   python -m uvicorn app.main:app --reload
+4. Open DigiCloud > Phone Numbers and click Sync Phone Numbers.
+
+No database migration is required.

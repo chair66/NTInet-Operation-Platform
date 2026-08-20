@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Customers · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex flex-wrap justify-content-between align-items-end gap-3">
+  <div>
+    <div class="eyebrow">Unified Customer Directory</div>
+    <h1>Customers</h1>
+    <p>Search NOP and live Platypus customer records without duplicate results.</p>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <span class="badge text-bg-light border px-3 py-2"><i class="fa-solid fa-server me-2"></i>NOP</span>
+    <span class="badge text-bg-success-subtle border border-success-subtle text-success-emphasis px-3 py-2"><i class="fa-solid fa-database me-2"></i>Platypus Live</span>
+  </div>
+</div>
+
+<section class="panel p-4 mb-4">
+  <form method="get" action="/customers" class="row g-3 align-items-end">
+    <div class="col-lg-9">
+      <label class="form-label fw-semibold" for="q">Customer search</label>
+      <input autofocus class="form-control form-control-lg" id="q" name="q" value="{{ q }}" placeholder="Name, phone, customer ID, username, or attention">
+    </div>
+    <div class="col-lg-3 d-grid">
+      <button class="btn btn-primary btn-lg" type="submit"><i class="fa-solid fa-magnifying-glass me-2"></i>Search</button>
+    </div>
+
+    <div class="col-12">
+      <div class="d-flex flex-wrap align-items-center gap-3 pt-1">
+        <span class="small fw-semibold text-muted me-1">Status:</span>
+        {% for value in status_options %}
+        <div class="form-check form-check-inline m-0">
+          <input class="form-check-input" type="checkbox" name="status" id="status-{{ value }}" value="{{ value }}" {{ 'checked' if value in selected_statuses else '' }}>
+          <label class="form-check-label" for="status-{{ value }}">
+            <span class="badge {{ {'active':'text-bg-success','on_hold':'text-bg-warning','suspended':'text-bg-danger','inactive':'text-bg-secondary'}[value] }}">{{ status_labels[value] }}</span>
+          </label>
+        </div>
+        {% endfor %}
+        <span class="small text-muted">Active and On Hold are selected by default.</span>
+      </div>
+    </div>
+  </form>
+</section>
+
+{% if error %}
+<div class="alert alert-warning"><i class="fa-solid fa-triangle-exclamation me-2"></i>{{ error }}{% if customers %} NOP results are still shown below.{% endif %}</div>
+{% endif %}
+
+{% if q %}
+<section class="panel">
+  <div class="p-4 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <div>
+      <h2 class="h5 mb-1">Search results</h2>
+      <div class="text-muted small">{{ customers|length }} match{{ '' if customers|length == 1 else 'es' }} for “{{ q }}”</div>
+    </div>
+    <div class="small text-muted">Duplicate NOP + Platypus customers are combined into one result.</div>
+  </div>
+  {% if customers %}
+  <div class="table-responsive">
+    <table class="table align-middle mb-0">
+      <thead><tr><th>Customer</th><th>Account ID</th><th>Phone</th><th>Username</th><th>Source</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+      {% for c in customers %}
+      <tr>
+        <td>
+          <strong><a class="link-body-emphasis text-decoration-none" href="{{ c.open_url }}">{{ c.name or 'Unnamed customer' }}</a></strong>
+          {% if c.attn %}<div class="small text-muted">Attn: {{ c.attn }}</div>{% endif %}
+        </td>
+        <td>
+          {% if c.platypus_id %}<div>{{ c.platypus_id }}</div>{% endif %}
+          {% if c.local_id and 'nop' in c.sources %}<div class="small text-muted">NOP #{{ c.local_id }}</div>{% endif %}
+        </td>
+        <td>{{ c.phonemasked or c.phone or '—' }}</td>
+        <td>{{ c.username or '—' }}</td>
+        <td>
+          {% if 'nop' in c.sources %}<span class="badge text-bg-light border me-1">NOP</span>{% endif %}
+          {% if 'platypus' in c.sources %}<span class="badge text-bg-success-subtle border border-success-subtle text-success-emphasis">Platypus</span>{% endif %}
+        </td>
+        <td><span class="badge {{ c.status_badge }}">{{ c.status_label }}</span></td>
+        <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{{ c.open_url }}">Open</a></td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state py-5 text-center">
+    <i class="fa-solid fa-user-slash fa-2x mb-3"></i>
+    <h5>No customers found</h5>
+    <p class="text-muted mb-0">Try another search or include additional customer statuses.</p>
+  </div>
+  {% endif %}
+</section>
+{% endif %}
+{% endblock %}

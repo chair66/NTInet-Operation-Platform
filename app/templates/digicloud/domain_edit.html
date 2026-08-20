@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Edit {{ domain.domain_name }}{% endblock %}
+{% block content %}
+<div class="container-fluid py-3">
+  <div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+      <div class="eyebrow">DigiCloud · Domains · Edit Domain</div>
+      <h1 class="h3 mb-0">{{ domain.domain_name }}</h1>
+      <div class="text-muted mt-1">{{ domain.organization.effective_name }} · {{ domain.status|title }}</div>
+    </div>
+    <a class="btn btn-outline-secondary" href="/digicloud/domains">Back to Domains</a>
+  </div>
+
+  {% if request.query_params.get('notice') %}
+  <div class="alert alert-success mb-3">{{ request.query_params.get('notice') }}</div>
+  {% endif %}
+  {% if request.query_params.get('error') %}
+  <div class="alert alert-danger mb-3">{{ request.query_params.get('error') }}</div>
+  {% endif %}
+
+  <form method="post" action="/digicloud/domains/{{ domain.id }}" class="card shadow-sm">
+    <div class="card-header fw-semibold">Edit Domain</div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-12">
+          <label class="form-label" for="description">Description</label>
+          <input class="form-control" id="description" name="description" value="{{ domain.description or '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="caller-id-name">Caller ID Name</label>
+          <input class="form-control" id="caller-id-name" name="caller_id_name" value="{{ domain.caller_id_name or '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="caller-id-number">Caller ID Number</label>
+          <input class="form-control" id="caller-id-number" name="caller_id_number" value="{{ domain.caller_id_number or '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="emergency-caller-id">Emergency Caller ID</label>
+          <input class="form-control" id="emergency-caller-id" name="emergency_caller_id" value="{{ domain.emergency_caller_id or '' }}">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label" for="area-code">Area Code</label>
+          <input class="form-control" id="area-code" name="area_code" value="{{ domain.area_code or '' }}">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label" for="time-zone">Time Zone</label>
+          <input class="form-control" id="time-zone" name="time_zone" value="{{ domain.time_zone or '' }}">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label" for="max-calls">Concurrent Calls</label>
+          <input class="form-control" id="max-calls" type="number" name="max_calls" value="{{ domain.max_calls }}">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label" for="max-offnet-calls">Off-Net Calls</label>
+          <input class="form-control" id="max-offnet-calls" type="number" name="max_offnet_calls" value="{{ domain.max_offnet_calls }}">
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+          <div class="form-check mb-2">
+            <input class="form-check-input" id="recording-enabled" type="checkbox" name="recording_enabled" {% if domain.recording_enabled %}checked{% endif %}>
+            <label class="form-check-label" for="recording-enabled">Recording</label>
+          </div>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+          <div class="form-check mb-2">
+            <input class="form-check-input" id="transcription-enabled" type="checkbox" name="transcription_enabled" {% if domain.transcription_enabled %}checked{% endif %}>
+            <label class="form-check-label" for="transcription-enabled">Transcription</label>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="transcription-provider">Provider</label>
+          <input class="form-control" id="transcription-provider" name="transcription_provider" value="{{ domain.transcription_provider or '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="email-from">Email From</label>
+          <input class="form-control" id="email-from" name="email_from" value="{{ domain.email_from or '' }}">
+        </div>
+        {% if domain.last_error %}
+        <div class="col-12"><div class="alert alert-warning mb-0">{{ domain.last_error }}</div></div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="card-footer d-flex gap-2">
+      <button class="btn btn-primary" type="submit">Save Changes</button>
+      <a class="btn btn-outline-secondary" href="/digicloud/domains">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

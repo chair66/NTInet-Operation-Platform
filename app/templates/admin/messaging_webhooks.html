@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Messaging Webhooks · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">Administration</div><h1>Messaging Webhooks</h1><p>Inbound SMS and outbound Bandwidth delivery receipts.</p></div><span class="number-pill">{{ events|length }} events</span></div>
+<div class="d-flex flex-wrap gap-2 mb-3">
+  {% for value, label in [('', 'All'), ('processed', 'Processed'), ('unmatched', 'Unmatched'), ('ignored', 'Ignored')] %}<a class="btn btn-sm {{ 'btn-primary' if selected_status==value else 'btn-outline-secondary' }}" href="/admin/messaging-webhooks{% if value %}?status={{ value }}{% endif %}">{{ label }}</a>{% endfor %}
+</div>
+<section class="card"><div class="table-responsive"><table class="table align-middle mb-0">
+<thead><tr><th>When</th><th>Event</th><th>From / To</th><th>Description</th><th>Processing</th><th>Matched record</th></tr></thead>
+<tbody>{% for event in events %}<tr>
+  <td class="text-nowrap">{{ event.created_at.strftime('%m/%d/%Y %I:%M %p') }}</td>
+  <td><strong>{{ event.event_type|replace('-',' ')|title }}</strong><small class="d-block text-muted">{{ event.provider_message_id }}</small></td>
+  <td>{{ event.source_address or '—' }}<small class="d-block text-muted">to {{ event.destination_address or '—' }}</small></td>
+  <td>{{ event.description or '—' }}{% if event.error_code %}<small class="d-block text-danger">Error {{ event.error_code }}</small>{% endif %}</td>
+  <td><span class="badge {{ 'text-bg-success' if event.processing_status=='processed' else ('text-bg-danger' if event.processing_status=='unmatched' else 'text-bg-secondary') }}">{{ event.processing_status|title }}</span></td>
+  <td>{% if event.customer_communication and event.customer_communication.customer_id %}<a href="/customers/{{ event.customer_communication.customer_id }}/communications">Customer communication</a>{% elif event.ticket_outbound_message_id %}<a href="/tickets/{{ event.ticket_outbound_message.ticket_id }}">Ticket message</a>{% else %}—{% endif %}</td>
+</tr>{% else %}<tr><td colspan="6" class="text-center text-muted py-5">No Bandwidth Messaging callbacks have been received.</td></tr>{% endfor %}</tbody>
+</table></div></section>
+{% endblock %}
