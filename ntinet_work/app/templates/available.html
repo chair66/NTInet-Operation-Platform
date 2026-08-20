@@ -1,0 +1,111 @@
+{% extends "base.html" %}{% block content %}
+<div class="page-head"><div><div class="eyebrow">Number acquisition</div><h1>Buy Numbers</h1><p>Search Bandwidth inventory using compatible location filters.</p></div></div>
+{% if notice %}<div class="alert {% if notice.startswith('Enter at least') %}alert-warning{% else %}alert-success{% endif %}">{{ notice }}</div>{% endif %}
+
+<div class="panel mb-3">
+  <div class="panel-header"><div><h2>Search available numbers</h2><p>Start broad, then narrow the results by city or rate center.</p></div></div>
+  <form class="p-3" id="number-search-form" method="get" action="/available-numbers">
+    <input type="hidden" id="search-mode" name="searchMode" value="{{ values.searchMode or 'area' }}">
+    <div class="search-mode-bar mb-3" role="group" aria-label="Search mode">
+      <button type="button" class="search-mode active" data-mode="area">Area Code</button>
+      <button type="button" class="search-mode" data-mode="city">City</button>
+      <button type="button" class="search-mode" data-mode="rate">Rate Center</button>
+      <button type="button" class="search-mode" data-mode="advanced">Advanced</button>
+    </div>
+    <div class="row g-3 align-items-end">
+      <div class="col-md-2 search-field field-area"><label class="form-label">Area code</label><input class="form-control option-trigger" id="area-code" name="areaCode" inputmode="numeric" maxlength="3" placeholder="Area code, e.g. 803" value="{{ values.areaCode }}" pattern="[0-9]{3}" title="Enter a 3-digit area code"></div>
+      <div class="col-md-2 search-field field-state"><label class="form-label">State</label><input class="form-control option-trigger text-uppercase" id="state" maxlength="2" name="state" placeholder="State, e.g. SC" value="{{ values.state }}"></div>
+      <div class="col-md-3 search-field field-city"><label class="form-label">City</label><input class="form-control rc-trigger" id="city" name="city" list="available-cities" placeholder="City, e.g. Mount Pleasant" value="{{ values.city }}"><datalist id="available-cities"></datalist><div class="form-text" id="city-status">Choose a suggested city when available.</div></div>
+      <div class="col-md-3 search-field field-rate"><label class="form-label">Rate center</label><select class="form-select" id="rate-center" name="rateCenter"><option value="">Select rate center</option>{% for rc in rate_centers %}<option value="{{rc}}" {% if values.rateCenter == rc %}selected{% endif %}>{{rc}}</option>{% endfor %}{% if values.rateCenter and values.rateCenter not in rate_centers %}<option selected value="{{values.rateCenter}}">{{values.rateCenter}}</option>{% endif %}</select><div class="form-text" id="rate-center-status">Enter an area code or state to load choices.</div></div>
+      <div class="col-md-2"><label class="form-label">Quantity</label><input class="form-control" name="quantity" type="number" min="1" max="100" placeholder="Quantity, e.g. 10" value="{{ values.quantity or '10' }}"></div>
+      <div class="col-md-2 ms-auto"><button class="btn btn-primary w-100"><i class="fa-solid fa-magnifying-glass me-2"></i>Search</button></div>
+    </div>
+    <div class="search-guidance mt-3" id="search-guidance"><i class="fa-regular fa-lightbulb me-2"></i>Area-code search is the fastest option. City and rate-center filters are optional.</div>
+  </form>
+</div>
+
+{% if searched %}
+<form class="panel" method="post" action="/available-numbers/review">
+  <div class="panel-header"><div><h2>Available numbers</h2><p>{{ results|length }} result{% if results|length != 1 %}s{% endif %} returned.</p></div></div>
+  {% if results %}
+  <div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th style="width:42px"><input type="checkbox" onclick="document.querySelectorAll('input[name=phone_numbers]').forEach(x=>x.checked=this.checked)"></th><th>Telephone Number</th><th>Type</th><th>Rate Center</th><th>State</th><th>City</th></tr></thead><tbody>{% for n in results %}<tr><td><input class="form-check-input" type="checkbox" name="phone_numbers" value="{{ n.phoneNumber }}"></td><td><strong>{{ n.phoneNumber }}</strong></td><td>{{ n.numberType or 'Local' }}</td><td>{{ n.rateCenter or values.rateCenter or 'Not returned' }}</td><td>{{ n.state or values.state or 'Not returned' }}</td><td>{{ n.city or values.city or '—' }}</td></tr>{% endfor %}</tbody></table></div>
+  <div class="p-3 border-top"><div class="row g-2 align-items-end"><div class="col-md-8"><label class="form-label">Destination Sub Account</label><select class="form-select" name="site_id" required><option value="">Choose a sub account</option>{% for s in sites %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}</select><div class="form-text">Bandwidth places the numbers into the site's default Location.</div></div><div class="col-md-4"><button class="btn btn-primary w-100" type="submit">Review Purchase</button></div></div></div>
+  {% else %}
+  <div class="empty-search-result"><i class="fa-solid fa-phone-slash"></i><h3>No matching numbers found</h3><p>Try removing the city or rate-center filter, increasing the quantity, or searching by area code only.</p></div>
+  {% endif %}
+</form>
+{% endif %}
+<script>
+const modeFields = {
+  area: ['field-area'],
+  city: ['field-state', 'field-city'],
+  rate: ['field-state', 'field-rate'],
+  advanced: ['field-area', 'field-state', 'field-city', 'field-rate']
+};
+const fieldInputs = {
+  'field-area': document.getElementById('area-code'),
+  'field-state': document.getElementById('state'),
+  'field-city': document.getElementById('city'),
+  'field-rate': document.getElementById('rate-center')
+};
+
+function setMode(mode, clearInactive = false) {
+  document.getElementById('search-mode').value = mode;
+  document.querySelectorAll('.search-mode').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  document.querySelectorAll('.search-field').forEach(el => {
+    const active = modeFields[mode].some(c => el.classList.contains(c));
+    el.classList.toggle('mode-hidden', !active);
+    if (!active && clearInactive) {
+      const className = Object.keys(fieldInputs).find(c => el.classList.contains(c));
+      if (className && fieldInputs[className]) fieldInputs[className].value = '';
+    }
+  });
+  const guidance = {
+    area: 'Search by a 3-digit area code. City, state, and rate center are not sent.',
+    city: 'Search by state and city. Area code and rate center are not sent.',
+    rate: 'Search by state and rate center. Area code and city are not sent.',
+    advanced: 'Combine filters only when you intentionally need a narrower search.'
+  };
+  document.getElementById('search-guidance').innerHTML = '<i class="fa-regular fa-lightbulb me-2"></i>' + guidance[mode];
+}
+
+document.querySelectorAll('.search-mode').forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.mode, true)));
+setMode({{ (values.searchMode or 'area') | tojson }}, false);
+
+// Enforce a clean 3-digit NPA input.
+const areaInput = document.getElementById('area-code');
+areaInput.addEventListener('input', () => { areaInput.value = areaInput.value.replace(/\D/g, '').slice(0, 3); });
+
+let optionTimer;
+async function loadFilterOptions() {
+  const mode = document.getElementById('search-mode').value;
+  if (!['advanced', 'rate'].includes(mode)) return;
+  const areaCode = document.getElementById('area-code').value.trim();
+  const state = document.getElementById('state').value.trim();
+  const cityStatus = document.getElementById('city-status');
+  const rateStatus = document.getElementById('rate-center-status');
+  if (!areaCode && !state) return;
+  cityStatus.textContent = 'Loading compatible cities…';
+  rateStatus.textContent = 'Loading compatible rate centers…';
+  try {
+    const response = await fetch('/available-numbers/filter-options?' + new URLSearchParams({areaCode, state}));
+    const data = await response.json();
+    document.getElementById('available-cities').innerHTML = (data.cities || []).map(city => `<option value="${city.replace(/"/g,'&quot;')}"></option>`).join('');
+    const select = document.getElementById('rate-center');
+    const current = select.value;
+    select.innerHTML = '<option value="">Select rate center</option>' + (data.rateCenters || []).map(rc => `<option value="${rc}">${rc}</option>`).join('');
+    if ([...select.options].some(o => o.value === current)) select.value = current;
+    cityStatus.textContent = data.cities?.length ? `${data.cities.length} compatible city option(s) found.` : 'No city suggestions returned.';
+    rateStatus.textContent = data.rateCenters?.length ? `${data.rateCenters.length} compatible rate center(s) found.` : 'No rate-center suggestions returned.';
+  } catch (_) {
+    cityStatus.textContent = 'City suggestions are temporarily unavailable.';
+    rateStatus.textContent = 'Rate-center suggestions are temporarily unavailable.';
+  }
+}
+document.querySelectorAll('.option-trigger').forEach(input => {
+  input.addEventListener('change', loadFilterOptions);
+  input.addEventListener('input', () => { clearTimeout(optionTimer); optionTimer = setTimeout(loadFilterOptions, 600); });
+});
+if (['advanced', 'rate'].includes(document.getElementById('search-mode').value) && (areaInput.value || document.getElementById('state').value)) loadFilterOptions();
+</script>
+{% endblock %}

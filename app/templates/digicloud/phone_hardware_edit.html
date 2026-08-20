@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Edit Phone Hardware{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
+  <div><div class="eyebrow">DigiCloud · Hardware Inventory</div><h1>Edit Phone Hardware</h1><p>{{ item.model }} · {{ item.mac_display }}</p></div>
+  <a class="btn btn-outline-secondary" href="/digicloud/phone-hardware{% if selected_organization_id %}?organization_id={{ selected_organization_id }}{% endif %}">Back to Hardware</a>
+</div>
+{% if request.query_params.get('error') %}<div class="alert alert-danger">{{ request.query_params.get('error') }}</div>{% endif %}
+<form method="post" class="card">
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-6"><label class="form-label">Model</label><input class="form-control" value="{{ item.model }}" disabled><div class="form-text">Model cannot be changed.</div></div>
+      <div class="col-md-6"><label class="form-label">MAC Address</label><input class="form-control font-monospace" value="{{ item.mac_display }}" disabled><div class="form-text">MAC address cannot be changed.</div></div>
+      <div class="col-md-6"><label class="form-label">Domain</label><input class="form-control" value="{{ item.domain }}" disabled></div>
+      <div class="col-md-3"><label class="form-label">Preferred Server</label><select class="form-select" name="server" required>{% if item.server and not servers|selectattr('value','equalto',item.server)|list %}<option value="{{ item.server }}" selected>{{ item.server }}</option>{% endif %}{% for server in servers %}<option value="{{ server.value }}" {% if server.value == item.server %}selected{% endif %}>{{ server.label }}</option>{% endfor %}{% if not item.server and not servers %}<option value="">No provisionable servers returned</option>{% endif %}</select></div>
+      <div class="col-md-3"><label class="form-label">Transport</label><select class="form-select" name="transport">{% for value in ['udp','tcp','tls'] %}<option value="{{ value }}" {% if item.transport == value %}selected{% endif %}>{{ value|upper }}</option>{% endfor %}</select></div>
+    </div>
+    <hr>
+    <h2 class="h5">Line Assignment</h2>
+    <p class="text-muted">Assign an extension to each supported line, or leave it blank for no assignment.</p>
+    <input type="hidden" name="line_count" value="{{ line_count }}">
+    <datalist id="domain-users">{% for u in users %}<option value="{{ u.extension }}">{{ u.name }}</option>{% endfor %}</datalist>
+    <div class="row g-3">
+      {% for value in line_values %}<div class="col-md-6"><label class="form-label">Line {{ loop.index }}</label><input class="form-control" name="line_{{ loop.index }}" value="{{ value }}" list="domain-users" placeholder="Start typing an extension"></div>{% endfor %}
+      <div class="col-12"><label class="form-label">Notes</label><textarea class="form-control" name="notes" rows="3">{{ item.notes }}</textarea></div>
+      <div class="col-12"><label class="form-label">Provisioning Overrides</label><textarea class="form-control font-monospace" name="overrides" rows="4">{{ item.raw.get('device-models-overrides-blob') or item.raw.get('device-provisioning-overrides') or item.raw.get('overrides') or '' }}</textarea></div>
+    </div>
+  </div>
+  <div class="card-footer d-flex justify-content-end gap-2"><a class="btn btn-outline-secondary" href="/digicloud/phone-hardware{% if selected_organization_id %}?organization_id={{ selected_organization_id }}{% endif %}">Cancel</a><button class="btn btn-primary">Save Changes</button></div>
+</form>
+{% endblock %}

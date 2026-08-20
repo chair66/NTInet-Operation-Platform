@@ -1,0 +1,24 @@
+NOP v1.6.0 — DigiCloud Sprint 2.1 UI Patch
+
+This patch contains only three application files:
+
+  app/templates/base.html
+  app/templates/digicloud/dashboard.html
+  app/static/style.css
+
+INSTALL
+1. Stop Uvicorn with Ctrl+C.
+2. Extract this ZIP to a temporary folder.
+3. From inside NOP-v1.6.0-Sprint-2.1, copy the app folder into the root of:
+
+   C:\Users\chair\Documents\ntinet-operations-platform
+
+4. Allow Windows to merge folders and replace the three matching files.
+5. Do not copy the outer NOP-v1.6.0-Sprint-2.1 folder into the app directory.
+6. Restart:
+
+   python -m uvicorn app.main:app --reload
+
+7. Hard-refresh the browser with Ctrl+F5.
+
+No database changes are included or required.

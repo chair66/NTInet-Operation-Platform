@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Delete {{ domain.domain_name }}{% endblock %}
+{% block content %}
+<div class="container-fluid py-3">
+  <div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+      <div class="eyebrow">DigiCloud · Domains · Delete Domain</div>
+      <h1 class="h3 mb-0">Delete Domain</h1>
+      <div class="h5 text-muted mt-1 mb-0">{{ domain.domain_name }}</div>
+    </div>
+    <a class="btn btn-outline-secondary" href="/digicloud/domains">Back to Domains</a>
+  </div>
+
+  {% if request.query_params.get('error') %}
+  <div class="alert alert-danger mb-3">{{ request.query_params.get('error') }}</div>
+  {% endif %}
+
+  <div class="row justify-content-center">
+    <div class="col-xl-7 col-lg-9">
+      <div class="card shadow-sm border-danger">
+        <div class="card-header bg-danger-subtle text-danger-emphasis fw-semibold">
+          <i class="fa-solid fa-triangle-exclamation me-2"></i>Confirm Domain Deletion
+        </div>
+        <div class="card-body">
+          <p class="fs-5">Delete <strong>{{ domain.domain_name }}</strong>?</p>
+          <div class="alert alert-warning">
+            This removes the domain from <strong>DigiCloud</strong> and from the active <strong>NOP domain inventory</strong>.
+            Any phone numbers assigned to the domain are removed from <strong>NOP DigiCloud inventory</strong>.
+            <strong>The phone numbers remain with the carrier and no carrier delete request is sent.</strong>
+          </div>
+          <form method="post" action="/digicloud/domains/{{ domain.id }}/delete">
+            <label class="form-label" for="confirmation">Type <strong>{{ domain.domain_name }}</strong> to confirm</label>
+            <input class="form-control" id="confirmation" name="confirmation" autocomplete="off" required autofocus>
+            <div class="d-flex flex-wrap gap-2 mt-4">
+              <button class="btn btn-danger" type="submit"><i class="fa-solid fa-trash-can me-1"></i>Delete Domain</button>
+              <a class="btn btn-outline-secondary" href="/digicloud/domains">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

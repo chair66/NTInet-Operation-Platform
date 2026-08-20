@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Edit DigiCloud User{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
+  <div><div class="eyebrow">DigiCloud · User Management · {{ selected_domain.domain_name }}</div><h1>Edit User Profile</h1><p>Update the customer's live DigiCloud profile.</p></div>
+  <div class="d-flex gap-2 flex-wrap">
+    {% if can_inspect %}<a class="btn btn-outline-dark" href="/digicloud/admin/api-inspector/user?domain={{ selected_domain.domain_name|urlencode }}&username={{ profile.username|urlencode }}">API Inspector</a>{% endif %}
+    <a class="btn btn-outline-danger" href="/digicloud/users/{{ profile.username|urlencode }}/delete?domain={{ selected_domain.domain_name|urlencode }}">Delete User</a>
+    <a class="btn btn-outline-secondary" href="/digicloud/users?domain={{ selected_domain.domain_name|urlencode }}">Back to Users</a>
+  </div>
+</div>
+{% if request.query_params.get('notice') %}<div class="alert alert-success">{{ request.query_params.get('notice') }}</div>{% endif %}
+{% if request.query_params.get('error') %}<div class="alert alert-danger">{{ request.query_params.get('error') }}</div>{% endif %}
+<ul class="nav nav-tabs mb-4">
+  <li class="nav-item"><a class="nav-link active" href="/digicloud/users/{{ profile.username|urlencode }}/edit?domain={{ selected_domain.domain_name|urlencode }}">Profile</a></li>
+  <li class="nav-item"><a class="nav-link" href="/digicloud/users/{{ profile.username|urlencode }}/answering-rules?domain={{ selected_domain.domain_name|urlencode }}">Answering Rules</a></li>
+  <li class="nav-item"><a class="nav-link" href="/digicloud/users/{{ profile.username|urlencode }}/phones?domain={{ selected_domain.domain_name|urlencode }}">Phones</a></li>
+</ul>
+<div class="row g-4">
+  <div class="col-xl-9">
+    <div class="card">
+      <div class="card-header"><strong>{{ profile.display_name or ((profile.first_name ~ ' ' ~ profile.last_name)|trim) or ('User ' ~ profile.extension) }}</strong><div class="small text-muted">Extension {{ profile.extension }} · Username {{ profile.username }}</div></div>
+      <form method="post" action="/digicloud/users/{{ profile.username|urlencode }}/edit">
+        <input type="hidden" name="domain" value="{{ selected_domain.domain_name }}">
+        <div class="card-body">
+          <h5>Customer Information</h5><div class="row g-3 mb-4">
+            <div class="col-md-6"><label class="form-label">First Name</label><input class="form-control" name="first_name" value="{{ profile.first_name }}"></div>
+            <div class="col-md-6"><label class="form-label">Last Name</label><input class="form-control" name="last_name" value="{{ profile.last_name }}"></div>
+            <div class="col-md-6"><label class="form-label">Email</label><input class="form-control" type="email" name="email" value="{{ profile.email }}"></div>
+            <div class="col-md-6"><label class="form-label">Department</label><input class="form-control" name="department" value="{{ profile.department }}"></div>
+            <div class="col-md-6"><label class="form-label">Extension</label><input class="form-control" value="{{ profile.extension }}" disabled><div class="form-text">Extension changes are intentionally handled outside Profile Edit.</div></div>
+            <div class="col-md-6"><label class="form-label">Username</label><input class="form-control" value="{{ profile.username }}" disabled></div>
+          </div>
+          <h5>Caller ID</h5><div class="row g-3 mb-4">
+            <div class="col-md-6"><label class="form-label">Caller ID Name</label><input class="form-control" name="caller_id_name" value="{{ profile.caller_id_name }}"></div>
+            <div class="col-md-6"><label class="form-label">Caller ID Number</label><input class="form-control" name="caller_id_number" value="{{ profile.caller_id_number }}"></div>
+            <div class="col-md-6"><label class="form-label">Emergency Caller ID</label><input class="form-control" name="emergency_caller_id" value="{{ profile.emergency_caller_id }}"></div>
+          </div>
+          <h5>Preferences</h5><div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label" for="time-zone">Time Zone</label>
+              {% set time_zones = [
+                ('US/Eastern', 'Eastern Time'),
+                ('US/Central', 'Central Time'),
+                ('US/Mountain', 'Mountain Time'),
+                ('US/Arizona', 'Arizona Time'),
+                ('US/Pacific', 'Pacific Time'),
+                ('US/Alaska', 'Alaska Time'),
+                ('US/Hawaii', 'Hawaii Time')
+              ] %}
+              <select class="form-select" id="time-zone" name="time_zone">
+                {% if profile.time_zone and profile.time_zone not in time_zones|map(attribute=0)|list %}
+                  <option value="{{ profile.time_zone }}" selected>{{ profile.time_zone }} (current)</option>
+                {% endif %}
+                {% for value, label in time_zones %}<option value="{{ value }}" {% if profile.time_zone == value %}selected{% endif %}>{{ label }} — {{ value }}</option>{% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6"><label class="form-label">Area Code</label><input class="form-control" name="area_code" value="{{ profile.area_code }}"></div>
+            <div class="col-12"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="enabled" name="enabled" {% if profile.enabled is not sameas false %}checked{% endif %}><label class="form-check-label" for="enabled">User enabled</label></div></div>
+          </div>
+          <hr class="my-4">
+          <h5>Voicemail</h5>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6 d-flex align-items-center"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="voicemail-enabled" name="voicemail_enabled" {% if profile.voicemail_enabled %}checked{% endif %}><label class="form-check-label" for="voicemail-enabled">Enable voicemail</label></div></div>
+            <div class="col-md-6"><label class="form-label">Mailbox Limit</label><input class="form-control" value="50 MB" disabled><div class="form-text">Fixed residential mailbox allocation.</div></div>
+          </div>
+          <div class="border rounded p-3" id="voicemail-notification-settings">
+            <div class="form-check form-switch mb-3"><input class="form-check-input" type="checkbox" role="switch" id="voicemail-notification-enabled" name="voicemail_notification_enabled" {% if profile.voicemail_notifications.enabled %}checked{% endif %}><label class="form-check-label" for="voicemail-notification-enabled">Receive an email for new voicemail</label></div>
+            <div class="row g-3">
+              <div class="col-md-4"><label class="form-label">Notification Email</label><input class="form-control" type="email" name="voicemail_notification_email" value="{{ profile.voicemail_notifications.recipient or profile.email }}"></div>
+              <div class="col-md-4"><label class="form-label">Email Type</label><select class="form-select" name="voicemail_email_type"><option value="attachment" {% if profile.voicemail_notifications.email_type == 'attachment' %}selected{% endif %}>Send with attachment</option><option value="notification" {% if profile.voicemail_notifications.email_type == 'notification' %}selected{% endif %}>Notification only</option></select></div>
+              <div class="col-md-4"><label class="form-label">After Email Notification</label><select class="form-select" name="voicemail_after_notification"><option value="trash" {% if profile.voicemail_notifications.after_action == 'trash' %}selected{% endif %}>Move to trash</option><option value="saved" {% if profile.voicemail_notifications.after_action == 'saved' %}selected{% endif %}>Move to saved</option><option value="new" {% if profile.voicemail_notifications.after_action == 'new' %}selected{% endif %}>Leave as new</option></select></div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer d-flex gap-2"><button class="btn btn-primary" type="submit">Save Changes</button><a class="btn btn-outline-secondary" href="/digicloud/users?domain={{ selected_domain.domain_name|urlencode }}">Cancel</a></div>
+      </form>
+    </div>
+  </div>
+  <div class="col-xl-3">
+    <div class="card mb-3"><div class="card-header"><strong>User Profile Guide</strong></div><div class="card-body small"><p><strong>PROFILE</strong><br>Manage contact information and calling preferences.</p><p><strong>CALLER ID</strong><br>Controls outbound caller identification.</p><p><strong>STATUS</strong><br>Disable a user without deleting the account.</p><p class="mb-0"><strong>SAVE CHANGES</strong><br>Updates DigiCloud immediately.</p></div></div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const voicemailEnabled = document.getElementById('voicemail-enabled');
+  const notificationEnabled = document.getElementById('voicemail-notification-enabled');
+  const notificationBox = document.getElementById('voicemail-notification-settings');
+  if (!voicemailEnabled || !notificationEnabled || !notificationBox) return;
+
+  const dependentControls = notificationBox.querySelectorAll(
+    'input:not(#voicemail-notification-enabled), select'
+  );
+
+  const refresh = function () {
+    const voicemailAvailable = voicemailEnabled.checked;
+    notificationEnabled.disabled = !voicemailAvailable;
+    dependentControls.forEach(function (control) {
+      control.disabled = !voicemailAvailable || !notificationEnabled.checked;
+    });
+    notificationBox.classList.toggle('opacity-50', !voicemailAvailable);
+  };
+
+  voicemailEnabled.addEventListener('change', refresh);
+  notificationEnabled.addEventListener('change', refresh);
+  refresh();
+});
+</script>
+{% endblock %}
+

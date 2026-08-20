@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block title %}Check Portability | NTInet Operations{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Porting · Step 1</div>
+    <h1>Check Portability</h1>
+    <p>Verify portability and the losing carrier before collecting end-user information.</p>
+  </div>
+</div>
+
+<section class="panel panel-body">
+  <form method="post" action="/ports/check">
+    <label class="form-label" for="port-phone-numbers">Phone numbers</label>
+    <textarea id="port-phone-numbers" class="form-control" required rows="5" name="phoneNumbers" placeholder="Separate numbers with spaces, commas, semicolons, or one per line">{{ phone_numbers }}</textarea>
+    <div class="form-text">Enter one or more telephone numbers. Each number is normalized and checked individually for portability.</div>
+    <button class="btn btn-primary mt-3" type="submit">
+      <i class="fa-solid fa-magnifying-glass me-2"></i>Check portability
+    </button>
+  </form>
+
+  {% if error %}
+  <div class="alert alert-danger mt-4">
+    <strong>{{ error.message }}</strong>
+    <details class="mt-2">
+      <summary>Diagnostics</summary>
+      <pre>{{ error.payload }}</pre>
+    </details>
+  </div>
+  {% endif %}
+
+  {% if result %}
+  <div class="portability-results mt-4">
+    <div class="portability-summary-banner">
+      <div class="portability-summary-icon"><i class="fa-solid fa-circle-check"></i></div>
+      <div>
+        <h2>Portability check completed</h2>
+        <p>
+          {{ portability.portable_count }} portable number{{ '' if portability.portable_count == 1 else 's' }}
+          across {{ portability.carrier_count }} losing carrier group{{ '' if portability.carrier_count == 1 else 's' }}.
+        </p>
+      </div>
+      {% if portability.multiple_carriers %}
+      <span class="portability-warning-badge"><i class="fa-solid fa-triangle-exclamation"></i> Multiple carriers</span>
+      {% elif portability.carrier_count == 1 %}
+      <span class="portability-success-badge"><i class="fa-solid fa-check"></i> Single carrier</span>
+      {% endif %}
+    </div>
+
+    {% if portability.multiple_carriers %}
+    <div class="alert alert-warning mt-3 mb-0">
+      <strong>Multiple losing carriers were detected.</strong>
+      Separate port requests may be required. Review each carrier group before continuing.
+    </div>
+    {% endif %}
+
+    {% if portability.groups %}
+    <div class="portability-carrier-grid mt-3">
+      {% for group in portability.groups %}
+      <article class="portability-carrier-card">
+        <div class="portability-carrier-head">
+          <div>
+            <span class="portability-label">Losing carrier</span>
+            <h3>{{ group.carrier_name }}</h3>
+          </div>
+          {% if group.port_type %}<span class="portability-network-badge">{{ group.port_type }}</span>{% endif %}
+        </div>
+
+        <dl class="portability-facts">
+          <div><dt>SPID</dt><dd>{{ group.spid or 'Not returned' }}</dd></div>
+          <div><dt>Earliest estimate</dt><dd>{{ group.earliest_estimate or 'Not returned' }}</dd></div>
+          {% if group.rate_center %}<div><dt>Rate center</dt><dd>{{ group.rate_center }}</dd></div>{% endif %}
+          {% if group.phone_number_type %}<div><dt>Number type</dt><dd>{{ group.phone_number_type }}</dd></div>{% endif %}
+          {% if group.resp_org %}<div><dt>RespOrg</dt><dd>{{ group.resp_org }}</dd></div>{% endif %}
+        </dl>
+
+        <div class="portability-number-section">
+          <div class="d-flex align-items-center justify-content-between gap-3 mb-2">
+            <span class="portability-label">Telephone numbers ({{ group.formatted_numbers|length }})</span>
+            {% if group.formatted_numbers %}
+            <button type="button" class="btn btn-sm btn-outline-secondary copy-port-numbers" data-numbers="{{ group.phone_numbers|join('\n') }}">
+              <i class="fa-regular fa-copy me-1"></i>Copy numbers
+            </button>
+            {% endif %}
+          </div>
+          {% if group.formatted_numbers %}
+          <div class="portability-number-list">
+            {% for number in group.formatted_numbers %}<span>{{ number }}</span>{% endfor %}
+          </div>
+          {% else %}
+          <p class="muted mb-0">The telephone-number list was not returned for this carrier group.</p>
+          {% endif %}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-warning mt-3 mb-0">
+      The portability request succeeded, but a recognizable losing-carrier group was not returned. Review the technical details below.
+    </div>
+    {% endif %}
+
+    {% if portability.nonportable %}
+    <div class="portability-nonportable mt-3">
+      <h3><i class="fa-solid fa-circle-xmark me-2"></i>Numbers not currently portable</h3>
+      {% for item in portability.nonportable %}
+      <div class="portability-nonportable-row">
+        <strong>{{ item.formatted_number }}</strong>
+        <span>{{ item.reasons|join('; ') if item.reasons else 'No reason was returned.' }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="portability-actions mt-3">
+      <form method="post" action="/ports/new/details">
+        <input type="hidden" name="phoneNumbers" value="{{ phone_numbers }}">
+        {% if portability.groups %}
+        <input type="hidden" name="losingCarrierName" value="{{ portability.groups[0].carrier_name if portability.groups|length == 1 else '' }}">
+        <input type="hidden" name="earliestEstimate" value="{{ portability.groups[0].earliest_estimate_raw if portability.groups|length == 1 else '' }}">
+        <input type="hidden" name="useEarliest" value="true">
+        <input type="hidden" name="requestedFocDate" value="">
+        <input type="hidden" name="requestedFocTime" value="11:30">
+        <input type="hidden" name="portType" value="{{ portability.groups[0].port_type if portability.groups|length == 1 else '' }}">
+        <input type="hidden" name="phoneNumberType" value="{{ portability.groups[0].phone_number_type if portability.groups|length == 1 else '' }}">
+        {% endif %}
+        <button class="btn btn-primary" type="submit" {% if not portability.groups %}disabled{% endif %}>
+          Continue to customer information
+        </button>
+      </form>
+      <details class="technical-details">
+        <summary>Technical details</summary>
+        <pre class="json-viewer">{{ result | tojson(indent=2) }}</pre>
+      </details>
+    </div>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.querySelectorAll('.copy-port-numbers').forEach((button) => {
+  button.addEventListener('click', async () => {
+    const original = button.innerHTML;
+    try {
+      await navigator.clipboard.writeText(button.dataset.numbers || '');
+      button.innerHTML = '<i class="fa-solid fa-check me-1"></i>Copied';
+    } catch (error) {
+      button.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1"></i>Copy failed';
+    }
+    window.setTimeout(() => { button.innerHTML = original; }, 1600);
+  });
+});
+</script>
+{% endblock %}

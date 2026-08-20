@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}DigiCloud User Management{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="eyebrow">DigiCloud · User Management</div>
+    <h1>Users</h1>
+    <p>View live customer users in domains owned by the linked DigiCloud reseller.</p>
+  </div>
+</div>
+
+{% if request.query_params.get('notice') %}<div class="alert alert-success">{{ request.query_params.get('notice') }}</div>{% endif %}
+{% if request.query_params.get('error') %}<div class="alert alert-danger">{{ request.query_params.get('error') }}</div>{% endif %}
+
+<div class="card mb-4">
+  <div class="card-header"><strong>Domain Selector</strong></div>
+  <div class="card-body">
+    {% if allowed_domains %}
+    <form method="get" action="/digicloud/users" class="row g-3 align-items-end">
+      <div class="col-lg-7">
+        <label class="form-label" for="domain">DigiCloud Domain</label>
+        <select class="form-select" id="domain" name="domain" required>
+          {% for item in allowed_domains %}
+          <option value="{{ item.domain_name }}" {% if selected_domain and item.domain_name == selected_domain.domain_name and item.organization_id == selected_domain.organization_id %}selected{% endif %}>
+            {{ item.domain_name }} — {{ item.organization.effective_name }}
+          </option>
+          {% endfor %}
+        </select>
+        <div class="form-text">Domains are loaded live from DigiCloud and restricted to the reseller linked to your organization.</div>
+      </div>
+      <div class="col-lg-3">
+        <button class="btn btn-primary w-100" type="submit">Load Users</button>
+      </div>
+    </form>
+    {% else %}
+    <div class="alert alert-warning mb-0">No live DigiCloud domains were found for the reseller linked to your organization. Verify the DigiCloud Reseller mapping on the organization record.</div>
+    {% endif %}
+  </div>
+</div>
+
+{% if selected_domain %}
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3"><div class="card h-100"><div class="card-body"><div class="text-muted small">Users</div><div class="h3 mb-0">{{ users|length }}</div></div></div></div>
+  <div class="col-6 col-lg-3"><div class="card h-100"><div class="card-body"><div class="text-muted small">Active</div><div class="h3 mb-0">{{ active_count }}</div></div></div></div>
+  <div class="col-6 col-lg-3"><div class="card h-100"><div class="card-body"><div class="text-muted small">Disabled</div><div class="h3 mb-0">{{ disabled_count }}</div></div></div></div>
+  <div class="col-6 col-lg-3"><div class="card h-100"><div class="card-body"><div class="text-muted small">Domain</div><div class="h5 mb-0 text-truncate" title="{{ selected_domain.domain_name }}">{{ selected_domain.domain_name }}</div></div></div></div>
+</div>
+{% if hidden_count %}
+<div class="alert alert-light border d-flex justify-content-between align-items-center flex-wrap gap-2">
+  <div><strong>{{ hidden_count }} internal user{{ '' if hidden_count == 1 else 's' }} hidden</strong><div class="small text-muted">Domain users and users with NDP or System scopes are excluded from the customer list.</div></div>
+  {% if can_show_hidden %}
+  <a class="btn btn-sm {{ 'btn-primary' if show_hidden else 'btn-outline-secondary' }}" href="/digicloud/users?domain={{ selected_domain.domain_name }}&show_hidden={{ 'false' if show_hidden else 'true' }}">{{ 'Hide Internal Users' if show_hidden else 'Show Hidden Users' }}</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% if live_error %}
+<div class="alert alert-danger">
+  <strong>Unable to load live users.</strong><br>{{ live_error }}
+</div>
+{% else %}
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div><strong>Live Users</strong><div class="small text-muted">{{ selected_domain.domain_name }}</div></div>
+    <div class="d-flex gap-2"><a class="btn btn-primary btn-sm" href="/digicloud/users/new?domain={{ selected_domain.domain_name|urlencode }}">+ Add User</a><a class="btn btn-outline-secondary btn-sm" href="/digicloud/users?domain={{ selected_domain.domain_name }}{% if show_hidden %}&show_hidden=true{% endif %}">Refresh</a></div>
+  </div>
+  <div class="card-body border-bottom">
+    <div class="row g-2 align-items-center">
+      <div class="col-lg-7"><label class="visually-hidden" for="user-search">Search users</label><input class="form-control" id="user-search" type="search" placeholder="Search name, extension, email, or department" autocomplete="off"></div>
+      <div class="col-lg-5 text-lg-end text-muted small"><span id="visible-user-count">{{ users|length }}</span> of {{ users|length }} listed users shown</div>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table align-middle mb-0" id="user-table">
+      <thead><tr><th>User</th><th>Email</th><th>Department</th><th>Status</th><th class="text-center">Devices</th><th class="text-end">Actions</th></tr></thead>
+      <tbody>
+      {% for item in users %}
+      <tr class="user-row{% if item.hidden %} table-light{% endif %}" data-search="{{ (item.name ~ ' ' ~ item.extension ~ ' ' ~ item.email ~ ' ' ~ item.department ~ ' ' ~ item.scope ~ ' ' ~ item.hidden_reason)|lower|e }}">
+        <td><div class="fw-semibold">{{ item.name }}</div><div class="small text-muted">Ext. {{ item.extension or '—' }}</div>{% if item.hidden %}<span class="badge text-bg-warning mt-1">Hidden · {{ item.hidden_reason }}</span>{% endif %}</td>
+        <td>{{ item.email or '—' }}</td>
+        <td>{{ item.department or '—' }}{% if item.scope %}<div class="small text-muted">Scope: {{ item.scope }}</div>{% endif %}</td>
+        <td>{% if item.enabled is sameas true %}<span class="badge text-bg-success">Active</span>{% elif item.enabled is sameas false %}<span class="badge text-bg-secondary">Disabled</span>{% else %}<span class="badge text-bg-light border text-dark">Unknown</span>{% endif %}</td>
+        <td class="text-center">{{ item.device_count if item.device_count is not none else '—' }}</td>
+        <td class="text-end">{% if item.hidden %}<span class="badge text-bg-light border text-dark">Protected</span>{% else %}<div class="btn-group"><a class="btn btn-sm btn-outline-primary" href="/digicloud/users/{{ item.username|urlencode }}/edit?domain={{ selected_domain.domain_name|urlencode }}">Edit</a><button class="btn btn-sm btn-outline-primary dropdown-toggle dropdown-toggle-split" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="visually-hidden">User actions</span></button><ul class="dropdown-menu dropdown-menu-end"><li><a class="dropdown-item" href="/digicloud/users/{{ item.username|urlencode }}/answering-rules?domain={{ selected_domain.domain_name|urlencode }}">Answering Rules</a></li><li><hr class="dropdown-divider"></li><li><a class="dropdown-item text-danger" href="/digicloud/users/{{ item.username|urlencode }}/delete?domain={{ selected_domain.domain_name|urlencode }}">Delete User</a></li></ul></div>{% endif %}</td>
+      </tr>
+      {% else %}
+      <tr id="empty-users"><td colspan="6" class="text-center py-5"><div class="fw-semibold">No users returned</div><div class="text-muted">DigiCloud did not return any visible users for this reseller-owned domain.</div></td></tr>
+      {% endfor %}
+      <tr id="no-search-results" class="d-none"><td colspan="6" class="text-center py-5"><div class="fw-semibold">No matching users</div><div class="text-muted">Try another name, extension, email address, or department.</div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endif %}
+
+<script>
+(function () {
+  const input = document.getElementById('user-search');
+  if (!input) return;
+  const rows = Array.from(document.querySelectorAll('.user-row'));
+  const count = document.getElementById('visible-user-count');
+  const noResults = document.getElementById('no-search-results');
+  function filterUsers() {
+    const query = input.value.trim().toLowerCase();
+    let visible = 0;
+    rows.forEach(function (row) {
+      const show = !query || row.dataset.search.includes(query);
+      row.classList.toggle('d-none', !show);
+      if (show) visible += 1;
+    });
+    count.textContent = visible;
+    noResults.classList.toggle('d-none', visible !== 0 || rows.length === 0);
+  }
+  input.addEventListener('input', filterUsers);
+})();
+</script>
+{% endblock %}

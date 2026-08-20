@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% block content %}
+<div class="page-head"><div><div class="eyebrow">Inventory</div><h1>My Numbers</h1><p>Find the Sub Account and Location assigned to a telephone number.</p></div><a class="btn btn-outline-secondary" href="/sites">Browse all numbers</a></div>
+<section class="panel p-4 mb-3">
+  <h2 class="h5 mb-3">Search for numbers active on your account</h2>
+  <form method="get" action="/my-numbers/search" class="row g-3 align-items-end">
+    <div class="col-lg-8"><label class="form-label">Phone number</label><input required class="form-control form-control-lg" name="phone_number" value="{{phone_number}}" placeholder="8035551212 or +18035551212"><div class="form-text">Enter a 10-digit NANP number or E.164 number.</div></div>
+    <div class="col-lg-4"><button class="btn btn-primary btn-lg w-100"><i class="fa-solid fa-magnifying-glass me-2"></i>Search</button></div>
+  </form>
+</section>
+{% if searched %}<section class="panel"><div class="panel-header"><div><h2>Search results</h2><p>{{matches|length}} match{% if matches|length != 1 %}es{% endif %} found.</p></div></div><div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>Telephone Number</th><th>Sub Account</th><th>Location</th><th></th></tr></thead><tbody>{% for m in matches %}<tr><td><strong>{{m.number.phoneNumber}}</strong></td><td>{{m.site.name}}</td><td>{{m.location.name}}</td><td class="text-end"><a class="btn btn-sm btn-outline-primary" href="/sites/{{m.site.id}}/locations/{{m.location.id}}/numbers/{{m.number.phoneNumber}}?site_name={{m.site.name|urlencode}}&location_name={{m.location.name|urlencode}}">View settings</a></td></tr>{% else %}<tr><td colspan="4" class="empty-state">No active number matched that search.</td></tr>{% endfor %}</tbody></table></div></section>{% endif %}
+{% endblock %}

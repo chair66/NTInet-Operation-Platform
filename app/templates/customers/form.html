@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit ' ~ customer.name if customer else 'New Customer' }} · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-start gap-3 mb-4">
+  <div>
+    <div class="eyebrow">Customer Management</div>
+    <h1 class="mb-1">{{ 'Edit Customer' if customer else 'New Customer' }}</h1>
+    <p class="text-muted mb-0">{{ customer.customer_number if customer else 'Create the operational customer record before adding contacts and locations.' }}</p>
+  </div>
+  <a class="btn btn-outline-secondary" href="{{ '/customers/' ~ customer.id if customer else '/customers' }}">Cancel</a>
+</div>
+
+<form class="panel customer-form" method="post" action="{{ '/customers/' ~ customer.id ~ '/edit' if customer else '/customers' }}">
+  <div class="panel-header"><h2>Account Information</h2></div>
+  <div class="panel-body">
+    <div class="row g-3">
+      <div class="col-lg-8"><label class="form-label">Customer name</label><input class="form-control" name="name" required maxlength="180" value="{{ customer.name if customer else '' }}"></div>
+      <div class="col-lg-4"><label class="form-label">Customer number</label><input class="form-control" disabled value="{{ customer.customer_number if customer else 'Assigned automatically' }}"></div>
+      <div class="col-md-6"><label class="form-label">Customer type</label><select class="form-select" name="customer_type">{% for value, label in type_labels.items() %}<option value="{{ value }}" {{ 'selected' if customer and customer.customer_type == value else '' }}>{{ label }}</option>{% endfor %}</select></div>
+      <div class="col-md-6"><label class="form-label">Status</label><select class="form-select" name="status">{% for value, label in status_labels.items() %}<option value="{{ value }}" {{ 'selected' if customer and customer.status == value else '' }}>{{ label }}</option>{% endfor %}</select></div>
+      {% if current_user.organization.is_staff %}
+      <div class="col-md-6"><label class="form-label">Owning organization</label><select class="form-select" name="owner_organization_id" required>{% for organization in organizations %}<option value="{{ organization.id }}" {{ 'selected' if (customer and customer.owner_organization_id == organization.id) or (not customer and organization.id == current_user.organization_id) else '' }}>{{ organization.name }}</option>{% endfor %}</select></div>
+      <div class="col-md-6"><label class="form-label">Servicing organization</label><select class="form-select" name="servicing_organization_id"><option value="">Not assigned</option>{% for organization in organizations %}<option value="{{ organization.id }}" {{ 'selected' if customer and customer.servicing_organization_id == organization.id else '' }}>{{ organization.name }}</option>{% endfor %}</select></div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="panel-header border-top"><h2>Billing Profile</h2><span>Operational information only; NOP does not update Platypus.</span></div>
+  <div class="panel-body">
+    <div class="row g-3">
+      <div class="col-md-6"><label class="form-label">Billing method</label><select class="form-select" name="billing_method">{% for value, label in billing_labels.items() %}<option value="{{ value }}" {{ 'selected' if customer and customer.billing_method == value else '' }}>{{ label }}</option>{% endfor %}</select></div>
+      <div class="col-md-6"><label class="form-label">Payment terms</label><input class="form-control" name="payment_terms" value="{{ customer.payment_terms if customer else '' }}" placeholder="Net 30"></div>
+      {% if customer %}<div class="col-md-6"><label class="form-label">Bill-to customer</label><select class="form-select" name="bill_to_customer_id"><option value="">This customer account</option>{% for item in related_customers %}<option value="{{ item.id }}" {{ 'selected' if customer.bill_to_customer_id == item.id else '' }}>{{ item.customer_number }} · {{ item.name }}</option>{% endfor %}</select></div>{% endif %}
+      <div class="col-md-6"><label class="form-label">Billing email</label><input class="form-control" type="email" name="billing_email" value="{{ customer.billing_email if customer else '' }}"></div>
+      <div class="col-md-6"><label class="form-label">Billing phone</label><input class="form-control" name="billing_phone" value="{{ customer.billing_phone if customer else '' }}"></div>
+      {% if customer %}
+      <div class="col-md-4"><div class="form-check mt-4"><input class="form-check-input" type="checkbox" name="tax_exempt" id="tax-exempt" {{ 'checked' if customer.tax_exempt else '' }}><label class="form-check-label" for="tax-exempt">Tax exempt</label></div></div>
+      <div class="col-md-4"><div class="form-check mt-4"><input class="form-check-input" type="checkbox" name="purchase_order_required" id="po-required" {{ 'checked' if customer.purchase_order_required else '' }}><label class="form-check-label" for="po-required">Purchase order required</label></div></div>
+      <div class="col-md-4"><label class="form-label">Default PO</label><input class="form-control" name="default_purchase_order" value="{{ customer.default_purchase_order }}"></div>
+      {% endif %}
+      <div class="col-12"><label class="form-label">Internal notes</label><textarea class="form-control" rows="4" name="notes">{{ customer.notes if customer else '' }}</textarea></div>
+    </div>
+  </div>
+  <div class="customer-form-actions"><a class="btn btn-outline-secondary" href="{{ '/customers/' ~ customer.id if customer else '/customers' }}">Cancel</a><button class="btn btn-primary" type="submit">{{ 'Save Changes' if customer else 'Create Customer' }}</button></div>
+</form>
+{% endblock %}

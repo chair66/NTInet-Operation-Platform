@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{% if address_source == 'digicloud_endpoint' %}Update{% elif address_source == 'nop_snapshot' %}Complete{% else %}Assign Required{% endif %} 911 Address{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
+  <div><div class="eyebrow">DigiCloud · User Management · {{ selected_domain.domain_name }}</div><h1>{% if address_source == 'digicloud_endpoint' %}View / Update 911 Address{% elif address_source == 'nop_snapshot' %}Complete DigiCloud 911 Assignment{% else %}Assign Required 911 Address{% endif %}</h1><p>{% if address_source == 'digicloud_endpoint' %}NOP found a live legacy-911 endpoint for this emergency DID. Validation will show the corrected address before anything is saved.{% elif address_source == 'nop_snapshot' %}This address was validated in NOP but has not been provisioned as an emergency endpoint in DigiCloud.{% else %}First validate the address, then review DigiCloud's correction before saving it.{% endif %}</p></div>
+</div>
+{% if billing_error %}<div class="alert alert-danger"><strong>Platypus billing also needs repair:</strong> {{ billing_error }}</div>{% endif %}
+{% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+{% if address_error %}<div class="alert alert-warning"><strong>911 provisioning could not be verified.</strong> {{ address_error }} NOP will not report this DID as provisioned.</div>{% elif not emergency_did_configured %}<div class="alert alert-danger"><strong>911 Not Provisioned for this user.</strong> DigiCloud does not report an explicitly configured emergency caller ID. Set the emergency caller ID before provisioning its address.</div>{% elif emergency_endpoint_found %}<div class="alert alert-warning"><strong>911 Endpoint Found — Carrier Provisioning Unconfirmed.</strong> DigiCloud returned an emergency endpoint record for {{ emergency_did }}{% if values.provisioned_carrier %} using carrier {{ values.provisioned_carrier }}{% endif %}, but this API does not report whether carrier provisioning completed. NOP will not display this as provisioned.</div>{% elif address_source == 'nop_snapshot' %}<div class="alert alert-danger"><strong>911 Not Provisioned in DigiCloud.</strong> The address below was validated in NOP, but no live emergency address endpoint was found for DID {{ emergency_did }}.</div>{% else %}<div class="alert alert-danger"><strong>911 Not Provisioned in DigiCloud.</strong> No live emergency address endpoint was found for DID {{ emergency_did }}.</div>{% endif %}
+<div class="row g-4">
+  <div class="col-xl-8">
+    <form method="post" action="/digicloud/users/{{ username|urlencode }}/911" class="card">
+      <input type="hidden" name="domain" value="{{ selected_domain.domain_name }}">
+      <input type="hidden" name="return_to" value="{{ return_to }}">
+      <input type="hidden" name="emergency_address_id" value="{{ current_address_id or '' }}">
+      <input type="hidden" name="address_source" value="{{ address_source }}">
+      <div class="card-header"><h2 class="h5 mb-0">911 Information <span class="text-danger">(Required)</span></h2></div>
+      <div class="card-body">
+        <div class="alert alert-warning"><strong>Emergency DID:</strong> {{ emergency_did }}<br>This is the emergency caller ID already assigned to the DigiCloud user.</div>
+        <div class="alert alert-danger"><strong>911 service notice:</strong> Enter the phone's actual physical service location. NOP validation alone does not complete 911 provisioning. A DigiCloud emergency address endpoint must exist for this callback DID before relying on it for emergency calling.{% if address_source == 'digicloud_endpoint' %} Until DigiCloud confirms an update, calls may use the previously registered address.{% endif %}</div>
+        <div class="row g-3">
+          <div class="col-md-6"><label class="form-label">Caller Name</label><input class="form-control" name="caller_name" value="{{ values.caller_name or profile.display_name or profile.caller_id_name }}" required></div>
+          <div class="col-md-6"><label class="form-label">User</label><input class="form-control" value="{{ username }}@{{ selected_domain.domain_name }}" disabled></div>
+          <div class="col-md-8"><label class="form-label">Street Address</label><input class="form-control" name="address_line_1" value="{{ values.address_line_1 or '' }}" autocomplete="address-line1" required></div>
+          <div class="col-md-4"><label class="form-label">Unit / Suite</label><input class="form-control" name="address_line_2" value="{{ values.address_line_2 or '' }}" autocomplete="address-line2"></div>
+          <div class="col-md-5"><label class="form-label">City</label><input class="form-control" name="city" value="{{ values.city or '' }}" autocomplete="address-level2" required></div>
+          <div class="col-md-3"><label class="form-label">State</label><input class="form-control text-uppercase" name="state" value="{{ values.state or '' }}" autocomplete="address-level1" maxlength="2" required></div>
+          <div class="col-md-4"><label class="form-label">ZIP Code</label><input class="form-control" name="postal_code" value="{{ values.postal_code or '' }}" autocomplete="postal-code" maxlength="10" required></div>
+        </div>
+      </div>
+      <div class="card-footer d-flex gap-2"><button class="btn btn-primary" type="submit">Validate Address</button><a class="btn btn-outline-secondary" href="{{ return_to if return_to else '/digicloud/users?domain=' ~ (selected_domain.domain_name|urlencode) }}">{{ 'Cancel' if return_to else 'Finish Later' }}</a></div>
+    </form>
+  </div>
+  <div class="col-xl-4"><div class="card"><div class="card-header"><strong>Legacy 911 Setup</strong></div><div class="card-body small"><ol class="mb-0"><li class="mb-2"><strong>Validate</strong> and review DigiCloud's standardized address.</li><li><strong>Save and verify</strong> the legacy 911 callback endpoint. Carrier completion remains unconfirmed until independently verified.</li></ol></div></div></div>
+</div>
+{% endblock %}

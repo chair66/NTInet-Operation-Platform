@@ -1,0 +1,37 @@
+NTInet Operations Platform
+Sprint 3.1 - Live Domain Sync
+
+FILES INCLUDED
+- app/providers/netsapiens/domains.py
+- app/services/digicloud_service.py
+- app/routers/digicloud.py
+- app/templates/digicloud/domains.html
+
+WHAT THIS ADDS
+- Read domains from NetSapiens for each configured reseller.
+- Sync Domains button on the DigiCloud Domains page.
+- Creates missing local domains.
+- Refreshes matching local domains.
+- Preserves local values when the API does not return a field.
+- Shows created, updated, unchanged, and skipped totals.
+- Records a DigiCloud domain-sync audit event.
+
+DATABASE
+No schema or migration changes are required.
+
+INSTALL FROM THE PROJECT ROOT
+1. Stop Uvicorn.
+2. Back up the four existing files listed above.
+3. Copy the app folder from this patch over the project's app folder.
+4. Confirm .env contains NETSAPIENS_API_URL and NETSAPIENS_TOKEN.
+5. In DigiCloud Admin Settings, confirm each organization to be synced has its NetSapiens reseller value configured.
+6. Start the application:
+
+   python -m uvicorn app.main:app --reload
+
+7. Open DigiCloud > Domains and click Sync Domains.
+
+IMPORTANT
+- The sync is read-only toward NetSapiens. It does not create, update, or delete anything on the NetSapiens platform.
+- A NetSapiens domain name already assigned locally to another organization is skipped and reported as a warning.
+- If the NetSapiens deployment returns a nonstandard response shape, save the traceback/API response so the collection parser can be adjusted precisely.

@@ -1,0 +1,17 @@
+{% extends "base.html" %}{% block content %}
+{% set page_title = "Open Orders" if view == "open" else "FOC Orders" if view == "foc" else "Exceptions" if view == "exception" else "Completed Ports" if view == "completed" else "Port Orders" %}
+{% set page_description = "Active submitted orders still in progress." if view == "open" else "Orders with a Firm Order Commitment that are awaiting completion." if view == "foc" else "Port orders that require attention." if view == "exception" else "Completed or closed port-in orders." if view == "completed" else "Past and current account-level port-in orders." %}
+<div class="page-head"><div><div class="eyebrow">Porting</div><h1>{{ page_title }}</h1><p>{{ page_description }}</p></div><a class="btn btn-primary" href="/ports/new">New Port</a></div>
+<ul class="nav nav-tabs mb-3">
+  <li class="nav-item"><a class="nav-link {{ 'active' if view == 'all' else '' }}" href="/ports">All</a></li>
+  <li class="nav-item"><a class="nav-link {{ 'active' if view == 'open' else '' }}" href="/ports?view=open">Open</a></li>
+  <li class="nav-item"><a class="nav-link" href="/ports/drafts">Drafts</a></li>
+  <li class="nav-item"><a class="nav-link {{ 'active' if view == 'foc' else '' }}" href="/ports?view=foc">FOC</a></li>
+  <li class="nav-item"><a class="nav-link {{ 'active' if view == 'exception' else '' }}" href="/ports?view=exception">Exceptions</a></li>
+  <li class="nav-item"><a class="nav-link {{ 'active' if view == 'completed' else '' }}" href="/ports?view=completed">Completed</a></li>
+  <li class="nav-item ms-auto"><a class="nav-link" href="/ports/port-outs">Port Outs</a></li>
+</ul>
+{% if error %}<div class="alert alert-danger"><strong>{{error.message}}</strong><details><summary>Diagnostics</summary><pre>{{error.payload}}</pre></details></div>{% endif %}
+<form class="panel p-3 mb-3"><input type="hidden" name="view" value="{{ view }}"><div class="row g-2 align-items-end"><div class="col-md-8"><label class="form-label">Filter by Sub Account</label><select class="form-select" name="site_id"><option value="">All Sub Accounts</option>{% for s in sites %}<option value="{{s.id}}" {% if s.id|string == selected_site_id|string %}selected{% endif %}>{{s.name}}</option>{% endfor %}</select></div><div class="col-md-4"><button class="btn btn-outline-primary w-100">Apply filter</button></div></div></form>
+<div class="panel"><div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>BTN / Number</th><th>Status</th><th>Order</th><th>Carrier</th><th>Qty</th><th>Last Updated</th><th></th></tr></thead><tbody>{% for p in portins %}<tr><td><strong>{{p.billingPhoneNumber or p.displayNumber or '—'}}</strong></td><td><span class="badge text-bg-secondary">{{p.processingStatus or 'Unknown'}}</span></td><td><code>{{p.orderId}}</code></td><td>{{p.losingCarrierName or '—'}}</td><td>{{p.countOfPhoneNumbers or p.numberCount or '—'}}</td><td>{{p.lastModifiedDate or '—'}}</td><td><a class="btn btn-sm btn-outline-primary" href="/ports/{{p.orderId}}">View</a></td></tr>{% else %}<tr><td colspan="7" class="empty-state">No {{ page_title|lower }} were returned for this account/filter.</td></tr>{% endfor %}</tbody></table></div></div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% if estimate.status == 'won' %}
+<section class="card mb-4 border-success">
+  <div class="card-header px-4 py-3 bg-success-subtle"><strong><i class="fa-solid fa-circle-check me-2"></i>Estimate Won</strong></div>
+  <div class="card-body p-4">
+    <div><strong>Accepted by:</strong> {{ estimate.accepted_by_name }}</div>
+    <div><strong>Email:</strong> {{ estimate.accepted_by_email }}</div>
+    <div><strong>Accepted:</strong> {{ (estimate.accepted_at|local_datetime).strftime('%m/%d/%Y %I:%M %p') if estimate.accepted_at else 'Recorded internally' }}</div>
+    {% if estimate.accepted_signature_data %}<img class="img-fluid border rounded mt-3 bg-white" style="max-height:120px" src="{{ estimate.accepted_signature_data }}" alt="Customer signature">{% endif %}
+  </div>
+  {% if can('estimates.manage') %}<form class="card-footer p-3" method="post" action="/estimates/{{ estimate.id }}/copy-to-job">
+    <label class="form-label fw-semibold">Convert accepted option to a job</label>
+    <select class="form-select mb-2" name="option_id" required><option value="">Select accepted option</option>{% for option in estimate.options if option.id in won_option_ids %}<option value="{{ option.id }}">{{ option.name }} · ${{ '%.2f'|format(option.total) }}</option>{% endfor %}</select>
+    <select class="form-select mb-3" name="job_id" required><option value="">Select customer job</option>{% for job in jobs %}<option value="{{ job.id }}">{{ job.job_number }} · {{ job.summary }}</option>{% endfor %}</select>
+    {% if jobs %}<button class="btn btn-success w-100"><i class="fa-solid fa-briefcase me-2"></i>Convert to Job</button>{% else %}<a class="btn btn-primary w-100" href="/jobs/new?customer_id={{ estimate.customer_id }}">Create Job First</a>{% endif %}
+  </form>{% endif %}
+</section>
+{% endif %}

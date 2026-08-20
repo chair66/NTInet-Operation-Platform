@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Edit Port Schedule | NTInet Operations{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">Porting</div><h1>Edit activation date &amp; time</h1><p>{{ order_id }}</p></div><a class="btn btn-outline-secondary" href="/ports/{{ order_id }}">Back to Port</a></div>
+{% if error %}<div class="alert alert-danger"><strong>{{ error.message }}</strong></div>{% endif %}
+<section class="panel p-4 mb-3">
+  <div class="row g-3">
+    <div class="col-md-4"><span class="port-detail-label">Current requested activation</span><strong class="d-block fs-5">{{ current_requested_display or 'Not set' }}</strong></div>
+    <div class="col-md-4"><span class="port-detail-label">Current FOC</span><strong class="d-block fs-5">{{ current_foc_display or 'Not assigned' }}</strong></div>
+    <div class="col-md-4"><span class="port-detail-label">Port handling</span><strong class="d-block fs-5">{{ profile.label }}</strong></div>
+  </div>
+</section>
+<form method="post" class="panel p-4">
+  {% if earliest_estimate %}<div class="alert alert-light border"><span class="port-detail-label">Current earliest available date</span><strong class="d-block">{{ earliest_display or earliest_estimate }}</strong></div>{% endif %}
+  <div class="row g-3 align-items-end">
+    <div class="col-lg-6"><label class="form-label fw-semibold">Requested activation date</label><input class="form-control" type="date" name="requested_date" value="{{ requested_date }}" {% if earliest_estimate %}min="{{ earliest_estimate[:10] }}"{% endif %} required></div>
+    <div class="col-lg-6"><label class="form-label fw-semibold">Requested activation time (ET)</label><input class="form-control" type="time" name="requested_time" value="{{ requested_time }}" {% if not time_editable %}readonly{% endif %}><div class="form-text">{% if time_editable %}Bandwidth allows the activation time to be changed for this order profile.{% else %}The activation time is locked for this order; NOP preserves the current provider time when the date changes.{% endif %}</div></div>
+  </div>
+  <div class="d-flex justify-content-end gap-2 mt-4"><a class="btn btn-outline-secondary" href="/ports/{{ order_id }}">Cancel</a><button class="btn btn-primary" type="submit">Save changes</button></div>
+</form>
+{% endblock %}

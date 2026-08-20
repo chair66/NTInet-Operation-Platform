@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}{% if number %}Manage {{ number.telephone_number }}{% else %}Add Phone Number to Domain{% endif %}{% endblock %}
+{% block content %}
+{% set settings = live_settings if live_settings is defined else {'treatment':'available','destination_user':'','enabled':true,'description':''} %}
+<div class="container-fluid py-3">
+  <div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+      <div class="eyebrow">DigiCloud · Phone Numbers · Manage Number</div>
+      {% if number %}
+      <h1 class="h3 mb-0">Manage Phone Number</h1>
+      <div class="h5 text-muted mt-1 mb-0">{{ number.telephone_number }}</div>
+      {% else %}
+      <h1 class="h3 mb-0">Add Phone Number to Domain</h1>
+      {% endif %}
+    </div>
+    <a class="btn btn-outline-secondary" href="/digicloud/phone-numbers">Back to Phone Numbers</a>
+  </div>
+
+  {% if request.query_params.get('notice') %}
+  <div class="alert alert-success d-flex align-items-start gap-2 mb-3" role="alert">
+    <i class="fa-solid fa-circle-check mt-1"></i>
+    <div><strong>Success!</strong> {{ request.query_params.get('notice') }}</div>
+  </div>
+  {% endif %}
+
+
+  <div class="card shadow-sm mb-3">
+    <div class="card-header fw-semibold">Domain Assignment</div>
+    <div class="card-body">
+      {% if not number and organizations|length > 1 %}
+      <form method="get" action="/digicloud/phone-numbers/new" class="mb-3">
+        <label class="form-label" for="organization-picker">Organization</label>
+        <select class="form-select" id="organization-picker" name="organization_id" onchange="this.form.submit()">
+          {% for organization in organizations %}
+          <option value="{{ organization.id }}" {% if organization.id == selected_org_id %}selected{% endif %}>{{ organization.name }}</option>
+          {% endfor %}
+        </select>
+      </form>
+      {% endif %}
+
+      <div class="row g-4">
+        <div class="col-xl-9">
+          <form id="number-assignment-form" method="post" action="{% if number %}/digicloud/phone-numbers/{{ number.id }}/assign{% else %}/digicloud/phone-numbers{% endif %}">
+            <input type="hidden" name="organization_id" value="{{ selected_org_id }}">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label" for="telephone-number">Phone Number</label>
+                <input class="form-control" id="telephone-number" name="telephone_number" value="{{ number.telephone_number if number else '' }}" {% if number %}readonly{% endif %} required>
+                <div class="form-text">Enter a 10-digit US number. DigiCloud saves the number in normalized format.</div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="domain-id">Domain</label>
+                <select class="form-select" id="domain-id" name="domain_id" required>
+                  <option value="">Select a domain</option>
+                  {% for domain in domains %}
+                  <option value="{{ domain.id }}" {% if number and number.domain_id == domain.id %}selected{% endif %}>{{ domain.domain_name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="treatment">Assignment / Treatment</label>
+                <select class="form-select" id="treatment" name="treatment">
+                  <option value="available" {% if settings.treatment == 'available' %}selected{% endif %}>Available Number</option>
+                  <option value="user" {% if settings.treatment == 'user' %}selected{% endif %}>User / Extension</option>
+                  <option value="conference" {% if settings.treatment == 'conference' %}selected{% endif %}>Conference</option>
+                  <option value="voicemail" {% if settings.treatment == 'voicemail' %}selected{% endif %}>Voicemail</option>
+                  <option value="auto_attendant" {% if settings.treatment == 'auto_attendant' %}selected{% endif %}>Auto Attendant</option>
+                  <option value="sip_trunk" {% if settings.treatment == 'sip_trunk' %}selected{% endif %}>SIP Trunk</option>
+                </select>
+                <div class="form-text">If no treatment is selected, Available Number is used and the number remains in the selected domain.</div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="destination-user">Destination</label>
+                <input class="form-control" id="destination-user" name="destination_user" value="{{ settings.destination_user }}" placeholder="Enter user, extension, conference, voicemail, attendant, or trunk">
+                <div class="form-text" id="destination-help">Leave blank when treatment is Available Number.</div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="description">Description <span class="text-muted fw-normal">(Optional)</span></label>
+                <input class="form-control" id="description" name="description" value="{{ settings.description }}" placeholder="Main office number">
+                <div class="form-text">Optional description for this number.</div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label d-block" for="enabled">Enable Number</label>
+                <div class="form-check form-switch pt-2">
+                  <input class="form-check-input" type="checkbox" role="switch" id="enabled" name="enabled" value="yes" {% if settings.enabled %}checked{% endif %}>
+                  <label class="form-check-label" for="enabled"><span id="enabled-label">{{ 'Enabled' if settings.enabled else 'Disabled' }}</span></label>
+                </div>
+                <div class="form-text">Disable to prevent this number from receiving calls.</div>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 mt-4">
+              <button class="btn btn-primary" type="submit">{% if number %}Save Changes{% else %}Add Number{% endif %}</button>
+              <a class="btn btn-outline-secondary" href="/digicloud/phone-numbers">Cancel</a>
+            </div>
+          </form>
+        </div>
+
+        <div class="col-xl-3">
+          <div class="border rounded-3 p-3 bg-warning-subtle h-100">
+            <h2 class="h6 mb-3"><i class="fa-regular fa-lightbulb me-2"></i>Number Assignment Guide</h2>
+            <div class="small">
+              <p class="text-danger fw-bold mb-1">REMOVE FROM DOMAIN</p>
+              <p>Removes the number from its current <strong>DigiCloud domain</strong> and places it in <strong>NOP Phone Numbers</strong> as <strong>Available</strong> for future assignment. The number is not removed from your carrier account.</p>
+              <hr>
+              <p class="text-danger fw-bold mb-1">MOVE / REASSIGN</p>
+              <p>Assign the number to another <strong>DigiCloud domain</strong> or change its treatment. If no treatment is selected, the number remains in the selected DigiCloud domain and is assigned the <strong>Available Number</strong> treatment.</p>
+              <hr>
+              <p class="text-danger fw-bold mb-1">REMOVE FROM CARRIER</p>
+              <p class="mb-0">Removing a number from your carrier account is performed through <strong>LNP Management</strong>. This page manages <strong>DigiCloud phone number assignments only</strong>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="border rounded-3 p-3 bg-warning-subtle">
+    <h2 class="h6 mb-2"><i class="fa-regular fa-bell me-2"></i>Important Notes</h2>
+    <ul class="small mb-0">
+      <li>Removing a number from a <strong>DigiCloud domain</strong> removes it from that domain and places it in <strong>NOP Phone Numbers</strong> as <strong>Available</strong> for future assignment.</li>
+      <li>This action does <strong>not</strong> remove the number from your carrier account.</li>
+      <li>To permanently remove a number from your carrier account, use <strong>LNP Management</strong>.</li>
+    </ul>
+  </div>
+</div>
+
+
+
+<script>
+(function () {
+  const treatment = document.getElementById('treatment');
+  const destination = document.getElementById('destination-user');
+  const help = document.getElementById('destination-help');
+  const enabled = document.getElementById('enabled');
+  const enabledLabel = document.getElementById('enabled-label');
+
+  const destinationText = {
+    available: 'Leave blank when treatment is Available Number.',
+    user: 'Enter the user or extension, for example 1000.',
+    conference: 'Enter the conference destination.',
+    voicemail: 'Enter the voicemail destination or mailbox.',
+    auto_attendant: 'Enter the auto attendant destination.',
+    sip_trunk: 'Enter the SIP trunk destination.'
+  };
+
+  function updateTreatment() {
+    const value = treatment.value || 'available';
+    const available = value === 'available';
+    destination.disabled = available;
+    destination.required = !available;
+    if (available) destination.value = '';
+    help.textContent = destinationText[value] || destinationText.available;
+  }
+
+  function updateEnabled() {
+    enabledLabel.textContent = enabled.checked ? 'Enabled' : 'Disabled';
+  }
+
+  treatment.addEventListener('change', updateTreatment);
+  enabled.addEventListener('change', updateEnabled);
+  updateTreatment();
+  updateEnabled();
+})();
+</script>
+{% endblock %}

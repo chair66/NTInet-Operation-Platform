@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}DigiCloud Phone Numbers{% endblock %}
+{% block content %}
+<div class="digicloud-domain-page">
+  <div class="digicloud-domain-titlebar">
+    <div>
+      <div class="eyebrow">DigiCloud</div>
+      <h1>Phone Numbers</h1>
+    </div>
+    <form method="post" action="/digicloud/phone-numbers/sync" class="m-0">
+      <button class="digicloud-refresh" type="submit" title="Sync phone numbers from NetSapiens" aria-label="Sync phone numbers from NetSapiens">
+        <i class="fa-solid fa-rotate"></i>
+      </button>
+    </form>
+  </div>
+
+  {% if request.query_params.get('notice') %}
+  <div class="alert alert-success d-flex align-items-start gap-2 mb-3" role="alert">
+    <i class="fa-solid fa-circle-check mt-1"></i>
+    <div><strong>Success!</strong> {{ request.query_params.get('notice') }}</div>
+  </div>
+  {% endif %}
+  {% if request.query_params.get('error') %}
+  <div class="alert alert-danger d-flex align-items-start gap-2 mb-3" role="alert">
+    <i class="fa-solid fa-circle-exclamation mt-1"></i>
+    <div>{{ request.query_params.get('error') }}</div>
+  </div>
+  {% endif %}
+
+  <div class="digicloud-domain-toolbar">
+    <form class="digicloud-domain-search" method="get" action="/digicloud/phone-numbers">
+      <div class="input-group input-group-sm">
+        <input
+          class="form-control"
+          type="search"
+          name="q"
+          value="{{ q }}"
+          placeholder="Search by phone number"
+          aria-label="Search phone numbers"
+        >
+        <button class="btn btn-outline-secondary" type="submit" title="Search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <span class="visually-hidden">Search</span>
+        </button>
+      </div>
+    </form>
+
+    <div class="d-flex align-items-center gap-2">
+      <a class="btn btn-sm btn-outline-primary" href="/digicloud/phone-numbers/new">
+        <i class="fa-solid fa-plus me-1"></i>Add Number
+      </a>
+      <span class="badge text-bg-light border">NetSapiens inventory</span>
+      <form method="post" action="/digicloud/phone-numbers/sync" class="m-0">
+        <button class="btn btn-sm btn-primary" type="submit">
+          <i class="fa-solid fa-rotate me-1"></i>Sync Phone Numbers
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="digicloud-domain-table-wrap">
+    <div class="table-responsive">
+      <table class="table digicloud-domain-table mb-0">
+        <thead>
+          <tr>
+            <th>Phone Number</th>
+            <th>Domain</th>
+            <th>Organization</th>
+            <th>Status</th>
+            <th>Notes</th>
+            <th>Updated</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for number in numbers %}
+          <tr>
+            <td><strong>{{ number.telephone_number }}</strong></td>
+            <td>
+              {% if number.domain %}
+              <a class="digicloud-domain-name" href="/digicloud/domains/{{ number.domain.id }}">{{ number.domain.domain_name }}</a>
+              {% else %}
+              <span class="text-muted">Available</span>
+              {% endif %}
+            </td>
+            <td>{{ number.organization.name if number.organization else '—' }}</td>
+            <td>
+              <span class="digicloud-status digicloud-status-{{ number.status }}">
+                <span></span>{{ number.status|replace('_', ' ')|title }}
+              </span>
+            </td>
+            <td>{{ number.notes or '—' }}</td>
+            <td class="digicloud-domain-updated">
+              {{ number.updated_at.strftime('%b %d, %Y') if number.updated_at else '—' }}
+            </td>
+            <td class="text-end">
+              <div class="d-inline-flex gap-2" role="group" aria-label="Phone number actions">
+                <a
+                  class="btn btn-sm btn-outline-secondary rounded-circle digicloud-action-icon"
+                  href="/digicloud/phone-numbers/{{ number.id }}/manage"
+                  title="Edit phone number"
+                  aria-label="Edit {{ number.telephone_number }}"
+                >
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </a>
+                <a
+                  class="btn btn-sm btn-outline-danger rounded-circle digicloud-action-icon"
+                  href="/digicloud/phone-numbers/{{ number.id }}/delete"
+                  title="Delete from DigiCloud and NOP"
+                  aria-label="Delete {{ number.telephone_number }} from DigiCloud and NOP"
+                >
+                  <i class="fa-solid fa-xmark"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="7" class="digicloud-domain-empty">
+              <i class="fa-solid fa-phone"></i>
+              <strong>No phone numbers found</strong>
+              <span>{% if q %}Try a different number or clear the search.{% else %}Click Sync Phone Numbers to import the live NetSapiens inventory.{% endif %}</span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="digicloud-domain-footer">
+    {{ numbers|length }} phone number{% if numbers|length != 1 %}s{% endif %}
+    {% if q %}shown{% endif %}
+  </div>
+</div>
+{% endblock %}

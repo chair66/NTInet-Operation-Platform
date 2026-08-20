@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Create Customer · {{ app_name }}{% endblock %}
+{% block content %}
+{% set v = values or {} %}
+<div class="page-header"><div><div class="eyebrow">Customer Management · Staff Only</div><h1>Create Customer and Services</h1><p>Step 1 of 3: create the authoritative NOP customer and linked Platypus billing account.</p></div></div>
+{% if error %}<div class="alert alert-danger"><strong>Customer setup is incomplete.</strong> {{ error }}</div>{% endif %}
+{% if customer %}<div class="alert alert-warning">NOP customer {{ customer.customer_number }} is saved. Retry will reuse this record and will not create another NOP customer.</div>{% endif %}
+<form method="post" class="panel p-4">
+  {% if customer %}<input type="hidden" name="local_customer_id" value="{{ customer.id }}">{% endif %}
+  <h2 class="h5">Customer information</h2>
+  <div class="row g-3">
+    <div class="col-md-6"><label class="form-label">Customer or business name</label><input class="form-control" name="name" value="{{ v.name or (customer.name if customer else '') }}" required></div>
+    <div class="col-md-3"><label class="form-label">Contact first name</label><input class="form-control" name="first_name" value="{{ v.first_name or '' }}" required></div>
+    <div class="col-md-3"><label class="form-label">Contact last name</label><input class="form-control" name="last_name" value="{{ v.last_name or '' }}"></div>
+    <div class="col-md-6"><label class="form-label">Billing email / portal username</label><input class="form-control" type="email" name="email" value="{{ v.email or (customer.billing_email if customer else '') }}" required></div>
+    <div class="col-md-3"><label class="form-label">Phone</label><input class="form-control" name="phone" value="{{ v.phone or (customer.billing_phone if customer else '') }}" required></div>
+    <div class="col-md-3"><label class="form-label">Platypus store ID</label><input class="form-control" name="store_id" value="{{ v.store_id or '1' }}" required></div>
+  </div>
+  <h2 class="h5 mt-4">Primary service and billing address</h2>
+  <div class="row g-3">
+    <div class="col-md-8"><label class="form-label">Address</label><input class="form-control" name="address_line_1" value="{{ v.address_line_1 or '' }}" required></div>
+    <div class="col-md-4"><label class="form-label">Address line 2</label><input class="form-control" name="address_line_2" value="{{ v.address_line_2 or '' }}"></div>
+    <div class="col-md-5"><label class="form-label">City</label><input class="form-control" name="city" value="{{ v.city or '' }}" required></div>
+    <div class="col-md-2"><label class="form-label">State</label><input class="form-control text-uppercase" maxlength="2" name="state" value="{{ v.state or 'SC' }}" required></div>
+    <div class="col-md-3"><label class="form-label">ZIP</label><input class="form-control" name="postal_code" value="{{ v.postal_code or '' }}" required></div>
+    <div class="col-md-2"><label class="form-label">Country</label><input class="form-control text-uppercase" maxlength="2" name="country" value="{{ v.country or 'US' }}" required></div>
+  </div>
+  <div class="alert alert-info mt-4">Rates are deliberately added after Platypus returns the customer ID. This prevents duplicate customers or untraceable rate assignments if a later service fails.</div>
+  <div class="d-flex gap-2"><button class="btn btn-primary" type="submit">Create Customer and Continue</button><a class="btn btn-outline-secondary" href="/customers">Cancel</a></div>
+</form>
+{% endblock %}

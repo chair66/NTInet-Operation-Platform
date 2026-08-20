@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}DigiCloud API Inspector{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
+  <div>
+    <div class="eyebrow">DigiCloud · Developer Tools</div>
+    <h1>API Inspector</h1>
+    <p>Raw, read-only API diagnostics for <strong>{{ username }}</strong> in <strong>{{ selected_domain.domain_name }}</strong>. Authentication secrets are masked.</p>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <a class="btn btn-outline-primary" href="/digicloud/admin/api-inspector/user?domain={{ selected_domain.domain_name|urlencode }}&username={{ username|urlencode }}">Refresh</a>
+    <a class="btn btn-outline-secondary" href="/digicloud/users/{{ username|urlencode }}/edit?domain={{ selected_domain.domain_name|urlencode }}">Back to Profile</a>
+  </div>
+</div>
+<div class="alert alert-warning"><strong>Super-admin diagnostic view.</strong> Do not copy customer data into tickets or email unless necessary. Tokens, API keys, passwords, and authorization values are not displayed.</div>
+{% for title, item in [('Single-user detail endpoint', detail), ('Domain user-list endpoint', collection)] %}
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <strong>{{ title }}</strong>
+    {% if item.response.status_code %}<span class="badge {% if item.response.status_code < 400 %}text-bg-success{% else %}text-bg-danger{% endif %}">HTTP {{ item.response.status_code }}</span>{% endif %}
+  </div>
+  <div class="card-body">
+    <dl class="row small">
+      <dt class="col-sm-2">Method</dt><dd class="col-sm-10"><code>{{ item.request.method }}</code></dd>
+      <dt class="col-sm-2">URL</dt><dd class="col-sm-10 text-break"><code>{{ item.request.url }}</code></dd>
+      <dt class="col-sm-2">Headers</dt><dd class="col-sm-10"><pre class="bg-light border rounded p-3 mb-0">{{ item.request.headers | tojson(indent=2) }}</pre></dd>
+    </dl>
+    {% if item.error %}<div class="alert alert-danger">{{ item.error }}</div>{% endif %}
+    <label class="form-label fw-semibold">Raw response body</label>
+    <pre class="bg-dark text-light rounded p-3 overflow-auto" style="max-height: 38rem; white-space: pre-wrap;">{{ item.response.body | tojson(indent=2) }}</pre>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}

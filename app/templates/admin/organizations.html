@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Organizations | NTInet Operations{% endblock %}
+{% block content %}
+<div class="page-heading d-flex justify-content-between align-items-start gap-3">
+  <div><h1>Organizations</h1><p>Manage NTInet staff and reseller organizations.</p></div>
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newOrganizationModal"><i class="fa-solid fa-plus me-2"></i>New Organization</button>
+</div>
+{% if request.query_params.get('notice') %}<div class="alert alert-success">{{ request.query_params.get('notice') }}</div>{% endif %}
+{% if request.query_params.get('error') %}<div class="alert alert-danger">{{ request.query_params.get('error') }}</div>{% endif %}
+
+<div class="row g-3 mb-4">
+  <div class="col-md"><div class="panel h-100 p-3"><div class="text-muted small">Organizations</div><div class="fs-3 fw-bold">{{ counts.organizations }}</div></div></div>
+  <div class="col-md"><div class="panel h-100 p-3"><div class="text-muted small">Active</div><div class="fs-3 fw-bold">{{ counts.active }}</div></div></div>
+  <div class="col-md"><div class="panel h-100 p-3"><div class="text-muted small">Suspended</div><div class="fs-3 fw-bold">{{ counts.suspended }}</div></div></div>
+  <div class="col-md"><div class="panel h-100 p-3"><div class="text-muted small">Disabled</div><div class="fs-3 fw-bold">{{ counts.disabled }}</div></div></div>
+  <div class="col-md"><div class="panel h-100 p-3"><div class="text-muted small">Users</div><div class="fs-3 fw-bold">{{ counts.users }}</div></div></div>
+</div>
+
+<div class="panel mb-4 p-3">
+  <form method="get" class="row g-3 align-items-end">
+    <div class="col-lg-5"><label class="form-label">Search</label><input class="form-control" name="q" value="{{ filters.q }}" placeholder="Name, display name, or slug"></div>
+    <div class="col-lg-3"><label class="form-label">Filter</label><select class="form-select" name="status_filter">
+      {% for value,label in [('all','All current'),('active','Active'),('suspended','Suspended'),('disabled','Disabled'),('deleted','Deleted'),('reseller','Resellers'),('staff','Staff')] %}<option value="{{ value }}" {{ 'selected' if filters.status_filter == value }}>{{ label }}</option>{% endfor %}
+    </select></div>
+    <div class="col-lg-2"><label class="form-label">Rows</label><select class="form-select" name="per_page">{% for size in [10,25,50,100] %}<option value="{{ size }}" {{ 'selected' if filters.per_page == size }}>{{ size }}</option>{% endfor %}</select></div>
+    <div class="col-lg-2 d-grid"><button class="btn btn-outline-primary">Apply</button></div>
+  </form>
+</div>
+
+<div class="panel">
+  <div class="table-responsive"><table class="table align-middle mb-0"><thead><tr>
+    <th>Organization</th><th>Type</th><th>Users</th><th>Modules</th><th>Status</th><th>Health</th><th>Last Activity</th><th></th>
+  </tr></thead><tbody>
+  {% for item in organizations %}{% set org=item.organization %}<tr>
+    <td><a class="fw-semibold text-decoration-none" href="/admin/organizations/{{ org.id }}">{{ org.effective_name }}</a><div class="small text-muted">{{ org.name }} · {{ org.slug }}</div></td>
+    <td><span class="badge text-bg-light">{{ org.organization_type|title }}</span></td>
+    <td>{{ item.active_user_count }} active <div class="small text-muted">{{ item.user_count }} total</div></td>
+    <td>{{ item.module_count }}</td>
+    <td>{% set status_class={'active':'success','suspended':'warning','disabled':'secondary','deleted':'dark'}.get(org.status,'secondary') %}<span class="badge text-bg-{{ status_class }}">{{ org.status|title }}</span></td>
+    <td>{% set health_class={'healthy':'success','warning':'warning','critical':'danger'}.get(item.health,'secondary') %}<span class="badge text-bg-{{ health_class }}" title="{{ item.health_detail }}">{{ item.health|title }}</span></td>
+    <td>{{ item.last_activity_at.strftime('%Y-%m-%d %H:%M') if item.last_activity_at else '—' }}</td>
+    <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="/admin/organizations/{{ org.id }}">Manage</a></td>
+  </tr>{% else %}<tr><td colspan="8" class="text-center py-5 text-muted">No organizations match these filters.</td></tr>{% endfor %}
+  </tbody></table></div>
+  <div class="d-flex justify-content-between align-items-center pt-3">
+    <div class="small text-muted">Showing {{ organization_page.first_item }}–{{ organization_page.last_item }} of {{ organization_page.total }}</div>
+    <div class="btn-group">
+      {% set prev=organization_page.page-1 %}{% set next=organization_page.page+1 %}
+      <a class="btn btn-sm btn-outline-secondary {{ 'disabled' if organization_page.page <= 1 }}" href="?q={{ filters.q|urlencode }}&status_filter={{ filters.status_filter }}&per_page={{ filters.per_page }}&page={{ prev }}">Previous</a>
+      <span class="btn btn-sm btn-outline-secondary disabled">Page {{ organization_page.page }} of {{ organization_page.pages }}</span>
+      <a class="btn btn-sm btn-outline-secondary {{ 'disabled' if organization_page.page >= organization_page.pages }}" href="?q={{ filters.q|urlencode }}&status_filter={{ filters.status_filter }}&per_page={{ filters.per_page }}&page={{ next }}">Next</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="newOrganizationModal" tabindex="-1" aria-labelledby="newOrganizationLabel" aria-hidden="true"><div class="modal-dialog modal-lg"><div class="modal-content"><form method="post" action="/admin/organizations">
+  <div class="modal-header"><h5 class="modal-title" id="newOrganizationLabel">New Organization</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+  <div class="modal-body"><div class="row g-3">
+    <div class="col-md-6"><label class="form-label">Legal name</label><input class="form-control" name="name" required maxlength="120"></div>
+    <div class="col-md-6"><label class="form-label">Display name</label><input class="form-control" name="display_name" maxlength="120"></div>
+    <div class="col-md-6"><label class="form-label">Type</label><select class="form-select" name="organization_type"><option value="reseller">Reseller</option><option value="staff">Staff</option></select></div>
+    <div class="col-md-6"><label class="form-label">Status</label><select class="form-select" name="status"><option value="active">Active</option><option value="suspended">Suspended</option><option value="disabled">Disabled</option></select></div>
+    <div class="col-12"><label class="form-label">Notes</label><textarea class="form-control" name="notes" rows="4"></textarea></div>
+    <div class="col-12"><div class="border rounded p-3 bg-light">
+      <div class="form-check"><input class="form-check-input" type="checkbox" name="create_digicloud_reseller" id="createDigiCloudReseller" checked><label class="form-check-label fw-semibold" for="createDigiCloudReseller">Create and link DigiCloud reseller</label></div>
+      <div class="mt-2"><label class="form-label">DigiCloud Reseller ID</label><input class="form-control" name="digicloud_reseller_id" placeholder="xyz-telecom"><div class="form-text">Leave blank to generate from the organization name. The ID is treated as permanent after creation.</div></div>
+    </div></div>
+  </div></div>
+  <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary">Create Organization</button></div>
+</form></div></div></div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Provider Health | NOP{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Administration</div>
+    <h1>Provider Health</h1>
+    <p>Configuration and live connectivity status for external systems used by NOP.</p>
+  </div>
+  <form method="post" action="/admin/providers/check">
+    <button class="btn btn-outline-primary"><i class="fa-solid fa-rotate me-2"></i>Run Health Checks</button>
+  </form>
+</div>
+
+{% if notice %}<div class="alert alert-success"><i class="fa-solid fa-circle-check me-2"></i>{{ notice }}</div>{% endif %}
+
+<div class="row g-3">
+  {% for provider in providers %}
+  {% set status = provider.status if provider.status is defined else ('configured' if provider.configured else 'not_configured') %}
+  <div class="col-xl-6">
+    <div class="panel p-4 h-100">
+      <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+        <div>
+          <div class="eyebrow">{{ provider.provider_type if provider.provider_type is defined else provider.type }}</div>
+          <h2 class="h5 mb-1">{{ provider.name }}</h2>
+          <div class="text-muted small">Environment: {{ provider.environment|title }}</div>
+        </div>
+        {% if status == 'online' %}
+          <span class="badge text-bg-success">Online</span>
+        {% elif status == 'offline' %}
+          <span class="badge text-bg-danger">Unavailable</span>
+        {% elif provider.configured %}
+          <span class="badge text-bg-info">Configured</span>
+        {% else %}
+          <span class="badge text-bg-warning">Not configured</span>
+        {% endif %}
+      </div>
+      <p class="text-muted mb-3">{{ provider.detail }}</p>
+      <dl class="row small mb-0">
+        <dt class="col-5">Provider ID</dt><dd class="col-7"><code>{{ provider.slug }}</code></dd>
+        <dt class="col-5">Response Time</dt><dd class="col-7">{{ provider.response_time_ms ~ ' ms' if provider.response_time_ms is defined and provider.response_time_ms is not none else 'Not tested' }}</dd>
+        <dt class="col-5">Capabilities</dt><dd class="col-7">{{ provider.capabilities|length if provider.capabilities is defined else '—' }}</dd>
+      </dl>
+    </div>
+  </div>
+  {% else %}
+  <div class="col-12"><div class="panel p-4">No providers are registered.</div></div>
+  {% endfor %}
+</div>
+
+<div class="alert alert-light border mt-4 mb-0 small">
+  Health checks are read-only. Secrets are never displayed or written to the provider log.
+</div>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}DigiCloud Domains{% endblock %}
+{% block content %}
+<div class="digicloud-domain-page">
+  <div class="digicloud-domain-titlebar">
+    <div>
+      <div class="eyebrow">DigiCloud</div>
+      <h1>Domains</h1>
+    </div>
+    <a class="digicloud-refresh" href="/digicloud/domains{% if query or status_filter %}?q={{ query|urlencode }}&status={{ status_filter|urlencode }}{% endif %}" title="Refresh domains" aria-label="Refresh domains">
+      <i class="fa-solid fa-rotate"></i>
+    </a>
+  </div>
+
+  {% if request.query_params.get('notice') %}
+  <div class="alert alert-success mb-3">{{ request.query_params.get('notice') }}</div>
+  {% endif %}
+  {% if request.query_params.get('error') %}
+  <div class="alert alert-danger mb-3">{{ request.query_params.get('error') }}</div>
+  {% endif %}
+
+  <div class="digicloud-domain-toolbar">
+    <form class="digicloud-domain-search" method="get" action="/digicloud/domains">
+      <div class="input-group input-group-sm">
+        <input
+          class="form-control"
+          type="search"
+          name="q"
+          value="{{ query }}"
+          placeholder="Enter a domain name or description"
+          aria-label="Search domains"
+        >
+        <select class="form-select digicloud-status-filter" name="status" aria-label="Filter by status">
+          <option value="">All statuses</option>
+          <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+          <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+        </select>
+        <button class="btn btn-outline-secondary" type="submit" title="Search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <span class="visually-hidden">Search</span>
+        </button>
+      </div>
+    </form>
+
+    {% if can('digicloud.domains.manage') %}
+    <div class="d-flex gap-2">
+      <form method="post" action="/digicloud/domains/sync">
+        <button class="btn btn-outline-primary btn-sm" type="submit">
+          <i class="fa-solid fa-arrows-rotate me-1"></i>Sync Domains
+        </button>
+      </form>
+      {% if current_user and current_user.is_superuser and can('digicloud.settings') %}
+      <a class="btn btn-outline-secondary btn-sm" href="/digicloud/domains/assignments">
+        <i class="fa-solid fa-right-left me-1"></i>Resolve Assignments
+      </a>
+      {% endif %}
+      <a class="btn btn-primary btn-sm digicloud-add-domain" href="/digicloud/domains/new">
+        <i class="fa-solid fa-plus me-1"></i>Add Domain
+      </a>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="digicloud-domain-table-wrap">
+    <div class="table-responsive">
+      <table class="table digicloud-domain-table mb-0">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Reseller</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Updated</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for domain in domains %}
+          <tr>
+            <td>
+              <a class="digicloud-domain-name" href="/digicloud/domains/{{ domain.id }}/edit">{{ domain.domain_name }}</a>
+            </td>
+            <td>{{ domain.netsapiens_reseller or '—' }}</td>
+            <td>{{ domain.description or '—' }}</td>
+            <td>
+              <span class="digicloud-status digicloud-status-{{ domain.status }}">
+                <span></span>{{ domain.status|title }}
+              </span>
+            </td>
+            <td class="digicloud-domain-updated">
+              {{ domain.updated_at.strftime('%b %d, %Y') if domain.updated_at else '—' }}
+            </td>
+            <td class="text-end digicloud-domain-actions">
+              {% if can('digicloud.domains.manage') %}
+              <a href="/digicloud/domains/{{ domain.id }}/edit" title="Edit {{ domain.domain_name }}" aria-label="Edit {{ domain.domain_name }}">
+                <i class="fa-regular fa-pen-to-square"></i>
+              </a>
+              {% endif %}
+              {% if can('digicloud.domains.delete') %}
+              <a class="danger" href="/digicloud/domains/{{ domain.id }}/delete" title="Delete {{ domain.domain_name }}" aria-label="Delete {{ domain.domain_name }}">
+                <i class="fa-regular fa-circle-xmark"></i>
+              </a>
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="6" class="digicloud-domain-empty">
+              <i class="fa-regular fa-folder-open"></i>
+              <strong>No domains found</strong>
+              <span>{% if query or status_filter %}Try changing the search or status filter.{% else %}Create the first DigiCloud domain for this organization.{% endif %}</span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="digicloud-domain-footer">
+    {{ domains|length }} domain{% if domains|length != 1 %}s{% endif %}
+    {% if query or status_filter %}shown{% endif %}
+  </div>
+</div>
+{% endblock %}

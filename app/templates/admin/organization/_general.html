@@ -1,0 +1,36 @@
+<div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab" tabindex="0">
+  <div class="row g-4">
+    <div class="col-xl-8">
+      <div class="panel">
+        <div class="panel-body">
+          <h2 class="h5 mb-3">Organization details</h2>
+          <form method="post" action="/admin/organizations/{{ org.id }}/edit">
+            <div class="row g-3">
+              <div class="col-md-6"><label class="form-label">Legal name</label><input class="form-control" name="name" value="{{ org.name }}" required maxlength="120"></div>
+              <div class="col-md-6"><label class="form-label">Display name</label><input class="form-control" name="display_name" value="{{ org.display_name or '' }}" maxlength="120"></div>
+              <div class="col-md-6"><label class="form-label">Type</label><select class="form-select" name="organization_type"><option value="reseller" {{ 'selected' if org.organization_type == 'reseller' }}>Reseller</option><option value="staff" {{ 'selected' if org.organization_type == 'staff' }}>Staff</option></select></div>
+              <div class="col-md-6"><label class="form-label">Status</label><select class="form-select" name="status" {{ 'disabled' if org.is_deleted }}><option value="active" {{ 'selected' if org.status == 'active' }}>Active</option><option value="suspended" {{ 'selected' if org.status == 'suspended' }}>Suspended</option><option value="disabled" {{ 'selected' if org.status == 'disabled' }}>Disabled</option></select></div>
+              <div class="col-12"><label class="form-label">Notes</label><textarea class="form-control" name="notes" rows="5">{{ org.notes }}</textarea></div>
+            </div>
+            {% if not org.is_deleted %}<button class="btn btn-primary mt-3">Save organization</button>{% endif %}
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-4">
+      <div class="panel mb-4"><div class="panel-body"><h2 class="h5 mb-2">Statistics</h2><dl class="row small statistics-list"><dt class="col-7">Users</dt><dd class="col-5 text-end">{{ summary.user_count }}</dd><dt class="col-7">Active users</dt><dd class="col-5 text-end">{{ summary.active_user_count }}</dd><dt class="col-7">Roles</dt><dd class="col-5 text-end">{{ summary.role_count }}</dd><dt class="col-7">Enabled modules</dt><dd class="col-5 text-end">{{ summary.module_count }}</dd><dt class="col-7">Last login</dt><dd class="col-5 text-end">{{ summary.last_login_at.strftime('%Y-%m-%d') if summary.last_login_at else '—' }}</dd></dl></div></div>
+      <div class="panel"><div class="panel-body"><h2 class="h5 mb-3">Lifecycle</h2>
+        {% if org.is_deleted %}
+          <form method="post" action="/admin/organizations/{{ org.id }}/restore"><button class="btn btn-outline-primary w-100" type="submit">Restore organization</button></form>
+        {% elif org.is_protected %}
+          <button class="btn btn-outline-danger w-100" type="button" disabled>Delete organization</button>
+          <p class="form-text mb-0 mt-2">This is the protected NTInet system organization and cannot be deleted.</p>
+        {% else %}
+          <form method="post" action="/admin/organizations/{{ org.id }}/delete" data-delete-confirm data-delete-subject="organization {{ org.effective_name }}">
+            <button class="btn btn-outline-danger w-100" type="submit">Delete organization</button>
+          </form>
+        {% endif %}
+      </div></div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}My Account · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Account</div>
+    <h1>My Account</h1>
+    <p>Manage your profile, password, and account security.</p>
+  </div>
+  <a class="btn btn-outline-secondary" href="/account/security"><i class="fa-solid fa-shield-halved me-2"></i>Security settings</a>
+</div>
+
+{% if request.query_params.get('success') %}<div class="alert alert-success"><i class="fa-solid fa-circle-check me-2"></i>{{ request.query_params.get('success') }}</div>{% endif %}
+{% if request.query_params.get('error') %}<div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation me-2"></i>{{ request.query_params.get('error') }}</div>{% endif %}
+
+<div class="row g-4 mb-4">
+  <div class="col-lg-4">
+    <div class="panel account-summary h-100">
+      <div class="account-avatar">{{ account_user.full_name[:1]|upper }}</div>
+      <h2>{{ account_user.full_name }}</h2>
+      <p>{{ account_user.email }}</p>
+      <div class="account-status"><span class="status-dot"></span> Active account</div>
+      <dl class="account-facts">
+        <div><dt>Organization</dt><dd>{{ account_user.organization.name }}</dd></div>
+        <div><dt>Roles</dt><dd>{{ account_user.roles|map(attribute='name')|join(', ') or 'No roles assigned' }}</dd></div>
+        <div><dt>Last login</dt><dd>{{ account_user.last_login_at.strftime('%b %d, %Y at %I:%M %p') if account_user.last_login_at else 'Not recorded' }}</dd></div>
+        <div><dt>Member since</dt><dd>{{ account_user.created_at.strftime('%b %d, %Y') }}</dd></div>
+      </dl>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="panel mb-4">
+      <div class="panel-header"><div><h2>Profile information</h2><p>Keep your name and sign-in email current.</p></div></div>
+      <form method="post" action="/account/profile" class="p-4">
+        <div class="row g-3">
+          <div class="col-md-6"><label class="form-label">Full name</label><input class="form-control" name="full_name" value="{{ account_user.full_name }}" maxlength="120" required></div>
+          <div class="col-md-6"><label class="form-label">Email address</label><input class="form-control" type="email" name="email" value="{{ account_user.email }}" maxlength="255" required></div>
+          <div class="col-12"><div class="form-text">Changing your email changes the address used to sign in.</div></div>
+          <div class="col-12"><button class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-2"></i>Save profile</button></div>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel" id="password">
+      <div class="panel-header"><div><h2>Change password</h2><p>Use a unique password with at least 12 characters.</p></div></div>
+      <form method="post" action="/account/password" class="p-4">
+        <div class="row g-3">
+          <div class="col-12"><label class="form-label">Current password</label><input class="form-control" type="password" name="current_password" autocomplete="current-password" required></div>
+          <div class="col-md-6"><label class="form-label">New password</label><input class="form-control" type="password" name="new_password" minlength="12" autocomplete="new-password" required></div>
+          <div class="col-md-6"><label class="form-label">Confirm new password</label><input class="form-control" type="password" name="confirm_password" minlength="12" autocomplete="new-password" required></div>
+          <div class="col-12"><button class="btn btn-primary"><i class="fa-solid fa-key me-2"></i>Change password</button></div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="panel h-100">
+      <div class="panel-header"><div><h2>Security overview</h2><p>Your current account protections.</p></div></div>
+      <div class="security-overview">
+        <div><span class="security-icon {{ 'enabled' if account_user.mfa_enabled else '' }}"><i class="fa-solid fa-mobile-screen-button"></i></span><div><strong>Multi-factor authentication</strong><small>{{ 'Enabled' if account_user.mfa_enabled else 'Not enabled' }}</small></div></div>
+        <div><span class="security-icon enabled"><i class="fa-solid fa-laptop"></i></span><div><strong>Trusted devices</strong><small>{{ active_device_count }} active</small></div></div>
+        <a href="/account/security">Manage security <i class="fa-solid fa-arrow-right ms-1"></i></a>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="panel h-100">
+      <div class="panel-header"><div><h2>Recent account activity</h2><p>Your latest sign-in and security events.</p></div></div>
+      {% if recent_activity %}<div class="activity-list">
+        {% for item in recent_activity %}<div class="activity-item"><span class="activity-icon"><i class="fa-solid fa-clock-rotate-left"></i></span><div><strong>{{ item.action|replace('.', ' ')|title }}</strong><small>{{ item.detail or 'Account activity' }} · {{ item.created_at.strftime('%b %d, %Y %I:%M %p') }}</small></div></div>{% endfor %}
+      </div>{% else %}<div class="empty-state">No account activity has been recorded yet.</div>{% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

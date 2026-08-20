@@ -1,0 +1,23 @@
+{% extends "base.html" %}{% block content %}
+<div class="page-head"><div><div class="eyebrow">Number inventory</div><h1>Review Number Move</h1><p>Verify the destination before submitting the live Bandwidth MoveTn order.</p></div></div>
+{% if error %}<div class="alert alert-danger"><strong>{{ error.message }}</strong>{% if error.payload %}<details class="mt-2"><summary>Bandwidth response</summary><pre class="json-viewer">{{ error.payload | tojson(indent=2) }}</pre></details>{% endif %}</div>{% endif %}
+<section class="panel p-4">
+  <dl class="row mb-4">
+    <dt class="col-sm-4">Telephone number</dt><dd class="col-sm-8"><strong>{{ tn }}</strong></dd>
+    <dt class="col-sm-4">Current location</dt><dd class="col-sm-8">{{ site_name }} / {{ location_name }}</dd>
+    <dt class="col-sm-4">Destination Sub Account</dt><dd class="col-sm-8">{{ destination_site.name }} ({{ destination_site.id }})</dd>
+    <dt class="col-sm-4">Destination Location</dt><dd class="col-sm-8">{{ destination_location.name }} ({{ destination_location.id }})</dd>
+    <dt class="col-sm-4">Customer order ID</dt><dd class="col-sm-8">{{ customer_order_id }}</dd>
+  </dl>
+  <div class="alert alert-warning">This is a live move. Location-level voice, messaging, E911, and line-feature settings may change.</div>
+  <form method="post" action="/sites/{{site_id}}/locations/{{location_id}}/numbers/{{tn}}/move">
+    <input type="hidden" name="destination_site_id" value="{{ destination_site.id }}">
+    <input type="hidden" name="destination_location_id" value="{{ destination_location.id }}">
+    <input type="hidden" name="customer_order_id" value="{{ customer_order_id }}">
+    <input type="hidden" name="site_name" value="{{ site_name }}">
+    <input type="hidden" name="location_name" value="{{ location_name }}">
+    <a class="btn btn-outline-secondary" href="/sites/{{site_id}}/locations/{{location_id}}/numbers/{{tn}}?site_name={{site_name}}&location_name={{location_name}}">Back</a>
+    <button class="btn btn-danger" type="submit">Confirm and Move Number</button>
+  </form>
+</section>
+{% endblock %}

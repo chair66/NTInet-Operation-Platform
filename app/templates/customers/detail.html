@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ customer.name or 'Customer' }} · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+  <div><div class="eyebrow">Platypus Customer #{{ profile.platypus_customer_id }}</div><h1>{{ customer.name or 'Unnamed customer' }}</h1><p>Live billing profile, rates, and services.</p></div>
+  <div class="d-flex flex-wrap gap-2">{% if local_customer_id %}{% if can("tickets.create") %}<a class="btn btn-primary" href="/tickets/new?customer_id={{ local_customer_id }}"><i class="fa-solid fa-ticket me-2"></i>Add Ticket</a>{% endif %}{% if can("jobs.create") %}<a class="btn btn-outline-primary" href="/jobs/new?customer_id={{ local_customer_id }}"><i class="fa-solid fa-screwdriver-wrench me-2"></i>Add Job</a>{% endif %}{% if can("estimates.create") %}<a class="btn btn-outline-primary" href="/estimates/new?customer_id={{ local_customer_id }}"><i class="fa-solid fa-file-signature me-2"></i>Add Estimate</a>{% endif %}{% if current_user.organization.is_staff %}<a class="btn btn-outline-danger" href="/customers/local/{{ local_customer_id }}/duplicate"><i class="fa-solid fa-code-merge me-2"></i>Merge / Delete</a>{% endif %}{% endif %}<a class="btn btn-outline-secondary" href="/customers"><i class="fa-solid fa-arrow-left me-2"></i>Customers</a></div>
+</div>
+
+{% if profile.staff_notes or profile.popup_notes %}
+<section class="panel border border-warning mb-4 overflow-hidden" id="customerNotesCard">
+  <div class="p-3 bg-warning-subtle border-bottom border-warning d-flex justify-content-between align-items-center gap-3">
+    <h2 class="h5 mb-0">Customer Notes</h2>
+    <button type="button" class="btn-close" aria-label="Close customer notes" title="Close" onclick="document.getElementById('customerNotesCard').remove()"></button>
+  </div>
+  <div class="p-4">
+    {% for note in profile.staff_notes %}
+      {% set note_text = note.message or note.notetext or note.note or note.notes or note.description %}
+      <article class="{{ 'border-top pt-3 mt-3' if not loop.first else '' }}">
+        <div class="d-flex flex-wrap justify-content-between gap-2 mb-1">
+          <strong>{{ note.subject or note.title or ('Customer note #' ~ (note.id or note.notenumber)) if (note.id or note.notenumber) else 'Customer note' }}</strong>
+          {% if note.status or note.notetype %}<span class="badge text-bg-light border">{{ note.status or note.notetype }}</span>{% endif %}
+        </div>
+        <div style="white-space:pre-wrap">{{ note_text or 'No note text was returned.' }}</div>
+        {% if note.created or note.createdate or note.date or note.datetime or note.username or note.staffname %}<div class="small text-muted mt-2">{% if note.created or note.createdate or note.date or note.datetime %}{{ note.created or note.createdate or note.date or note.datetime }}{% endif %}{% if (note.created or note.createdate or note.date or note.datetime) and (note.username or note.staffname) %} · {% endif %}{% if note.username or note.staffname %}{{ note.staffname or note.username }}{% endif %}</div>{% endif %}
+      </article>
+    {% endfor %}
+    {% for note in profile.popup_notes %}<article class="{% if profile.staff_notes or not loop.first %}border-top pt-3 mt-3{% endif %}" style="white-space:pre-wrap">{{ note }}</article>{% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<div class="row g-4 mb-4">
+  <div class="col-xl-7"><section class="panel p-4 h-100"><h2 class="h5 mb-3">Customer information</h2><div class="row g-3">
+    {% set account_status = customer.activestatus or ('Active' if customer.active == 'Y' else 'Inactive') %}
+    {% set account_status_key = account_status|lower|replace('_', ' ')|trim %}
+    <div class="col-md-6"><div class="text-muted small mb-1">Account status</div><span class="badge {{ 'text-bg-success' if account_status_key == 'active' else 'text-bg-warning text-dark' if account_status_key in ['on hold', 'hold'] else 'text-bg-danger' if account_status_key == 'suspended' else 'text-bg-secondary' }}">{{ account_status }}</span></div>
+    <div class="col-md-6"><div class="text-muted small">Customer ID</div><strong>{{ customer.id or profile.platypus_customer_id }}</strong></div>
+    <div class="col-md-6"><div class="text-muted small">Phone numbers</div>{% if profile.display_phones %}<div class="d-flex flex-column gap-1">{% for phone in profile.display_phones %}<strong>{{ phone }}</strong>{% endfor %}</div>{% else %}<strong>—</strong>{% endif %}</div>
+    <div class="col-md-6"><div class="text-muted small">Email</div><strong>{{ customer.email or '—' }}</strong></div>
+    <div class="col-md-6"><div class="text-muted small">Username</div><strong>{{ customer.username or '—' }}</strong></div>
+    <div class="col-md-6"><div class="text-muted small">Attention</div><strong>{{ customer.attn or '—' }}</strong></div>
+    <div class="col-12"><hr class="my-1"></div>
+    <div class="col-md-6"><div class="text-muted small mb-1">Billing address</div>{% set a = profile.billing_address %}{% if a %}<strong>{{ a.addr1 or '—' }}{% if a.addr2 %}<br>{{ a.addr2 }}{% endif %}{% if a.city or a.state or a.zip %}<br>{{ a.city or '' }}{% if a.city and a.state %}, {% endif %}{{ a.state or '' }} {{ a.zip or '' }}{% endif %}</strong>{% else %}<strong>—</strong>{% endif %}</div>
+    <div class="col-md-6"><div class="text-muted small mb-1">Service address</div>{% set a = profile.service_address %}{% if a %}<strong>{{ a.addr1 or '—' }}{% if a.addr2 %}<br>{{ a.addr2 }}{% endif %}{% if a.city or a.state or a.zip %}<br>{{ a.city or '' }}{% if a.city and a.state %}, {% endif %}{{ a.state or '' }} {{ a.zip or '' }}{% endif %}</strong>{% else %}<strong>—</strong>{% endif %}</div>
+  </div></section></div>
+
+  <div class="col-xl-5"><section class="panel h-100"><div class="p-4 border-bottom d-flex justify-content-between align-items-center gap-3"><div><h2 class="h5 mb-1">Rates & Services</h2><div class="text-muted small">Live rate assignments.</div></div>{% if current_user.organization.is_staff %}<a class="btn btn-sm btn-outline-danger flex-shrink-0" href="/customers/{{ profile.platypus_customer_id }}/rates/manage"><i class="fa-solid fa-tags me-1"></i>Add / Manage Rates</a>{% endif %}</div>
+    {% if profile.rates %}<div class="accordion accordion-flush" id="ratesAccordion">{% for rate in profile.rates %}{% set crid = rate.crid or rate.cr_id %}<div class="accordion-item">
+      <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#rate{{ loop.index }}" aria-expanded="false" aria-controls="rate{{ loop.index }}"><span class="me-2"><strong>{{ rate.rg_name or rate.name or ('Rate ' ~ (rate.rgid or rate.rg_id or '')) }}</strong><span class="d-block small text-muted">CRID {{ crid or '—' }} · Qty {{ rate.cr_quantity or rate.quantity or '1' }}</span></span><span class="ms-auto me-2 fw-semibold">{% if rate.cr_overridden == 'Y' and rate.cr_override_price %}${{ '%.2f'|format(rate.cr_override_price|float) }}{% elif rate.fee %}${{ '%.2f'|format(rate.fee|float) }}{% endif %}</span></button></h2>
+      <div id="rate{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#ratesAccordion"><div class="accordion-body">{% if rate.services %}<div class="list-group list-group-flush">{% for svc in rate.services %}<div class="list-group-item px-0 d-flex justify-content-between align-items-start"><div><strong>{% if svc.is_plume %}<a class="link-body-emphasis" href="/customers/{{ local_customer_id }}/plume?service_id={{ svc.plume_service_id|urlencode }}">{{ svc.s_name or ('Service #' ~ svc.s_num) }} <i class="fa-solid fa-arrow-up-right-from-square ms-1 small text-muted"></i></a>{% else %}<a class="link-body-emphasis" href="/customers/{{ profile.platypus_customer_id }}/rates/{{ crid }}">{{ svc.s_name or ('Service #' ~ svc.s_num) }} <i class="fa-solid fa-arrow-up-right-from-square ms-1 small text-muted"></i></a>{% endif %}</strong><div class="small text-muted">{{ svc.s_data or 'No service data' }}</div></div><span class="badge {{ 'text-bg-success' if svc.s_active == 'Y' else 'text-bg-secondary' }}">{{ 'Active' if svc.s_active == 'Y' else 'Inactive' }}</span></div>{% endfor %}</div>{% else %}<div class="text-muted small">No service instances are assigned.</div>{% endif %}</div></div>
+    </div>{% endfor %}</div>{% else %}<div class="p-4 text-center text-muted">No rate groups are assigned.</div>{% endif %}
+  </section></div>
+</div>
+
+<section class="panel mb-4"><div class="p-4 border-bottom"><h2 class="h5 mb-1">Customer history</h2><div class="text-muted small">Recent tickets, jobs, and estimates.</div></div><div class="row g-0">
+  <div class="col-lg-4 border-end"><div class="p-4"><div class="d-flex justify-content-between align-items-center mb-3"><h3 class="h6 mb-0"><i class="fa-solid fa-ticket me-2 text-muted"></i>Tickets</h3>{% if can("tickets.create") %}<a class="btn btn-sm btn-outline-primary" href="/tickets/new?customer_id={{ local_customer_id }}">Add</a>{% endif %}</div>{% if recent_tickets %}<div class="list-group list-group-flush">{% for item in recent_tickets %}<a class="list-group-item list-group-item-action px-0" href="/tickets/{{ item.id }}"><div class="d-flex justify-content-between gap-2"><strong>{{ item.ticket_number }}</strong><span class="badge text-bg-light border">{{ item.status|replace('_',' ')|title }}</span></div><div class="small text-muted text-truncate">{{ item.subject }}</div></a>{% endfor %}</div>{% else %}<div class="text-muted small">No ticket history.</div>{% endif %}</div></div>
+  <div class="col-lg-4 border-end"><div class="p-4"><div class="d-flex justify-content-between align-items-center mb-3"><h3 class="h6 mb-0"><i class="fa-solid fa-screwdriver-wrench me-2 text-muted"></i>Jobs</h3>{% if can("jobs.create") %}<a class="btn btn-sm btn-outline-primary" href="/jobs/new?customer_id={{ local_customer_id }}">Add</a>{% endif %}</div>{% if recent_jobs %}<div class="list-group list-group-flush">{% for item in recent_jobs %}<a class="list-group-item list-group-item-action px-0" href="/jobs/{{ item.id }}"><div class="d-flex justify-content-between gap-2"><strong>{{ item.job_number }}</strong><span class="badge text-bg-light border">{{ item.status|replace('_',' ')|title }}</span></div><div class="small text-muted text-truncate">{{ item.summary }}</div></a>{% endfor %}</div>{% else %}<div class="text-muted small">No job history.</div>{% endif %}</div></div>
+  <div class="col-lg-4"><div class="p-4"><div class="d-flex justify-content-between align-items-center mb-3"><h3 class="h6 mb-0"><i class="fa-solid fa-file-signature me-2 text-muted"></i>Estimates</h3>{% if can("estimates.create") %}<a class="btn btn-sm btn-outline-primary" href="/estimates/new?customer_id={{ local_customer_id }}">Add</a>{% endif %}</div>{% if recent_estimates %}<div class="list-group list-group-flush">{% for item in recent_estimates %}<a class="list-group-item list-group-item-action px-0" href="/estimates/{{ item.id }}"><div class="d-flex justify-content-between gap-2"><strong>{{ item.estimate_number }}</strong><span class="badge text-bg-light border">{{ item.status|replace('_',' ')|title }}</span></div><div class="small text-muted text-truncate">{{ item.title }} · ${{ '%.2f'|format(item.total|float) }}</div></a>{% endfor %}</div>{% else %}<div class="text-muted small">No estimate history.</div>{% endif %}</div></div>
+</div></section>
+{% endblock %}

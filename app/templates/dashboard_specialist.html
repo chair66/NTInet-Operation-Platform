@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | {{ app_name }}{% endblock %}
+{% block content %}
+<div class="page-head dashboard-head">
+  <div>
+    <div class="eyebrow">Operations</div>
+    <h1>Dashboard</h1>
+    <p>DigiCloud user management, telephone numbers, and porting.</p>
+  </div>
+</div>
+<div class="row g-4 specialist-dashboard">
+  {% if can("digicloud.users.manage") and has_module("digicloud-user-management") %}
+  <div class="col-md-6 col-xl-4">
+    <a class="metric-card specialist-card h-100" href="/digicloud/users">
+      <div class="metric-icon"><i class="fa-solid fa-users"></i></div>
+      <div class="flex-grow-1"><span>DigiCloud Users</span><strong>User Management</strong><small>Manage users, answering rules, voicemail, and assigned phones.</small></div>
+      <i class="fa-solid fa-chevron-right card-arrow"></i>
+    </a>
+  </div>
+  {% endif %}
+  {% if can("digicloud.numbers.read") %}
+  <div class="col-md-6 col-xl-4">
+    <a class="metric-card specialist-card h-100" href="/digicloud/phone-numbers">
+      <div class="metric-icon"><i class="fa-solid fa-phone"></i></div>
+      <div class="flex-grow-1"><span>DigiCloud Numbers</span><strong>Phone Numbers</strong><small>View and manage DigiCloud telephone-number inventory.</small></div>
+      <i class="fa-solid fa-chevron-right card-arrow"></i>
+    </a>
+  </div>
+  {% endif %}
+  {% if can("digicloud.hardware.read") %}
+  <div class="col-md-6 col-xl-4">
+    <a class="metric-card specialist-card h-100" href="/digicloud/phone-hardware">
+      <div class="metric-icon"><i class="fa-solid fa-phone-volume"></i></div>
+      <div class="flex-grow-1"><span>DigiCloud Hardware</span><strong>Phone Hardware</strong><small>View, add, assign, edit, and remove reseller-scoped phone hardware.</small></div>
+      <i class="fa-solid fa-chevron-right card-arrow"></i>
+    </a>
+  </div>
+  {% endif %}
+  {% if can("numbers.read") %}
+  <div class="col-md-6 col-xl-4">
+    <a class="metric-card specialist-card h-100" href="/sites">
+      <div class="metric-icon"><i class="fa-solid fa-list-ol"></i></div>
+      <div class="flex-grow-1"><span>Carrier Numbers</span><strong>Number Inventory</strong><small>Search and manage Bandwidth number inventory and line features.</small></div>
+      <i class="fa-solid fa-chevron-right card-arrow"></i>
+    </a>
+  </div>
+  {% endif %}
+  {% if can("ports.read") %}
+  <div class="col-md-6 col-xl-4">
+    <a class="metric-card specialist-card h-100" href="/ports">
+      <div class="metric-icon"><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
+      <div class="flex-grow-1"><span>Porting</span><strong>Port Orders</strong><small>Create ports, review FOC dates, and resolve exceptions.</small></div>
+      <i class="fa-solid fa-chevron-right card-arrow"></i>
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

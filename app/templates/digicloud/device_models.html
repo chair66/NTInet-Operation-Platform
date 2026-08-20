@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Reseller Device Catalog{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
+  <div>
+    <div class="eyebrow">DigiCloud · Provisioning</div>
+    <h1>Reseller Device Catalog</h1>
+    <p>Choose which live DigiCloud phone models each reseller is allowed to provision.</p>
+  </div>
+  <a class="btn btn-outline-secondary" href="/digicloud/admin/device-models?organization_id={{ selected_org_id }}">Refresh Catalog</a>
+</div>
+
+{% if request.query_params.get('notice') %}<div class="alert alert-success">{{ request.query_params.get('notice') }}</div>{% endif %}
+
+<div class="row g-3 mb-3">
+  <div class="col-md-4"><div class="card h-100"><div class="card-body"><div class="text-muted small">LIVE DIGICLOUD CATALOG</div><div class="fs-3 fw-semibold">{{ catalog_count }}</div><div class="small text-muted">Models returned by /phones/models</div></div></div></div>
+  <div class="col-md-4"><div class="card h-100"><div class="card-body"><div class="text-muted small">APPROVED FOR RESELLER</div><div class="fs-3 fw-semibold">{{ approved_count }}</div><div class="small text-muted">Available on the Add Phone page</div></div></div></div>
+  <div class="col-md-4"><div class="card h-100"><div class="card-body"><div class="text-muted small">PROVISIONING SERVER</div><div class="fs-5 fw-semibold text-break">{{ provisioning_server or 'Not configured' }}</div><div class="small text-muted">Configured in DigiCloud Reseller Settings</div></div></div></div>
+</div>
+
+<form method="get" class="card mb-3">
+  <div class="card-body row g-3 align-items-end">
+    <div class="col-xl-3 col-md-6">
+      <label class="form-label">Organization / Reseller</label>
+      <select class="form-select" name="organization_id" onchange="this.form.submit()">
+        {% for org in organizations %}<option value="{{ org.id }}" {% if org.id == selected_org_id %}selected{% endif %}>{{ org.effective_name }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-xl-2 col-md-6">
+      <label class="form-label">Vendor</label>
+      <select class="form-select" name="brand"><option value="">All vendors</option>{% for item in brands %}<option value="{{ item }}" {% if item == selected_brand %}selected{% endif %}>{{ item }}</option>{% endfor %}</select>
+    </div>
+    <div class="col-xl-2 col-md-6">
+      <label class="form-label">Device Type</label>
+      <select class="form-select" name="device_type"><option value="">All types</option>{% for item in device_types %}<option value="{{ item }}" {% if item == selected_device_type %}selected{% endif %}>{{ item }}</option>{% endfor %}</select>
+    </div>
+    <div class="col-xl-2 col-md-6">
+      <label class="form-label">Approval</label>
+      <select class="form-select" name="approval">
+        <option value="all" {% if approval == 'all' %}selected{% endif %}>All models</option>
+        <option value="approved" {% if approval == 'approved' %}selected{% endif %}>Approved only</option>
+        <option value="not_approved" {% if approval == 'not_approved' %}selected{% endif %}>Not approved</option>
+      </select>
+    </div>
+    <div class="col-xl-2 col-md-9"><label class="form-label">Search</label><input class="form-control" name="q" value="{{ q }}" placeholder="HT801, Poly Edge..."></div>
+    <div class="col-xl-1 col-md-3"><button class="btn btn-outline-primary w-100">Filter</button></div>
+  </div>
+</form>
+
+<form method="post" action="/digicloud/admin/device-models" class="card" id="device-catalog-form">
+  <input type="hidden" name="organization_id" value="{{ selected_org_id }}">
+  <input type="hidden" name="brand" value="{{ selected_brand }}">
+  <input type="hidden" name="device_type" value="{{ selected_device_type }}">
+  <input type="hidden" name="approval" value="{{ approval }}">
+  <input type="hidden" name="q" value="{{ q }}">
+  {% for row in rows %}<input type="hidden" name="visible_models" value="{{ row['brand_model'] }}">{% endfor %}
+  <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div><strong>Provisioning Catalog</strong><span class="text-muted ms-2">{{ rows|length }} shown</span></div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-sm btn-outline-success" type="button" id="approve-visible">Approve shown</button>
+      <button class="btn btn-sm btn-outline-secondary" type="button" id="clear-visible">Clear shown</button>
+    </div>
+  </div>
+  <div class="table-responsive" style="max-height:620px;overflow:auto">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="sticky-top bg-body"><tr><th style="width:70px">Allow</th><th>Vendor</th><th>Model</th><th>API Value</th><th>Type</th><th>Config Format</th></tr></thead>
+      <tbody>
+      {% for row in rows %}{% set name=row['brand_model'] %}
+        <tr>
+          <td><input class="form-check-input model-toggle" type="checkbox" name="enabled_models" value="{{ name }}" {% if row['approved'] %}checked{% endif %}></td>
+          <td>{{ row['brand'] }}</td>
+          <td><strong>{{ name }}</strong></td>
+          <td><code>{{ row['model'] }}</code></td>
+          <td>{{ row['device_type'] }}</td>
+          <td><code>{{ row['config_format'] }}</code></td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6" class="text-center py-5 text-muted">No models match the selected filters.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="card-footer d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div class="small text-muted">Saving changes affects only the models shown by the current filter. Approvals outside this view are preserved.</div>
+    <button class="btn btn-primary" {% if not rows %}disabled{% endif %}>Save Approved Models</button>
+  </div>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const toggles = Array.from(document.querySelectorAll('.model-toggle'));
+  document.getElementById('approve-visible')?.addEventListener('click', () => toggles.forEach(el => el.checked = true));
+  document.getElementById('clear-visible')?.addEventListener('click', () => toggles.forEach(el => el.checked = false));
+});
+</script>
+{% endblock %}

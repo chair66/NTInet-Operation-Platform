@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% block title %}Add DigiCloud User{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
+  <div><div class="eyebrow">DigiCloud · User Management · {{ selected_domain.domain_name }}</div><h1>Add User</h1><p>Create a live customer user in this approved DigiCloud domain.</p></div>
+  <a class="btn btn-outline-secondary" href="/digicloud/users?domain={{ selected_domain.domain_name|urlencode }}">Back to Users</a>
+</div>
+{% if request.query_params.get('error') %}<div class="alert alert-danger">{{ request.query_params.get('error') }}</div>{% endif %}
+<div class="row g-4">
+  <div class="col-xl-9">
+    <form method="post" action="/digicloud/users/new" class="card" id="add-user-form">
+      <input type="hidden" name="domain" value="{{ selected_domain.domain_name }}">
+      <input type="hidden" name="return_to" value="{{ return_to }}">
+      <div class="card-body">
+        <h5>Step 1 · Select Available DID</h5>
+        <div class="border rounded p-3 mb-4">
+          <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">Search or Select DID / Extension</label><input class="form-control" name="extension" id="extension" value="{{ prefill.extension or '' }}" list="available-dids" inputmode="numeric" maxlength="16" autocomplete="off" required><datalist id="available-dids">{% for did in available_dids %}<option value="{{ did }}" label="{{ did_statuses.get(did, 'Available') }}">{{ did }} · {{ did_statuses.get(did, 'Available') }}</option>{% endfor %}</datalist><div class="form-text">Includes active and inactive numbers assigned to {{ selected_domain.domain_name }} that are not already used by another user.</div></div>
+            <div class="col-md-6"><div class="alert alert-info py-2 mb-0"><strong>{{ available_dids|length }} eligible number{% if available_dids|length != 1 %}s{% endif %}</strong><br>Begin typing to search, or open the field to select from the domain list.</div></div>
+            {% if did_error %}<div class="col-12"><div class="alert alert-warning mb-0">Live DigiCloud lookup warning: {{ did_error }}{% if available_dids %}<br>Showing numbers from NOP's synced domain inventory.{% endif %}</div></div>{% endif %}{% if not available_dids %}<div class="col-12"><div class="alert alert-warning mb-0">No eligible numbers were found for this domain. Sync DigiCloud Phone Numbers, then reload this page.</div></div>{% endif %}
+          </div>
+        </div>
+        <h5>Customer Information</h5>
+        <div class="row g-3 mb-4">
+          <div class="col-md-6"><label class="form-label">First Name</label><input class="form-control" name="first_name" value="{{ prefill.first_name or '' }}" required></div>
+          <div class="col-md-6"><label class="form-label">Last Name</label><input class="form-control" name="last_name" value="{{ prefill.last_name or '' }}" required></div>
+          <div class="col-md-6"><label class="form-label">Email</label><input class="form-control" type="email" name="email" value="{{ prefill.email or '' }}" required></div>
+          <div class="col-md-6"><label class="form-label">Department</label><input class="form-control" name="department"></div>
+        </div>
+        <h5>Caller ID</h5>
+        <div class="row g-3 mb-4">
+          <div class="col-md-4"><label class="form-label">Caller ID Name</label><input class="form-control" name="caller_id_name" maxlength="32"><div class="form-text">Defaults to the customer's full name.</div></div>
+          <div class="col-md-4"><label class="form-label">Caller ID Number</label><input class="form-control phone-copy" name="caller_id_number" inputmode="numeric"><div class="form-text">Defaults to the extension.</div></div>
+          <div class="col-md-4"><label class="form-label">Emergency Caller ID</label><input class="form-control phone-copy" name="emergency_caller_id" inputmode="numeric" readonly><div class="form-text">Locked to the assigned 10-digit DID.</div></div>
+        </div>
+        <h5>Preferences</h5>
+        <div class="row g-3 mb-4">
+          <div class="col-md-6"><label class="form-label">Time Zone</label><select class="form-select" name="time_zone"><option value="US/Eastern">Eastern Time</option><option value="US/Central">Central Time</option><option value="US/Mountain">Mountain Time</option><option value="US/Arizona">Arizona Time</option><option value="US/Pacific">Pacific Time</option><option value="US/Alaska">Alaska Time</option><option value="US/Hawaii">Hawaii Time</option></select></div>
+          <div class="col-md-6"><label class="form-label">Area Code</label><input class="form-control" name="area_code" value="{{ defaults.default_area_code or '803' }}" inputmode="numeric" maxlength="3" required></div>
+        </div>
+        <h5>Device Setup</h5>
+        <div class="border rounded p-3 mb-4">
+          <div class="form-check mb-2"><input class="form-check-input" type="radio" name="device_setup" id="device-none" value="none" checked><label class="form-check-label" for="device-none"><strong>No device yet</strong><br><span class="text-muted small">Create the DigiCloud user without assigning hardware or manual SIP credentials.</span></label></div>
+          <div class="form-check mb-2"><input class="form-check-input" type="radio" name="device_setup" id="device-inventory" value="inventory"><label class="form-check-label" for="device-inventory"><strong>Assign available phone hardware</strong><br><span class="text-muted small">Assign an existing unassigned MAC from DigiCloud phone inventory.</span></label></div>
+          <div class="ms-4 mb-3" id="inventory-device-fields">
+            <label class="form-label">Available Device</label>
+            <select class="form-select" name="inventory_mac" id="inventory-mac">
+              <option value="">Select available hardware</option>
+              {% for phone in available_phones %}<option value="{{ phone.mac }}">{{ phone.model or 'Unknown model' }} · {{ phone.mac_display }}{% if phone.server %} · {{ phone.server }}{% endif %}</option>{% endfor %}
+            </select>
+            {% if not available_phones %}<div class="form-text text-warning">No unassigned hardware is available for this domain. Add it under DigiCloud → Phone Hardware first.</div>{% endif %}
+          </div>
+          <div class="form-check"><input class="form-check-input" type="radio" name="device_setup" id="device-manual" value="manual"><label class="form-check-label" for="device-manual"><strong>Create manual provisioning credentials</strong><br><span class="text-muted small">Create a SIP device connection for a manually configured customer gateway.</span></label></div>
+        </div>
+        <h5>Platypus Billing</h5>
+        <div class="border rounded p-3 mb-4">
+          {% if billing_model == 'wholesale' %}<div class="alert alert-info"><strong>Wholesale / White Label Billing</strong><br>This subscriber will be billed under the reseller's locked parent Platypus account. One rate and one service 264 instance will be created for the 10-digit subscriber.</div>{% endif %}
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">NOP / Platypus Customer</label>
+              {% if fixed_platypus_customer_id %}
+              <input type="hidden" name="platypus_customer_id" value="{{ fixed_platypus_customer_id }}">
+              <input class="form-control" value="{{ fixed_billing_customer_label }}" disabled>
+              <div class="form-text">Locked from the customer record.</div>
+              {% else %}
+              <div class="position-relative" id="billing-customer-lookup">
+                <div class="input-group"><span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span><input class="form-control" id="billing-customer-search" type="search" autocomplete="off" placeholder="Name, NOP number, Platypus number, email, or phone"></div>
+                <div class="list-group position-absolute start-0 end-0 mt-1 shadow-sm d-none" id="billing-customer-results" style="z-index:1020;max-height:300px;overflow-y:auto"></div>
+              </div>
+              <input type="hidden" name="platypus_customer_id" id="platypus-customer-id" value="">
+              <div class="border rounded bg-light p-2 mt-2 d-none" id="selected-billing-customer"></div>
+              <div class="form-text" id="billing-customer-status">Type at least two characters to search active linked customers.</div>
+              {% endif %}
+            </div>
+            <div class="col-md-3"><label class="form-label">Residential Rate</label>{% if fixed_rate_group_id %}<input type="hidden" name="residential_rate_group_id" value="{{ fixed_rate_group_id }}"><input class="form-control" value="RGID {{ fixed_rate_group_id }}" disabled><div class="form-text">Locked from Manage Rates.</div>{% else %}<select class="form-select" name="residential_rate_group_id" required><option value="">Select rate</option>{% for rgid, label in residential_rates.items() %}<option value="{{ rgid }}">{{ label }} · RGID {{ rgid }}</option>{% endfor %}</select>{% endif %}</div>
+            <div class="col-md-3"><label class="form-label">Phone MAC Address</label><input class="form-control" name="billing_mac" id="billing-mac" placeholder="Assigned hardware only" readonly><div class="form-text" id="billing-mac-help">Required only when assigning available phone hardware; stored in Platypus service 264.</div></div>
+          </div>
+        </div>
+        <h5>Voicemail</h5>
+        <div class="row g-3 mb-3">
+          <div class="col-md-4"><label class="form-label">Initial Voicemail PIN</label><input class="form-control" name="voicemail_pin" inputmode="numeric" minlength="4" maxlength="10"><div class="form-text">Optional. Digits only.</div></div>
+          <div class="col-md-4 d-flex align-items-center"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="voicemail-enabled" name="voicemail_enabled" checked><label class="form-check-label" for="voicemail-enabled">Enable voicemail</label></div></div>
+          <div class="col-md-4"><label class="form-label">Mailbox Limit</label><input class="form-control" value="50 MB" disabled><div class="form-text">Residential default.</div></div>
+        </div>
+        <div class="border rounded p-3" id="voicemail-notification-settings">
+          <div class="form-check form-switch mb-3"><input class="form-check-input" type="checkbox" id="voicemail-notification-enabled" name="voicemail_notification_enabled" checked><label class="form-check-label" for="voicemail-notification-enabled">Receive an email for new voicemail</label></div>
+          <div class="row g-3">
+            <div class="col-md-4"><label class="form-label">Notification Email</label><input class="form-control" type="email" id="voicemail-notification-email" name="voicemail_notification_email"><div class="form-text">Defaults to the customer email above.</div></div>
+            <div class="col-md-4"><label class="form-label">Email Type</label><select class="form-select" name="voicemail_email_type"><option value="attachment" selected>Send with attachment</option><option value="notification">Notification only</option></select></div>
+            <div class="col-md-4"><label class="form-label">After Email Notification</label><select class="form-select" name="voicemail_after_notification"><option value="trash" selected>Move to trash</option><option value="saved">Move to saved</option><option value="new">Leave as new</option></select></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer d-flex gap-2"><button class="btn btn-primary" type="submit" {% if not available_dids %}disabled{% endif %}>Create User &amp; Continue to 911</button><a class="btn btn-outline-secondary" href="/digicloud/users?domain={{ selected_domain.domain_name|urlencode }}">Cancel</a></div>
+    </form>
+  </div>
+  <div class="col-xl-3"><div class="card"><div class="card-header"><strong>Provisioning Summary</strong></div><div class="card-body small"><p><strong>DOMAIN</strong><br>{{ selected_domain.domain_name }}</p><p><strong>USER SCOPE</strong><br>Basic User</p><p><strong>DIAL PLAN</strong><br>{{ selected_domain.domain_name }}</p><p class="mb-0"><strong>CREATE USER</strong><br>Creates the account directly in DigiCloud and records the action in the NOP audit log.</p></div></div></div>
+</div>
+<script>
+(function(){
+ const ext=document.getElementById('extension');
+ const copies=document.querySelectorAll('.phone-copy');
+ ext.addEventListener('input',function(){
+   const value=ext.value.replace(/\D/g,''); ext.value=value;
+   copies.forEach(function(input){ if(!input.dataset.touched) input.value=value; });
+ });
+ copies.forEach(function(input){input.addEventListener('input',function(){input.dataset.touched='1'; input.value=input.value.replace(/\D/g,'');});});
+ const customerEmail=document.querySelector('input[name="email"]');
+ const notifyEmail=document.getElementById('voicemail-notification-email');
+ if(customerEmail && notifyEmail){
+   const syncEmail=function(){ if(!notifyEmail.dataset.touched) notifyEmail.value=customerEmail.value; };
+   customerEmail.addEventListener('input',syncEmail); syncEmail();
+   notifyEmail.addEventListener('input',function(){notifyEmail.dataset.touched='1';});
+ }
+ const voicemailEnabled=document.getElementById('voicemail-enabled');
+ const notificationEnabled=document.getElementById('voicemail-notification-enabled');
+ const notificationBox=document.getElementById('voicemail-notification-settings');
+ const refreshVoicemail=function(){
+   const available=voicemailEnabled.checked;
+   notificationEnabled.disabled=!available;
+   notificationBox.querySelectorAll('input:not(#voicemail-notification-enabled), select').forEach(function(el){el.disabled=!available || !notificationEnabled.checked;});
+   notificationBox.classList.toggle('opacity-50',!available);
+ };
+ voicemailEnabled.addEventListener('change',refreshVoicemail);
+ notificationEnabled.addEventListener('change',refreshVoicemail);
+ refreshVoicemail();
+
+ const deviceRadios=document.querySelectorAll('input[name="device_setup"]');
+ const inventoryFields=document.getElementById('inventory-device-fields');
+ const inventorySelect=document.getElementById('inventory-mac');
+ const billingMac=document.getElementById('billing-mac');
+ const refreshDeviceSetup=function(){
+   const selected=document.querySelector('input[name="device_setup"]:checked');
+   const useInventory=selected && selected.value==='inventory';
+   inventoryFields.classList.toggle('opacity-50',!useInventory);
+   inventorySelect.disabled=!useInventory;
+   inventorySelect.required=useInventory;
+   billingMac.required=useInventory;
+   if(!useInventory) billingMac.value='';
+ };
+ deviceRadios.forEach(function(radio){radio.addEventListener('change',refreshDeviceSetup);});
+ inventorySelect.addEventListener('change',function(){ billingMac.value=inventorySelect.value || ''; });
+ refreshDeviceSetup();
+
+ const customerSearch=document.getElementById('billing-customer-search');
+ const customerResults=document.getElementById('billing-customer-results');
+ const customerId=document.getElementById('platypus-customer-id');
+ const selectedCustomer=document.getElementById('selected-billing-customer');
+ const customerStatus=document.getElementById('billing-customer-status');
+ let customerSearchTimer;
+ let customerSearchController;
+ if(customerSearch){
+   const clearResults=function(){ customerResults.replaceChildren(); customerResults.classList.add('d-none'); };
+   const selectCustomer=function(customer){
+     customerId.value=customer.platypus_customer_id;
+     customerSearch.value=customer.label;
+     selectedCustomer.replaceChildren();
+     const label=document.createElement('span'); label.className='fw-semibold'; label.textContent=customer.label;
+     const clear=document.createElement('button'); clear.type='button'; clear.className='btn btn-sm btn-link text-danger float-end py-0'; clear.textContent='Clear';
+     clear.addEventListener('click',function(){ customerId.value=''; customerSearch.value=''; selectedCustomer.classList.add('d-none'); customerStatus.textContent='Type at least two characters to search active linked customers.'; customerSearch.focus(); });
+     selectedCustomer.append(label,clear); selectedCustomer.classList.remove('d-none');
+     customerStatus.textContent='Customer selected.'; clearResults();
+   };
+   const runCustomerSearch=async function(){
+     const query=customerSearch.value.trim();
+     customerId.value=''; selectedCustomer.classList.add('d-none');
+     if(query.length<2){ clearResults(); customerStatus.textContent='Type at least two characters to search active linked customers.'; return; }
+     if(customerSearchController) customerSearchController.abort();
+     customerSearchController=new AbortController(); customerStatus.textContent='Searching…';
+     try{
+       const response=await fetch(`/digicloud/users/billing-customers/search?q=${encodeURIComponent(query)}`,{signal:customerSearchController.signal,headers:{Accept:'application/json'}});
+       if(!response.ok) throw new Error(`Search failed (HTTP ${response.status})`);
+       const payload=await response.json(); const matches=payload.customers || [];
+       customerResults.replaceChildren();
+       matches.forEach(function(customer){ const button=document.createElement('button'); button.type='button'; button.className='list-group-item list-group-item-action'; button.textContent=customer.label; button.addEventListener('click',function(){selectCustomer(customer);}); customerResults.appendChild(button); });
+       if(!matches.length){ const empty=document.createElement('div'); empty.className='list-group-item text-muted'; empty.textContent='No active Platypus-linked customers found.'; customerResults.appendChild(empty); }
+       customerResults.classList.remove('d-none'); customerStatus.textContent=`${matches.length} customer${matches.length===1?'':'s'} found.`;
+     }catch(error){ if(error.name!=='AbortError'){ clearResults(); customerStatus.textContent=error.message; } }
+   };
+   customerSearch.addEventListener('input',function(){ clearTimeout(customerSearchTimer); customerSearchTimer=setTimeout(runCustomerSearch,250); });
+   customerSearch.addEventListener('focus',function(){ if(customerSearch.value.trim().length>=2 && !customerId.value) runCustomerSearch(); });
+   document.addEventListener('click',function(event){ if(!event.target.closest('#billing-customer-lookup')) clearResults(); });
+   document.getElementById('add-user-form').addEventListener('submit',function(event){ if(!customerId.value){ event.preventDefault(); customerStatus.textContent='Select a customer from the search results before creating the user.'; customerStatus.classList.add('text-danger'); customerSearch.focus(); } });
+ }
+})();
+</script>
+{% endblock %}

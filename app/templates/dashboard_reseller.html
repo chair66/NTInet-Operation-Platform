@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block title %}{{ current_user.organization.effective_name }} Dashboard · {{ app_name }}{% endblock %}{% block content %}
+<div class="dashboard-hero"><div><span class="eyebrow">Reseller Workspace</span><h1>{{ current_user.organization.effective_name }}</h1><p>Your dashboard includes only the modules enabled for your organization.</p></div></div>
+{% if module_cards %}<div class="module-dashboard">{% for module in module_cards %}<a href="{{ module.url }}"><span class="module-icon"><i class="fa-solid {{ module.icon }}"></i></span><div><h2>{{ module.name }}</h2><p>{{ module.description }}</p><strong>Open Module <i class="fa-solid fa-arrow-right"></i></strong></div></a>{% endfor %}</div>{% else %}<div class="card card-body text-center py-5"><i class="fa-solid fa-grid-2 fs-2 text-muted mb-3"></i><h2 class="h5">No modules enabled</h2><p class="text-muted mb-0">Contact NTInet to enable services for this organization.</p></div>{% endif %}
+{% include "partials/lnp_dashboard_status.html" %}
+{% endblock %}

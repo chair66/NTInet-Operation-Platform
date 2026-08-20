@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Customer Created · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="page-header"><div><div class="eyebrow">Customer Management · Staff Only</div><h1>Customer Created</h1><p>Step 1 is complete. Continue to select rates and configure their services.</p></div></div>
+<div class="alert alert-success">NOP customer {{ customer.customer_number }} is linked to Platypus customer {{ platypus_customer_id }}.</div>
+<div class="alert alert-warning"><strong>Copy the temporary portal credential now.</strong> It is shown once and is not stored in NOP or written to the audit log.</div>
+<section class="panel p-4 mb-4"><dl class="row mb-0"><dt class="col-sm-4">Portal username</dt><dd class="col-sm-8"><code>{{ portal_username }}</code></dd><dt class="col-sm-4">Temporary password</dt><dd class="col-sm-8"><code>{{ temporary_password }}</code></dd></dl></section>
+<div class="d-flex gap-2"><a class="btn btn-primary" href="/customers/{{ platypus_customer_id }}/rates/manage">Continue to Rates and Services</a><a class="btn btn-outline-secondary" href="/customers/{{ platypus_customer_id }}">Customer Profile</a></div>
+{% endblock %}

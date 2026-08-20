@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Delete DigiCloud Phone{% endblock %}
+{% block content %}
+<div class="page-header"><div class="eyebrow">DigiCloud · {{ selected_domain.domain_name }} · {{ profile.username }}</div><h1>Delete Phone</h1><p>Permanently remove this device from the user's DigiCloud phones.</p></div>
+{% if request.query_params.get('error') %}<div class="alert alert-danger">{{ request.query_params.get('error') }}</div>{% endif %}
+<div class="card border-danger">
+<div class="card-header"><strong>{{ phone.model or phone.device }}</strong><div class="small text-muted">{{ phone.device }}{% if phone.mac %} · {{ phone.mac }}{% endif %}</div></div>
+<div class="card-body"><div class="alert alert-warning"><strong>This action cannot be undone.</strong> The device will be removed from the user's DigiCloud phone list. Provisioned phones are removed from DigiCloud MAC inventory and from the user device list.</div>
+<form method="post" action="/digicloud/users/{{ profile.username|urlencode }}/phones/{{ phone.device|urlencode }}/delete">
+<input type="hidden" name="domain" value="{{ selected_domain.domain_name }}">
+<label class="form-label">Type <strong>{{ phone.device }}</strong> to confirm</label><input class="form-control mb-3" name="confirmation" autocomplete="off" required>
+<div class="d-flex gap-2"><button class="btn btn-danger" type="submit">Delete Phone</button><a class="btn btn-outline-secondary" href="/digicloud/users/{{ profile.username|urlencode }}/phones?domain={{ selected_domain.domain_name|urlencode }}">Cancel</a></div>
+</form></div></div>
+{% endblock %}

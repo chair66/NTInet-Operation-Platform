@@ -1,0 +1,9 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sign in | NTInet</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"><link rel="stylesheet" href="{{ url_for('static', path='style.css') }}"></head>
+<body class="login-page"><div class="login-shell"><div class="login-brand"><img src="{{ url_for('static', path='brand/ntinet-logo-dark-bg.png') }}" alt="NTInet"><span>Operations</span></div>
+<div class="login-card"><h1>Welcome back</h1><p>Sign in to manage DigiCloud, number operations, and platform administration.</p>{% if error_message %}<div class="alert alert-danger">{{ error_message }}</div>{% endif %}
+<form method="post" action="/login"><input type="hidden" name="next" value="{{ next or '/' }}"><label class="form-label">Email address</label><input class="form-control mb-3" type="email" name="email" value="{{ email or '' }}" required autofocus placeholder="you@company.com">
+<label class="form-label">Password</label><input class="form-control mb-4" type="password" name="password" required placeholder="Enter your password"><button class="btn btn-primary w-100" type="submit">Sign in</button></form></div>
+<div class="login-note">Secure access for NTInet staff and authorized organizations<br><span>© 2026 NTInet, Inc.</span></div></div></body></html>
+

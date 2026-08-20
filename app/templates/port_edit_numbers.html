@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Edit Port Numbers | NTInet Operations{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">Porting</div><h1>Edit numbers for this port</h1><p>{{ order_id }}</p></div><a class="btn btn-outline-secondary" href="/ports/{{ order_id }}">Back to Port</a></div>
+{% if error %}<div class="alert alert-danger"><strong>{{ error.message }}</strong>{% if error.payload %}<details class="mt-2"><summary>Details</summary><pre class="json-viewer">{{ error.payload | tojson(indent=2) }}</pre></details>{% endif %}</div>{% endif %}
+<section class="panel p-4 mb-3">
+  <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-3"><div><h2 class="h5 mb-1">Current phone numbers</h2><div class="text-muted">{{ order.phoneNumbers|length if order.phoneNumbers else 0 }} number{{ '' if order.phoneNumbers and order.phoneNumbers|length == 1 else 's' }} currently on this order.</div></div></div>
+  {% if order.phoneNumbers %}<div class="d-flex flex-wrap gap-2">{% for number in order.phoneNumbers %}<span class="role-pill">{{ number }}</span>{% endfor %}</div>{% else %}<p class="text-muted mb-0">No telephone numbers were returned by Bandwidth.</p>{% endif %}
+</section>
+<form method="post" class="panel p-4">
+  <div class="row g-4">
+    <div class="col-lg-6"><label class="form-label fw-semibold">Phone Numbers to Add</label><textarea class="form-control" name="add_numbers" rows="5" placeholder="8035551212, 8035551213">{{ add_numbers }}</textarea><div class="form-text">Separate numbers with commas, spaces, or new lines.</div></div>
+    <div class="col-lg-6"><label class="form-label fw-semibold">Phone Numbers to Remove</label><textarea class="form-control" name="remove_numbers" rows="5" placeholder="8035551214">{{ remove_numbers }}</textarea><div class="form-text">Only numbers currently on the order will be removed.</div></div>
+  </div>
+  <div class="alert alert-light border mt-4 mb-0">NOP validates the complete resulting number set with Bandwidth portability before updating the order. Some submitted port types restrict TN changes; Bandwidth will return that restriction if it applies.</div>
+  <div class="d-flex justify-content-end gap-2 mt-4"><a class="btn btn-outline-secondary" href="/ports/{{ order_id }}">Cancel</a><button class="btn btn-primary" type="submit">Validate &amp; Save Numbers</button></div>
+</form>
+{% endblock %}

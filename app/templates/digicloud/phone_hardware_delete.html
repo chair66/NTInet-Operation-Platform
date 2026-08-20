@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Delete Phone Hardware{% endblock %}
+{% block content %}
+<div class="page-header"><div class="eyebrow">DigiCloud · Hardware Inventory</div><h1>Delete Phone Hardware</h1><p>Permanently remove this MAC from DigiCloud phone inventory.</p></div>
+{% if request.query_params.get('error') %}<div class="alert alert-danger">{{ request.query_params.get('error') }}</div>{% endif %}
+<div class="card border-danger"><div class="card-body">
+  <h2 class="h5">{{ item.model }}</h2><dl class="row mb-4"><dt class="col-sm-3">MAC Address</dt><dd class="col-sm-9 font-monospace">{{ item.mac_display }}</dd><dt class="col-sm-3">Domain</dt><dd class="col-sm-9">{{ item.domain }}</dd><dt class="col-sm-3">Status</dt><dd class="col-sm-9">{% if item.assigned %}Assigned to {{ item.subscriber }}{% else %}Available{% endif %}</dd></dl>
+  {% if item.assigned %}<div class="alert alert-warning">This hardware is assigned to a user. Unassign it before deleting it from inventory.</div>{% else %}<div class="alert alert-danger">This action cannot be undone.</div><form method="post"><label class="form-label">Type <strong>delete</strong> to confirm</label><input class="form-control mb-3" name="confirmation" autocomplete="off" required><div class="d-flex gap-2"><button class="btn btn-danger">Delete Hardware</button><a class="btn btn-outline-secondary" href="/digicloud/phone-hardware{% if selected_organization_id %}?organization_id={{ selected_organization_id }}{% endif %}">Cancel</a></div></form>{% endif %}
+</div></div>
+{% endblock %}

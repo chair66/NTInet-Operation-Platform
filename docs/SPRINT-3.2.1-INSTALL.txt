@@ -1,0 +1,28 @@
+NOP v1.6.0 - Sprint 3.2.1 Navigation and Reseller User Access Fix
+
+CHANGES
+1. Adds a Reseller Settings link under the DigiCloud navigation group.
+   - Visible only to a superuser with the digicloud.settings permission.
+   - Opens /digicloud/admin/settings.
+
+2. Allows reseller/organization administrators with admin.users permission
+   to open /admin/users without requiring the platform-only Administration
+   module assignment.
+   - UserService continues to restrict non-platform admins to users in their
+     own organization.
+   - The admin.users permission is still required.
+
+INSTALL
+1. Stop Uvicorn.
+2. Extract this ZIP into the project root.
+3. Allow the included files to replace existing files.
+4. Restart:
+
+   python -m uvicorn app.main:app --reload
+
+TEST
+- Platform Admin: DigiCloud > Reseller Settings should appear.
+- Reseller Admin: Administration > Users should open and show only users
+  belonging to the reseller's organization.
+
+No database migration is required.

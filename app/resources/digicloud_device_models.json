@@ -1,0 +1,2991 @@
+[
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Aastra",
+    "device-models-brand-and-model": "Aastra 480i",
+    "device-models-type": "Device",
+    "device-models-config-format": "Aastra"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Aastra",
+    "device-models-brand-and-model": "Aastra 6757i",
+    "device-models-type": "Device",
+    "device-models-config-format": "Aastra"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Algo",
+    "device-models-brand-and-model": "Algo 8301",
+    "device-models-type": "Device",
+    "device-models-config-format": "Algo"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Algo",
+    "device-models-brand-and-model": "Algo 8373",
+    "device-models-type": "Device",
+    "device-models-config-format": "Algo"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Audiocodes",
+    "device-models-brand-and-model": "Audiocodes MP202",
+    "device-models-type": "Device",
+    "device-models-config-format": "Audiocodes"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Avaya",
+    "device-models-brand-and-model": "Avaya J129",
+    "device-models-type": "Device",
+    "device-models-config-format": "Avaya"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Avaya",
+    "device-models-brand-and-model": "Avaya J139",
+    "device-models-type": "Device",
+    "device-models-config-format": "Avaya"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Avaya",
+    "device-models-brand-and-model": "Avaya J159",
+    "device-models-type": "Device",
+    "device-models-config-format": "Avaya"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Avaya",
+    "device-models-brand-and-model": "Avaya J169",
+    "device-models-type": "Device",
+    "device-models-config-format": "Avaya"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Avaya",
+    "device-models-brand-and-model": "Avaya J179",
+    "device-models-type": "Device",
+    "device-models-config-format": "Avaya"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco 6841",
+    "device-models-type": "Device",
+    "device-models-config-format": "LinksysXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco 6851",
+    "device-models-type": "Device",
+    "device-models-config-format": "LinksysXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco 7811",
+    "device-models-type": "Device",
+    "device-models-config-format": "LinksysXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco 7821",
+    "device-models-type": "Device",
+    "device-models-config-format": "LinksysXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco 7841",
+    "device-models-type": "Device",
+    "device-models-config-format": "LinksysXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco 7861",
+    "device-models-type": "Device",
+    "device-models-config-format": "LinksysXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco 7906",
+    "device-models-type": "Device",
+    "device-models-config-format": "CiscoXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco 7940",
+    "device-models-type": "Device",
+    "device-models-config-format": "Cisco"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco 7941",
+    "device-models-type": "Device",
+    "device-models-config-format": "CiscoXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco 7960",
+    "device-models-type": "Device",
+    "device-models-config-format": "Cisco"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco 7961",
+    "device-models-type": "Device",
+    "device-models-config-format": "CiscoXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco 8811",
+    "device-models-type": "Device",
+    "device-models-config-format": "LinksysXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco 8841",
+    "device-models-type": "Device",
+    "device-models-config-format": "LinksysXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco 8845",
+    "device-models-type": "Device",
+    "device-models-config-format": "LinksysXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco 8851",
+    "device-models-type": "Device",
+    "device-models-config-format": "LinksysXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco 8861",
+    "device-models-type": "Device",
+    "device-models-config-format": "LinksysXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco 8865",
+    "device-models-type": "Device",
+    "device-models-config-format": "LinksysXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco spa112",
+    "device-models-type": "Device",
+    "device-models-config-format": "CiscoSPA"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco spa122",
+    "device-models-type": "Device",
+    "device-models-config-format": "CiscoSPA"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco spa501G",
+    "device-models-type": "Device",
+    "device-models-config-format": "CiscoSPA"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco spa502G",
+    "device-models-type": "Device",
+    "device-models-config-format": "CiscoSPA"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco spa504G",
+    "device-models-type": "Device",
+    "device-models-config-format": "CiscoSPA"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco spa508G",
+    "device-models-type": "Device",
+    "device-models-config-format": "CiscoSPA"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco spa509G",
+    "device-models-type": "Device",
+    "device-models-config-format": "CiscoSPA"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco spa512G",
+    "device-models-type": "Device",
+    "device-models-config-format": "CiscoSPA"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco spa514G",
+    "device-models-type": "Device",
+    "device-models-config-format": "CiscoSPA"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Cisco",
+    "device-models-brand-and-model": "Cisco spa525G",
+    "device-models-type": "Device",
+    "device-models-config-format": "CiscoSPA"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "ClearlyIP",
+    "device-models-brand-and-model": "ClearlyIP CIP230",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "ClearlyIP",
+    "device-models-brand-and-model": "ClearlyIP CIP250",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "ClearlyIP",
+    "device-models-brand-and-model": "ClearlyIP CIP270",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Crexendo",
+    "device-models-brand-and-model": "Crexendo CX220",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Crexendo",
+    "device-models-brand-and-model": "Crexendo CX240",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Crexendo",
+    "device-models-brand-and-model": "Crexendo CX270",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Crexendo",
+    "device-models-brand-and-model": "Crexendo CX340",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Crexendo",
+    "device-models-brand-and-model": "Crexendo CX350",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Crexendo",
+    "device-models-brand-and-model": "Crexendo CX430",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "ESI",
+    "device-models-brand-and-model": "ESI 30",
+    "device-models-type": "Device",
+    "device-models-config-format": "ESI"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "ESI",
+    "device-models-brand-and-model": "ESI 45",
+    "device-models-type": "Device",
+    "device-models-config-format": "ESI"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil H2U",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil H4W",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil H6W",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil V62",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil V62 Pro",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil V63",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil V64",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil V65",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil V66 Pro",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil V67",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil X1",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil X1P",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil X1S",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil X1SP",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil X210",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil X3S",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil X3SG",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil X3SP",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil X3U",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil X4",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil X4G",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil X4S",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil X4U",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil X5U",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil X6U",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil X7",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil X7A",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Fanvil",
+    "device-models-brand-and-model": "Fanvil X7C",
+    "device-models-type": "Device",
+    "device-models-config-format": "FanvilNC"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Flyingvoice",
+    "device-models-brand-and-model": "Flyingvoice FIP15GPlus",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Flyingvoice",
+    "device-models-brand-and-model": "Flyingvoice P23GW",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Flyingvoice",
+    "device-models-brand-and-model": "Flyingvoice PR08",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream 286",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream 386",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream 486",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream 488",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream 502",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream 503",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream 701",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream 702",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream 704",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream 801",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream 812",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "GrandstreamGW"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream 814",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "GrandstreamGW"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream 818",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "GrandstreamGW"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream DP715",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GRP2601",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GRP2601P",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GRP2602",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GRP2602P",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GRP2602W",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GRP2603",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GRP2603P",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GRP2604",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GRP2604P",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GRP2612",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GRP2613",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GRP2614",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GRP2615",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GRP2616",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GRP2624",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GRP2634",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GRP2650",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GRP2670",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GSHT812COV",
+    "device-models-type": "Device",
+    "device-models-config-format": "GSHT812COV"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXP-1610",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXP-1615",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXP-1620",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXP-1625",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXP-1628",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXP-1630",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXP-1760",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXP-1760W",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXP-1780",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXP-1782",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXP-2000",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXP-2010",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXP-2020",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXP-2110",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXP-2120",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXP-2130",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXP-2135",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXP-2140",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXP-2160",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXP-2170",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXV-3000",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXV-3240",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXV-3275",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXV3350",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXV3370",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXV3380",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXW-4004",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "GrandstreamGW"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXW-4008",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "GrandstreamGW"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream GXW-4216",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "GrandstreamGW"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream H812",
+    "device-models-type": "Device",
+    "device-models-config-format": "GSHT812"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream HT-812",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream HT812"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream HT801",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream HT812",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "GrandstreamGW"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream HT812 V2",
+    "device-models-type": "Device",
+    "device-models-config-format": "GrandstreamGW"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream HT814",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream HT814"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream HT818 V2",
+    "device-models-type": "Device",
+    "device-models-config-format": "GrandstreamGW"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream WP816",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream WP826",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Grandstream",
+    "device-models-brand-and-model": "Grandstream WP836",
+    "device-models-type": "Device",
+    "device-models-config-format": "Grandstream"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UC503",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UC505",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UC507",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UC902",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UC903",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UC912P",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UC921E",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UC923",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UC923U",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UC924",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UC924E",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UC924U",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UC926",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UC926E",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UC926U",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UCV10",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UCV10 Lite",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UCV20",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UCV50",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UCV50 Lite",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UCV52",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Htek",
+    "device-models-brand-and-model": "Htek UCV53",
+    "device-models-type": "Device",
+    "device-models-config-format": "Htek"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Lg-Ericsson",
+    "device-models-brand-and-model": "Lg-Ericsson 8815",
+    "device-models-type": "Device",
+    "device-models-config-format": "LgEricsson"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Lg-Ericsson",
+    "device-models-brand-and-model": "Lg-Ericsson 8820",
+    "device-models-type": "Device",
+    "device-models-config-format": "LgEricsson"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Lg-Ericsson",
+    "device-models-brand-and-model": "Lg-Ericsson 8830",
+    "device-models-type": "Device",
+    "device-models-config-format": "LgEricsson"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Lg-Ericsson",
+    "device-models-brand-and-model": "Lg-Ericsson 8840",
+    "device-models-type": "Device",
+    "device-models-config-format": "LgEricsson"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Linksys",
+    "device-models-brand-and-model": "Linksys PAP",
+    "device-models-type": "Device",
+    "device-models-config-format": "Linksys"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Linksys",
+    "device-models-brand-and-model": "Linksys PAP2",
+    "device-models-type": "Device",
+    "device-models-config-format": "Linksys"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Linksys",
+    "device-models-brand-and-model": "Linksys PAP2T",
+    "device-models-type": "Device",
+    "device-models-config-format": "Linksys"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Linksys",
+    "device-models-brand-and-model": "Linksys spa2102",
+    "device-models-type": "Device",
+    "device-models-config-format": "Linksys"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Linksys",
+    "device-models-brand-and-model": "Linksys spa2103",
+    "device-models-type": "Device",
+    "device-models-config-format": "Linksys"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Linksys",
+    "device-models-brand-and-model": "Linksys spa8000",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "LinksysGW"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Linksys",
+    "device-models-brand-and-model": "Linksys spa901",
+    "device-models-type": "Device",
+    "device-models-config-format": "Linksys"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Linksys",
+    "device-models-brand-and-model": "Linksys spa921",
+    "device-models-type": "Device",
+    "device-models-config-format": "Linksys"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Linksys",
+    "device-models-brand-and-model": "Linksys spa922",
+    "device-models-type": "Device",
+    "device-models-config-format": "Linksys"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Linksys",
+    "device-models-brand-and-model": "Linksys spa941",
+    "device-models-type": "Device",
+    "device-models-config-format": "Linksys"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Linksys",
+    "device-models-brand-and-model": "Linksys spa942",
+    "device-models-type": "Device",
+    "device-models-config-format": "Linksys"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Linksys",
+    "device-models-brand-and-model": "Linksys spa962",
+    "device-models-type": "Device",
+    "device-models-config-format": "LinksysXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Linksys",
+    "device-models-brand-and-model": "Linksys wip310",
+    "device-models-type": "Device",
+    "device-models-config-format": "Linksys"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Mediatrix",
+    "device-models-brand-and-model": "Mediatrix 4102",
+    "device-models-type": "Device",
+    "device-models-config-format": "Mediatrix"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Mediatrix",
+    "device-models-brand-and-model": "Mediatrix 4104",
+    "device-models-type": "Device",
+    "device-models-config-format": "Mediatrix"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Mediatrix",
+    "device-models-brand-and-model": "Mediatrix 4108",
+    "device-models-type": "Device",
+    "device-models-config-format": "Mediatrix"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Mitel",
+    "device-models-brand-and-model": "Mitel 6730i",
+    "device-models-type": "Device",
+    "device-models-config-format": "Aastra"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Mitel",
+    "device-models-brand-and-model": "Mitel 6731i",
+    "device-models-type": "Device",
+    "device-models-config-format": "Aastra"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Mitel",
+    "device-models-brand-and-model": "Mitel 6735i",
+    "device-models-type": "Device",
+    "device-models-config-format": "Aastra"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Mitel",
+    "device-models-brand-and-model": "Mitel 6737i",
+    "device-models-type": "Device",
+    "device-models-config-format": "Aastra"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Mitel",
+    "device-models-brand-and-model": "Mitel 6753i",
+    "device-models-type": "Device",
+    "device-models-config-format": "Aastra"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Mitel",
+    "device-models-brand-and-model": "Mitel 6755i",
+    "device-models-type": "Device",
+    "device-models-config-format": "Aastra"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Mitel",
+    "device-models-brand-and-model": "Mitel 6757i",
+    "device-models-type": "Device",
+    "device-models-config-format": "Aastra"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Mitel",
+    "device-models-brand-and-model": "Mitel 6863i",
+    "device-models-type": "Device",
+    "device-models-config-format": "Aastra"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Mitel",
+    "device-models-brand-and-model": "Mitel 6865i",
+    "device-models-type": "Device",
+    "device-models-config-format": "Aastra"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Mitel",
+    "device-models-brand-and-model": "Mitel 6867i",
+    "device-models-type": "Device",
+    "device-models-config-format": "Aastra"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Mitel",
+    "device-models-brand-and-model": "Mitel 6869i",
+    "device-models-type": "Device",
+    "device-models-config-format": "Aastra"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Mitel",
+    "device-models-brand-and-model": "Mitel 6873i",
+    "device-models-type": "Device",
+    "device-models-config-format": "Aastra"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Mitel",
+    "device-models-brand-and-model": "Mitel 6915",
+    "device-models-type": "Device",
+    "device-models-config-format": "Aastra"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Mitel",
+    "device-models-brand-and-model": "Mitel 6920w",
+    "device-models-type": "Device",
+    "device-models-config-format": "Aastra"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Mitel",
+    "device-models-brand-and-model": "Mitel 6930w",
+    "device-models-type": "Device",
+    "device-models-config-format": "Aastra"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Mitel",
+    "device-models-brand-and-model": "Mitel 6940w",
+    "device-models-type": "Device",
+    "device-models-config-format": "Aastra"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Panasonic",
+    "device-models-brand-and-model": "Panasonic KX-TGP500",
+    "device-models-type": "Device",
+    "device-models-config-format": "Panasonic"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Panasonic",
+    "device-models-brand-and-model": "Panasonic KX-TGP550",
+    "device-models-type": "Device",
+    "device-models-config-format": "Panasonic"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Panasonic",
+    "device-models-brand-and-model": "Panasonic KX-UT113",
+    "device-models-type": "Device",
+    "device-models-config-format": "Panasonic"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Panasonic",
+    "device-models-brand-and-model": "Panasonic KX-UT123",
+    "device-models-type": "Device",
+    "device-models-config-format": "Panasonic"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Panasonic",
+    "device-models-brand-and-model": "Panasonic KX-UT133",
+    "device-models-type": "Device",
+    "device-models-config-format": "Panasonic"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Panasonic",
+    "device-models-brand-and-model": "Panasonic KX-UT136",
+    "device-models-type": "Device",
+    "device-models-config-format": "Panasonic"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom 301",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom 320",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom 330",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom 331",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom 335",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom 4000",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom 430",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom 450",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom 500",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom 5000",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom 501",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom 550",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom 560",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom 600",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom 6000",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom 601",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom 650",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom 670",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom 7000",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom CCX400",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom CCX500",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom CCX505",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom CCX600",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom CCX700",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom D230",
+    "device-models-type": "Device",
+    "device-models-config-format": "Obihai"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Edge B10",
+    "device-models-type": "Device",
+    "device-models-config-format": "Obihai"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Edge B20",
+    "device-models-type": "Device",
+    "device-models-config-format": "Obihai"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Edge B30",
+    "device-models-type": "Device",
+    "device-models-config-format": "Obihai"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Edge E100",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Edge E220",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Edge E300",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Edge E320",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Edge E350",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Edge E400",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Edge E450",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Edge E500",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Edge E550",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Obi300",
+    "device-models-type": "Device",
+    "device-models-config-format": "Obihai"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Obi302",
+    "device-models-type": "Device",
+    "device-models-config-format": "Obihai"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Obi504",
+    "device-models-type": "Device",
+    "device-models-config-format": "Obihai"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Obi508",
+    "device-models-type": "Device",
+    "device-models-config-format": "Obihai"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Rove B1",
+    "device-models-type": "Device",
+    "device-models-config-format": "Obihai"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Rove B2",
+    "device-models-type": "Device",
+    "device-models-config-format": "Obihai"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Rove B4",
+    "device-models-type": "Device",
+    "device-models-config-format": "Obihai"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Trio 8300",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Trio 8500",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Trio 8800",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom Trio C60",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom VVX101",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom VVX150",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom VVX1500",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom VVX201",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom VVX250",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom VVX300",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom VVX301",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom VVX310",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom VVX311",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom VVX350",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom VVX400",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom VVX401",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom VVX410",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom VVX411",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom VVX450",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom VVX500",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom VVX501",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom VVX600",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Polycom",
+    "device-models-brand-and-model": "Polycom VVX601",
+    "device-models-type": "Device",
+    "device-models-config-format": "Polycom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AFE (4FXS/2FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AFE (6FXS/2FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AFG (2FXS/0FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AFG (4FXS/0FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AFG (8FXS/0FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AFM (2FXS/2FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AFM (4FXS/4FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AFT (0FXS/2FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AFT (0FXS/4FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AFT (0FXS/8FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum ASG (2FXS/0FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum ASG (4FXS/0FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum ASM (2FXS/2FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum ASM (4FXS/4FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AXE (16FXS/2FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AXE (24FXS/2FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AXE (8FXS/2FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AXG (16FXS/0FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AXG (24FXS/0FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AXG (8FXS/0FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AXM (16FXS/16FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AXM (24FXS/24FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AXM (8FXS/8FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AXT (0FXS/16FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AXT (0FXS/24FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AXT (0FXS/48FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Quintum",
+    "device-models-brand-and-model": "Quintum AXT (0FXS/8FXO)",
+    "device-models-type": "AnalogGW",
+    "device-models-config-format": "QuintumAnalog"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "ReadyNet",
+    "device-models-brand-and-model": "ReadyNet VWRT510",
+    "device-models-type": "Device",
+    "device-models-config-format": "ReadyNet"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Sipura",
+    "device-models-brand-and-model": "Sipura 2100",
+    "device-models-type": "Device",
+    "device-models-config-format": "Linksys"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Snom",
+    "device-models-brand-and-model": "Snom 300",
+    "device-models-type": "Device",
+    "device-models-config-format": "Snom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Snom",
+    "device-models-brand-and-model": "Snom 360",
+    "device-models-type": "Device",
+    "device-models-config-format": "Snom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Snom",
+    "device-models-brand-and-model": "Snom D120",
+    "device-models-type": "Device",
+    "device-models-config-format": "SnomXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Snom",
+    "device-models-brand-and-model": "Snom D140",
+    "device-models-type": "Device",
+    "device-models-config-format": "SnomXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Snom",
+    "device-models-brand-and-model": "Snom D150",
+    "device-models-type": "Device",
+    "device-models-config-format": "SnomXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Snom",
+    "device-models-brand-and-model": "Snom D713",
+    "device-models-type": "Device",
+    "device-models-config-format": "SnomXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Snom",
+    "device-models-brand-and-model": "Snom D717",
+    "device-models-type": "Device",
+    "device-models-config-format": "SnomXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Snom",
+    "device-models-brand-and-model": "Snom D735",
+    "device-models-type": "Device",
+    "device-models-config-format": "SnomXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Snom",
+    "device-models-brand-and-model": "Snom D785",
+    "device-models-type": "Device",
+    "device-models-config-format": "SnomXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Snom",
+    "device-models-brand-and-model": "Snom D787",
+    "device-models-type": "Device",
+    "device-models-config-format": "SnomXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Snom",
+    "device-models-brand-and-model": "Snom D810",
+    "device-models-type": "Device",
+    "device-models-config-format": "SnomXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Snom",
+    "device-models-brand-and-model": "Snom D810WB",
+    "device-models-type": "Device",
+    "device-models-config-format": "SnomXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Snom",
+    "device-models-brand-and-model": "Snom D812",
+    "device-models-type": "Device",
+    "device-models-config-format": "SnomXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Snom",
+    "device-models-brand-and-model": "Snom D815",
+    "device-models-type": "Device",
+    "device-models-config-format": "SnomXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Snom",
+    "device-models-brand-and-model": "Snom M100KLE",
+    "device-models-type": "Device",
+    "device-models-config-format": "Vtech"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Snom",
+    "device-models-brand-and-model": "Snom M3",
+    "device-models-type": "Device",
+    "device-models-config-format": "SnomM3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Snom",
+    "device-models-brand-and-model": "Snom M500",
+    "device-models-type": "Device",
+    "device-models-config-format": "SnomM500"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Snom",
+    "device-models-brand-and-model": "Snom M700",
+    "device-models-type": "Device",
+    "device-models-config-format": "SnomXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Snom",
+    "device-models-brand-and-model": "Snom PA1",
+    "device-models-type": "Device",
+    "device-models-config-format": "SnomXML"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech CTM-S2110",
+    "device-models-type": "Device",
+    "device-models-config-format": "Vtech"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech CTM-S2120",
+    "device-models-type": "Device",
+    "device-models-config-format": "Vtech"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech CTM-S2312",
+    "device-models-type": "Device",
+    "device-models-config-format": "VtechHospitality"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech CTM-S2315",
+    "device-models-type": "Device",
+    "device-models-config-format": "Vtech"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech CTM-S2411",
+    "device-models-type": "Device",
+    "device-models-config-format": "VtechHospitality"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech CTM-S2415",
+    "device-models-type": "Device",
+    "device-models-config-format": "Vtech"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech CTM-S2421",
+    "device-models-type": "Device",
+    "device-models-config-format": "VtechHospitality"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech CTM-S2425",
+    "device-models-type": "Device",
+    "device-models-config-format": "Vtech"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech ET635",
+    "device-models-type": "Device",
+    "device-models-config-format": "Snom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech ET685",
+    "device-models-type": "Device",
+    "device-models-config-format": "Snom"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech LS-S3410",
+    "device-models-type": "Device",
+    "device-models-config-format": "VtechHospitality"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech LS-S3420",
+    "device-models-type": "Device",
+    "device-models-config-format": "VtechHospitality"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech S2200",
+    "device-models-type": "Device",
+    "device-models-config-format": "VtechHospitality"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech S2210-L",
+    "device-models-type": "Device",
+    "device-models-config-format": "VtechHospitality"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech S2211-L",
+    "device-models-type": "Device",
+    "device-models-config-format": "VtechHospitality"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech S2220-L",
+    "device-models-type": "Device",
+    "device-models-config-format": "VtechHospitality"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech S2221-L",
+    "device-models-type": "Device",
+    "device-models-config-format": "VtechHospitality"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech VCS752",
+    "device-models-type": "Device",
+    "device-models-config-format": "Vtech"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech VCS754",
+    "device-models-type": "Device",
+    "device-models-config-format": "Vtech"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech VDP650",
+    "device-models-type": "Device",
+    "device-models-config-format": "Vtech"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech VSP600",
+    "device-models-type": "Device",
+    "device-models-config-format": "Vtech"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech VSP715",
+    "device-models-type": "Device",
+    "device-models-config-format": "Vtech"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech VSP725",
+    "device-models-type": "Device",
+    "device-models-config-format": "Vtech"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech VSP726",
+    "device-models-type": "Device",
+    "device-models-config-format": "Vtech"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech VSP735",
+    "device-models-type": "Device",
+    "device-models-config-format": "Vtech"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech VSP736",
+    "device-models-type": "Device",
+    "device-models-config-format": "Vtech"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Vtech",
+    "device-models-brand-and-model": "Vtech VSP861",
+    "device-models-type": "Device",
+    "device-models-config-format": "Vtech"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink CP860",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink CP920",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink CP925",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink CP960",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink CP965",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T12",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T18P",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T19P",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T20P",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T21P",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T21P E2",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T22P",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T23G",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T26P",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T27G",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T28P",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T29G",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T30",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T30P",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T31",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T31G",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T31P",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T31W",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T32G",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink2"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T33G",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T33P",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T34W",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T38G",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink2"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T40G",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T40P",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T41P",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T41S",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T41U",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T42G",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T42S",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T42U",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T43U",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T44U",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T44W",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T46G",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T46S",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T46U",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T48S",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T48U",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T49G",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T52S",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T53",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T53W",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T54S",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T54W",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T56A",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T57W",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T58A",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T58V",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T58W",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T73U",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T73W",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T74U",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T74W",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T77U",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T85W",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T87W",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-T9CM",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink SIP-VP59",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink VP-T49G",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink W52P",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink W60P",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink W70B",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink W80DM",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  },
+  {
+    "device-models-visible-in-portal": "yes",
+    "device-models-brand": "Yealink",
+    "device-models-brand-and-model": "Yealink W90DM",
+    "device-models-type": "Device",
+    "device-models-config-format": "Yealink3"
+  }
+]

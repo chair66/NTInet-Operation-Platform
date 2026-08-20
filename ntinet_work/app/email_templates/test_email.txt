@@ -1,0 +1,9 @@
+This is a test email from the NTInet Operations Platform.
+
+Your SMTP configuration is working correctly.
+
+Environment: ${environment}
+Version: LNP v${app_version}
+Sent: ${sent_at}
+
+No port order was created or submitted by this test.

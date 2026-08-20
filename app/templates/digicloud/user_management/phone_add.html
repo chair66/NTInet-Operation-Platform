@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Add DigiCloud Phone{% endblock %}
+{% block content %}
+<div class="page-header"><div><div class="eyebrow">DigiCloud · {{ selected_domain.domain_name }} · {{ profile.username }}</div><h1>Add Phone</h1><p>Add a provisioned device or create credentials for manual setup.</p></div></div>
+{% if request.query_params.get('error') %}<div class="alert alert-danger">{{ request.query_params.get('error') }}</div>{% endif %}
+<form method="post" action="/digicloud/users/{{ profile.username|urlencode }}/phones/new" class="card">
+<input type="hidden" name="domain" value="{{ selected_domain.domain_name }}">
+<div class="card-body">
+  <h5>Setup Type</h5>
+  <div class="row g-3 mb-4">
+    <div class="col-md-6"><label class="border rounded p-3 w-100 h-100"><input class="form-check-input me-2" type="radio" name="setup_type" value="ata" checked> <strong>Device Provisioning</strong><span class="d-block small text-muted ms-4">Select available hardware already stored in this domain’s DigiCloud inventory.</span></label></div>
+    <div class="col-md-6"><label class="border rounded p-3 w-100 h-100"><input class="form-check-input me-2" type="radio" name="setup_type" value="manual"> <strong>Manual Provisioning</strong><span class="d-block small text-muted ms-4">Use the displayed SIP credentials to configure the customer device manually.</span></label></div>
+  </div>
+  <div id="ata-fields">
+    <h5>Device Provisioning</h5>
+    {% if available_hardware %}
+    <div class="row g-3 mb-4">
+      <div class="col-md-6"><label class="form-label">Model</label>
+        <select class="form-select" id="inventory-model">
+          <option value="">All available models</option>
+          {% for model in inventory_models %}<option value="{{ model }}">{{ model }}</option>{% endfor %}
+        </select>
+        <div class="form-text">Models are read from live DigiCloud inventory for {{ selected_domain.domain_name }}.</div>
+      </div>
+      <div class="col-md-6"><label class="form-label">Available Hardware</label>
+        <select class="form-select" name="inventory_mac" id="inventory-hardware">
+          <option value="">Select available hardware</option>
+          {% for item in available_hardware %}<option value="{{ item.mac }}" data-model="{{ item.model }}">{{ item.model or 'Unknown model' }} · {{ item.mac_display }}</option>{% endfor %}
+        </select>
+        <div class="form-text">Only unassigned MAC addresses in this domain are shown.</div>
+      </div>
+    </div>
+    {% else %}
+    <div class="alert alert-warning mb-4">No unassigned phone hardware is available in this domain. Add hardware under DigiCloud → Phone Hardware first.</div>
+    {% endif %}
+  </div>
+  <div id="manual-fields" class="d-none">
+    <h5>Manual Provisioning Credentials</h5><div class="row g-3 mb-4">
+      <div class="col-md-6"><label class="form-label">SIP Username</label><input class="form-control" name="sip_username" value="{{ profile.username }}@{{ selected_domain.domain_name }}"></div>
+      <div class="col-md-6"><label class="form-label">SIP Password</label><div class="input-group"><input class="form-control font-monospace" id="new-sip-password" type="password" name="sip_password" value="{{ generated_sip_password }}" autocomplete="new-password" spellcheck="false"><button class="btn btn-outline-secondary" id="toggle-new-sip-password" type="button" aria-label="Show SIP password" title="Show password"><i class="fa-solid fa-eye" aria-hidden="true"></i></button></div><div class="form-text">Use the eye icon to reveal it. The credential is not written to the NOP audit log.</div></div>
+    </div>
+  </div>
+  <div id="manual-server-fields"><h5>Manual Provisioning Settings</h5><div class="row g-3">
+    <div class="col-md-8"><label class="form-label">Preferred Server</label>
+      <select class="form-select" name="preferred_server">
+        {% if provisioning_server %}<option value="{{ provisioning_server }}" selected>{{ provisioning_server }}</option>{% endif %}
+        {% for server in server_options %}{% if server.value != provisioning_server %}<option value="{{ server.value }}">{{ server.label }}</option>{% endif %}{% endfor %}
+        {% if not provisioning_server and not server_options %}<option value="">Not configured</option>{% endif %}
+      </select>
+      <div class="form-text">Loaded from the reseller setting and DigiCloud’s provisionable server profiles.</div>
+    </div>
+    <div class="col-md-4" id="transport-field"><label class="form-label">Transport</label><select class="form-select" name="transport"><option value="udp" selected>UDP</option><option value="tcp">TCP</option><option value="tls">TLS</option></select></div>
+  </div></div>
+</div>
+<div class="card-footer d-flex gap-2"><button class="btn btn-primary">Add Phone</button><a class="btn btn-outline-secondary" href="/digicloud/users/{{ profile.username|urlencode }}/phones?domain={{ selected_domain.domain_name|urlencode }}">Cancel</a></div>
+</form>
+{% endblock %}
+{% block scripts %}<script>document.addEventListener('DOMContentLoaded',()=>{
+ const radios=document.querySelectorAll('input[name="setup_type"]');
+ const inventory=document.getElementById('ata-fields');
+ const manual=document.getElementById('manual-fields');
+ const manualServer=document.getElementById('manual-server-fields');
+ const hardware=document.getElementById('inventory-hardware');
+ const model=document.getElementById('inventory-model');
+ const password=document.getElementById('new-sip-password');
+ const passwordToggle=document.getElementById('toggle-new-sip-password');
+ function refresh(){const value=document.querySelector('input[name="setup_type"]:checked').value;inventory.classList.toggle('d-none',value!=='ata');manual.classList.toggle('d-none',value!=='manual');manualServer.classList.toggle('d-none',value!=='manual');if(hardware){hardware.disabled=value!=='ata';hardware.required=value==='ata';}}
+ function filterHardware(){if(!hardware||!model)return;const chosen=model.value;for(const option of hardware.options){if(!option.value)continue;option.hidden=Boolean(chosen&&option.dataset.model!==chosen);}if(hardware.selectedOptions[0]?.hidden)hardware.value='';}
+ radios.forEach(r=>r.addEventListener('change',refresh));if(model)model.addEventListener('change',filterHardware);refresh();filterHardware();
+ if(password&&passwordToggle){passwordToggle.addEventListener('click',()=>{const show=password.type==='password';password.type=show?'text':'password';passwordToggle.innerHTML=show?'<i class="fa-solid fa-eye-slash" aria-hidden="true"></i>':'<i class="fa-solid fa-eye" aria-hidden="true"></i>';passwordToggle.setAttribute('aria-label',show?'Hide SIP password':'Show SIP password');passwordToggle.title=show?'Hide password':'Show password';});}
+});</script>{% endblock %}

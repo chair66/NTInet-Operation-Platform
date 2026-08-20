@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block content %}
+<div class="page-head"><div><div class="eyebrow">Port out</div><h1>Port-Out Order</h1><p><code>{{order_id}}</code></p></div><a class="btn btn-outline-secondary" href="/ports/port-outs">Back to port outs</a></div>
+{% if error %}<div class="alert alert-danger"><strong>{{error.message}}</strong><details><summary>Diagnostics</summary><pre>{{error.payload}}</pre></details></div>{% endif %}
+<section class="panel p-4"><h2 class="h5">LSR response</h2><p class="text-muted">This is the full current port-out order response. Additional fields can be mapped into summary cards after the response is validated.</p><pre class="json-viewer">{{ order | tojson(indent=2) }}</pre></section>
+{% endblock %}

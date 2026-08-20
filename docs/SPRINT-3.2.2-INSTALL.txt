@@ -1,0 +1,25 @@
+NOP v1.6.0 - Sprint 3.2.2 Domain Assignment Resolution
+
+CHANGES
+- Adds Resolve Assignments beside Sync Domains for Platform Admins.
+- Detects domains whose live NetSapiens reseller differs from their local NOP organization.
+- Allows a Platform Admin to reassign a domain to the live reseller organization.
+- Moves every linked DigiCloud phone-number record with the domain.
+- Records the old organization, new organization, and moved-number count in the audit log.
+- Normal domain sync remains conservative and will continue to skip cross-organization conflicts until resolved.
+
+INSTALL
+1. Stop Uvicorn.
+2. Extract this ZIP into the project root and replace included files.
+3. Restart:
+   python -m uvicorn app.main:app --reload
+
+TEST
+1. Log in as Platform Admin.
+2. Open DigiCloud > Domains.
+3. Click Resolve Assignments.
+4. Confirm the moved domains show their current and live reseller organizations.
+5. Click Reassign for each intended move.
+6. Run Sync Domains and then Sync Phone Numbers.
+
+No database migration is required.

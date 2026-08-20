@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}DigiCloud Phone Hardware{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
+  <div><div class="eyebrow">DigiCloud · Hardware Inventory</div><h1>Phone Hardware</h1><p>Add physical phones and ATAs to DigiCloud inventory before assigning them to residential users.</p></div>
+  <a class="btn btn-primary" href="/digicloud/phone-hardware/new{% if selected_domain %}?domain={{ selected_domain|urlencode }}{% endif %}">Add Hardware</a>
+</div>
+{% if request.query_params.get('notice') %}<div class="alert alert-success">{{ request.query_params.get('notice') }}</div>{% endif %}
+{% if request.query_params.get('error') %}<div class="alert alert-danger">{{ request.query_params.get('error') }}</div>{% endif %}
+{% if live_error %}<div class="alert alert-danger">{{ live_error }}</div>{% endif %}
+<div class="card mb-3"><div class="card-body">
+<form method="get" class="row g-2 align-items-end" id="hardware-filter-form">
+  {% if is_platform_admin %}
+  <div class="col-md-3">
+    <label class="form-label">Reseller</label>
+    <select class="form-select" name="organization_id" onchange="this.form.submit()">
+      {% for org in organizations %}<option value="{{ org.id }}" {% if selected_organization_id == org.id %}selected{% endif %}>{{ org.name }}</option>{% endfor %}
+    </select>
+  </div>
+  {% endif %}
+  <div class="col-md-3">
+    <label class="form-label">Domain</label>
+    <select class="form-select" name="domain">
+      <option value="">All reseller domains</option>
+      {% for d in domains %}<option value="{{ d.domain_name }}" {% if selected_domain == d.domain_name %}selected{% endif %}>{{ d.domain_name }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Brand</label>
+    <select class="form-select" name="brand" id="hardware-brand">
+      <option value="">All brands</option>
+      {% for item in brands %}<option value="{{ item }}" {% if selected_brand == item %}selected{% endif %}>{{ item }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Model</label>
+    <select class="form-select" name="model" id="hardware-model">
+      <option value="">All models</option>
+      {% for item in models %}<option value="{{ item }}" {% if selected_model == item %}selected{% endif %}>{{ item }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">Status</label>
+    <select class="form-select" name="status">
+      <option value="all" {% if selected_status == 'all' %}selected{% endif %}>All statuses</option>
+      <option value="available" {% if selected_status == 'available' %}selected{% endif %}>Available</option>
+      <option value="assigned" {% if selected_status == 'assigned' %}selected{% endif %}>Assigned</option>
+    </select>
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">MAC Address</label>
+    <input class="form-control font-monospace" name="mac" value="{{ selected_mac }}" placeholder="Full or partial MAC">
+    <div class="form-text">Separators are optional.</div>
+  </div>
+  <div class="col-auto"><button class="btn btn-outline-secondary">Filter</button></div>
+  <div class="col-auto"><a class="btn btn-link" href="/digicloud/phone-hardware{% if is_platform_admin and selected_organization_id %}?organization_id={{ selected_organization_id }}{% endif %}">Clear</a></div>
+</form></div></div>
+<div class="card"><div class="table-responsive"><table class="table align-middle mb-0">
+<thead><tr><th>Status</th><th>MAC Address</th><th>Brand</th><th>Model</th><th>Domain</th><th>Assigned User</th><th>Preferred Server</th><th>Transport</th><th class="text-end">Actions</th></tr></thead>
+<tbody>
+{% for row in rows %}<tr>
+<td>{% if row.assigned %}<span class="badge text-bg-primary">Assigned</span>{% else %}<span class="badge text-bg-success">Available</span>{% endif %}</td>
+<td class="font-monospace">{{ row.mac_display or '—' }}</td><td>{{ row.brand }}</td><td>{{ row.model or 'Unknown model' }}</td><td>{{ row.domain or '—' }}</td><td>{{ row.subscriber or '—' }}</td><td>{{ row.server or '—' }}</td><td>{{ row.transport|upper }}</td><td class="text-end text-nowrap"><a class="btn btn-sm btn-outline-primary" href="/digicloud/phone-hardware/{{ row.mac|urlencode }}/edit{% if selected_organization_id %}?organization_id={{ selected_organization_id }}{% endif %}">Edit</a> <a class="btn btn-sm btn-outline-danger" href="/digicloud/phone-hardware/{{ row.mac|urlencode }}/delete{% if selected_organization_id %}?organization_id={{ selected_organization_id }}{% endif %}">Delete</a></td>
+</tr>{% else %}<tr><td colspan="9" class="text-center text-muted py-5">No phone hardware matches the selected reseller and filters.</td></tr>{% endfor %}
+</tbody></table></div></div>
+<script>
+(() => {
+  const brand = document.getElementById('hardware-brand');
+  const model = document.getElementById('hardware-model');
+  if (!brand || !model) return;
+  brand.addEventListener('change', () => {
+    model.value = '';
+    document.getElementById('hardware-filter-form').submit();
+  });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }} | {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="eyebrow">NTI Mobile</div>
+    <h1>{{ page_title }}</h1>
+    <p>{{ page_description }}</p>
+  </div>
+</div>
+
+<section class="panel">
+  <div class="empty-state">
+    <i class="fa-solid fa-screwdriver-wrench"></i>
+    <h2>{{ page_title }} foundation ready</h2>
+    <p>
+      This page is registered, protected by module access, and connected to
+      NTInet Operations Platform permissions.
+    </p>
+    <span class="badge text-bg-light border">NTIM-001</span>
+  </div>
+</section>
+{% endblock %}

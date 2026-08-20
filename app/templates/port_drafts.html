@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Port Drafts | NTInet Operations{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">Porting</div><h1>Draft Port Orders</h1><p>Resume local requests that have not yet been created as live port orders.</p></div><a class="btn btn-primary" href="/ports/new"><i class="fa-solid fa-plus me-2"></i>New Port</a></div>
+<ul class="nav nav-tabs mb-3">
+  <li class="nav-item"><a class="nav-link" href="/ports">All</a></li>
+  <li class="nav-item"><a class="nav-link" href="/ports?view=open">Open</a></li>
+  <li class="nav-item"><a class="nav-link active" href="/ports/drafts">Drafts</a></li>
+  <li class="nav-item"><a class="nav-link" href="/ports?view=foc">FOC</a></li>
+  <li class="nav-item"><a class="nav-link" href="/ports?view=exception">Exceptions</a></li>
+  <li class="nav-item"><a class="nav-link" href="/ports?view=completed">Completed</a></li>
+  <li class="nav-item ms-auto"><a class="nav-link" href="/ports/port-outs">Port Outs</a></li>
+</ul>
+<section class="panel p-0 overflow-hidden">
+  <div class="table-responsive"><table class="table align-middle mb-0">
+    <thead><tr><th>Reference</th><th>Customer</th><th>BTN</th><th>Carrier</th><th>Health</th><th>Status</th><th>Updated</th><th></th></tr></thead>
+    <tbody>
+    {% for draft in drafts %}
+      <tr>
+        <td><strong>{{ draft.nti_reference }}</strong></td>
+        <td>{{ draft.customer_name or 'Not entered' }}</td>
+        <td>{{ draft.billing_telephone_number or 'Not entered' }}</td>
+        <td>{{ draft.losing_carrier_name or 'Not entered' }}</td>
+        <td><span class="badge text-bg-{{ 'danger' if draft.status in ['submission_failed','requires_attention'] else 'warning' if draft.status == 'portability_changed' else 'success' }}">{{ 'Requires Attention' if draft.status in ['submission_failed','requires_attention'] else 'Portability Changed' if draft.status == 'portability_changed' else 'Current' }}</span></td><td><span class="badge text-bg-{{ 'danger' if draft.status == 'submission_failed' else 'success' if draft.status == 'submitted' else 'secondary' }}">{{ draft.status.replace('_', ' ')|title }}</span></td>
+        <td>{{ draft.updated_at.strftime('%b %d, %Y %I:%M %p') if draft.updated_at else '' }}</td>
+        <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="/ports/drafts/{{ draft.id }}">Open</a></td>
+      </tr>
+    {% else %}<tr><td colspan="8" class="text-center py-5 text-muted">No unsubmitted draft port orders.</td></tr>{% endfor %}
+    </tbody>
+  </table></div>
+</section>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}{{ rate.rg_name or rate.name or 'Service Status' }} · {{ customer.name }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex flex-wrap justify-content-between align-items-end gap-3">
+  <div>
+    <div class="eyebrow">Platypus Customer #{{ profile.platypus_customer_id }} · CRID {{ crid }}</div>
+    <h1>{{ rate.rg_name or rate.name or 'Service Status' }}</h1>
+    <p>Billing service from Platypus combined with live operational status.</p>
+  </div>
+  <a class="btn btn-outline-secondary" href="/customers/{{ profile.platypus_customer_id }}"><i class="fa-solid fa-arrow-left me-2"></i>Customer</a>
+</div>
+
+<section class="panel mb-4">
+  <div class="p-4 border-bottom d-flex flex-wrap justify-content-between gap-3">
+    <div><h2 class="h5 mb-1">Billing Service</h2><div class="text-muted small">Platypus remains the billing source of record.</div></div>
+    <div class="text-end"><div class="small text-muted">CRID</div><strong>{{ crid }}</strong></div>
+  </div>
+  <div class="p-4">
+    {% if rate.rg_description %}<p>{{ rate.rg_description }}</p>{% endif %}
+    <div class="row g-3">
+      <div class="col-md-4"><div class="text-muted small">Quantity</div><strong>{{ rate.cr_quantity or rate.quantity or '1' }}</strong></div>
+      <div class="col-md-4"><div class="text-muted small">Rate status</div><strong>{{ 'Active' if (rate.rg_active or 'Y') == 'Y' else 'Inactive' }}</strong></div>
+      <div class="col-md-4"><div class="text-muted small">Price</div><strong>{% if rate.cr_overridden == 'Y' and rate.cr_override_price %}${{ '%.2f'|format(rate.cr_override_price|float) }}{% elif rate.fee %}${{ '%.2f'|format(rate.fee|float) }}{% else %}—{% endif %}</strong></div>
+    </div>
+    {% if rate.services %}<hr><h3 class="h6">Platypus services</h3><div class="row g-2">{% for svc in rate.services %}<div class="col-lg-6"><div class="border rounded p-3 h-100"><strong>{{ svc.s_name or ('Service #' ~ svc.s_num) }}</strong><div class="text-muted small">{{ svc.s_data or 'No service data' }}</div></div></div>{% endfor %}</div>{% endif %}
+  </div>
+</section>
+
+{% if is_plume %}
+<section class="panel mb-4">
+  <div class="p-4 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div><h2 class="h5 mb-1">Plume Pod Status</h2><div class="text-muted small">Live read-only status from Plume Cloud.</div></div>
+    {% if local_customer_id %}<a class="btn btn-outline-primary" href="/customers/{{ local_customer_id }}/plume?service_id={{ plume_service_id|urlencode }}"><i class="fa-solid fa-wifi me-2"></i>Pod health & devices</a>{% endif %}
+  </div>
+  {% if live_error %}<div class="alert alert-warning m-4">{{ live_error }}</div>{% endif %}
+  {% if plume_snapshot %}
+  <div class="p-4">
+    <div class="row g-3 mb-4">
+      <div class="col-md-4"><div class="text-muted small">Location</div><strong>{{ plume_snapshot.location_name or plume_snapshot.location_id }}</strong></div>
+      <div class="col-md-4"><div class="text-muted small">Pods online</div><strong>{{ plume_snapshot.pods|selectattr('status','equalto','online')|list|length }} / {{ plume_snapshot.pods|length }}</strong></div>
+      <div class="col-md-4"><div class="text-muted small">Devices connected</div><strong>{{ plume_snapshot.connected_devices|length }} / {{ plume_snapshot.devices|length }}</strong></div>
+    </div>
+    {% if plume_snapshot.pods %}<div class="row g-3">{% for pod in plume_snapshot.pods %}<div class="col-lg-6"><div class="border rounded p-3 h-100"><div class="d-flex justify-content-between gap-2"><strong>{{ pod.name }}</strong><span class="badge {{ 'text-bg-success' if pod.status == 'online' else 'text-bg-danger' if pod.status == 'offline' else 'text-bg-secondary' }}">{{ pod.status|title }}</span></div><div class="small text-muted">{{ pod.model or pod.serial_number or pod.id }}</div><div class="small mt-2">Health: <strong>{{ pod.health|title }}</strong> · Devices: <strong>{{ pod.connected_device_count }}</strong>{% if pod.signal_strength is not none %} · Signal: <strong>{{ pod.signal_strength }} dBm</strong>{% endif %}</div></div></div>{% endfor %}</div>{% else %}<div class="text-muted">No pods were returned for this Plume location.</div>{% endif %}
+  </div>
+  {% endif %}
+</section>
+{% elif is_digital_voice %}
+<section class="panel mb-4">
+  <div class="p-4 border-bottom"><h2 class="h5 mb-1">DigiCloud Service Status</h2><div class="text-muted small">Live DigiCloud user, registration, devices, and enabled routing features linked from the Platypus DID.</div></div>
+  {% if digicloud_links %}
+    {% for link in digicloud_links %}
+    <div class="p-4 {% if not loop.last %}border-bottom{% endif %}">
+      <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+        <div><div class="text-muted small">Telephone number</div><h3 class="h5 mb-0">{{ link.did }}</h3>{% if link.domain %}<div class="small text-muted">{{ link.domain }}{% if link.username %} · User {{ link.username }}{% endif %}</div>{% endif %}</div>
+        {% if link.linked %}<span class="badge text-bg-success">Linked</span>{% else %}<span class="badge text-bg-warning">Not linked</span>{% endif %}
+      </div>
+      {% if link.error %}<div class="alert alert-warning mb-0">{{ link.error }}</div>{% endif %}
+      {% if link.linked %}
+      <div class="row g-3 mb-4">
+        <div class="col-md-3"><div class="text-muted small">User</div><strong>{{ link.user.display_name or link.username }}</strong></div>
+        <div class="col-md-3"><div class="text-muted small">Account</div><strong>{{ 'Enabled' if link.user.enabled is not false else 'Disabled' }}</strong></div>
+        <div class="col-md-3"><div class="text-muted small">Voicemail</div><strong>{{ 'Enabled' if link.user.voicemail_enabled else 'Disabled' }}</strong></div>
+        <div class="col-md-3"><div class="text-muted small">Devices online</div><strong>{{ link.online_devices }} / {{ link.devices|length }}</strong></div>
+      </div>
+      <div class="d-flex flex-wrap gap-2 mb-4">
+        {% if can('digicloud.users.manage') %}
+        <a class="btn btn-sm btn-outline-primary" href="/digicloud/users/{{ link.username }}/edit?domain={{ link.domain }}">Edit User Profile</a>
+        <a class="btn btn-sm btn-outline-primary" href="/digicloud/users/{{ link.username }}/phones?domain={{ link.domain }}">Phones</a>
+        <a class="btn btn-sm btn-outline-primary" href="/digicloud/users/{{ link.username }}/answering-rules?domain={{ link.domain }}">Answering Rules</a>
+        {% endif %}
+      </div>
+      {% if can('digicloud.users.manage') %}
+      <div class="border rounded p-3 mb-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+          <div>
+            <h4 class="h6 mb-1">Current 911 Address</h4>
+            <div class="small text-muted">Emergency address status for {{ link.did }}.</div>
+          </div>
+          {% if link.emergency_address_error %}<span class="badge text-bg-warning text-dark">Unable to Verify</span>{% elif link.emergency_endpoint_found and link.emergency_did_matches %}<span class="badge text-bg-warning text-dark">Provisioning Unconfirmed</span>{% else %}<span class="badge text-bg-danger">911 Not Provisioned</span>{% endif %}
+        </div>
+        {% if link.emergency_address_error %}<div class="alert alert-warning py-2"><strong>911 provisioning could not be verified.</strong> {{ link.emergency_address_error }} NOP will not report this DID as provisioned.</div>{% elif not link.emergency_did_configured %}<div class="alert alert-danger py-2"><strong>911 Not Provisioned for this user.</strong> DigiCloud does not report an explicitly configured emergency caller ID for the user.</div>{% elif not link.emergency_did_matches %}<div class="alert alert-danger py-2"><strong>911 Not Provisioned for this DID.</strong> The DigiCloud user's emergency caller ID{% if link.user_emergency_did %} is {{ link.user_emergency_did }} and{% endif %} does not match {{ link.did }}.</div>{% elif link.emergency_endpoint_found %}<div class="alert alert-warning py-2"><strong>911 Endpoint Found — Carrier Provisioning Unconfirmed.</strong> DigiCloud returned an endpoint for {{ link.did }}{% if link.emergency_provisioned_carrier %} using carrier {{ link.emergency_provisioned_carrier }}{% endif %}, but the documented endpoint API does not report carrier completion. NOP will not display a green provisioned status.</div>{% else %}<div class="alert alert-danger py-2"><strong>911 Not Provisioned in DigiCloud.</strong> No live emergency address endpoint was found with callback number {{ link.did }}.{% if link.emergency_address_source == 'nop_snapshot' %} The address shown below exists only in NOP.{% endif %}</div>{% endif %}
+        {% if link.emergency_address.address_line_1 %}
+        <address class="mb-3">
+          <strong>{{ link.emergency_address.caller_name or link.user.display_name or link.username }}</strong><br>
+          {{ link.emergency_address.address_line_1 }}{% if link.emergency_address.address_line_2 %}<br>{{ link.emergency_address.address_line_2 }}{% endif %}<br>
+          {{ link.emergency_address.city }}, {{ link.emergency_address.state }} {{ link.emergency_address.postal_code }}
+        </address>
+        {% elif not link.emergency_address_error %}<p class="text-danger mb-3">No 911 address is currently assigned to this DigiCloud user.</p>{% endif %}
+        <div class="alert alert-warning small mb-3"><strong>911 service notice:</strong> The address must be the phone's actual physical service location. NOP validation alone does not complete 911 provisioning; DigiCloud must confirm the assignment before this number is treated as ready for emergency calling.</div>
+        <a class="btn btn-sm btn-outline-danger" href="/digicloud/users/{{ link.username|urlencode }}/911?domain={{ link.domain|urlencode }}&amp;return_to={{ ('/customers/' ~ profile.platypus_customer_id ~ '/rates/' ~ crid)|urlencode }}"><i class="fa-solid fa-location-dot me-1"></i>{% if link.emergency_endpoint_found %}View / Update 911 Endpoint{% elif link.emergency_address_source == 'nop_snapshot' %}Complete DigiCloud 911 Submission{% else %}Configure 911 Address{% endif %}</a>
+      </div>
+      {% endif %}
+      <h4 class="h6">Devices</h4>
+      {% if link.devices %}<div class="table-responsive mb-4"><table class="table align-middle"><thead><tr><th>Status</th><th>Device</th><th>Model / MAC</th><th>Server / IP</th>{% if can('digicloud.users.manage') %}<th class="text-end">Actions</th>{% endif %}</tr></thead><tbody>{% for d in link.devices %}<tr><td>{% if d.online %}<span class="badge text-bg-success">Online</span>{% else %}<span class="badge text-bg-danger">Offline</span>{% endif %}</td><td>{{ d.device or '—' }}</td><td>{{ d.model or 'Manual SIP' }}{% if d.mac %}<div class="small text-muted">{{ d.mac }}</div>{% endif %}</td><td>{{ d.server or '—' }}{% if d.ip %}<div class="small text-muted">{{ d.ip }}</div>{% endif %}</td>{% if can('digicloud.users.manage') %}<td class="text-end">{% if not d.model and not d.mac %}<form method="post" action="/digicloud/users/{{ link.username|urlencode }}/phones/{{ d.device|urlencode }}/reset-password" class="d-inline" data-delete-confirm data-delete-subject="SIP password" data-delete-message="Reset this manual device's SIP password? The old password will stop working immediately, and the replacement will be displayed only once."><input type="hidden" name="domain" value="{{ link.domain }}"><input type="hidden" name="return_to" value="/customers/{{ profile.platypus_customer_id }}/rates/{{ crid }}"><button class="btn btn-sm btn-outline-warning" type="submit"><i class="fa-solid fa-key me-1"></i>Reset SIP Password</button></form>{% else %}<span class="text-muted small">Provisioned</span>{% endif %}</td>{% endif %}</tr>{% endfor %}</tbody></table></div>{% else %}<p class="text-muted">No DigiCloud devices found for this user.</p>{% endif %}
+      <h4 class="h6">Features / Answering Rules</h4>
+      <div class="row g-2">
+        <div class="col-md-4"><div class="border rounded p-3"><div class="text-muted small">Voicemail</div><strong>{{ 'Enabled' if link.user.voicemail_enabled else 'Disabled' }}</strong>{% if link.user.voicemail_notification_enabled %}<div class="small">Email notification enabled</div>{% endif %}</div></div>
+        {% for rule in link.rules %}<div class="col-md-4"><div class="border rounded p-3"><div class="text-muted small">{{ rule.timeframe_label }}</div><strong>{{ rule.strategy }}</strong>{% if rule.destinations %}<div class="small text-muted">{% for dest in rule.destinations %}{{ dest.label }}{% if not loop.last %}, {% endif %}{% endfor %}</div>{% endif %}</div></div>{% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  {% else %}<div class="p-4 text-muted">No DID service instances were found under this Digital Voice rate.</div>{% endif %}
+</section>
+{% else %}
+<section class="panel p-4"><h2 class="h5">Operational integration</h2><p class="text-muted mb-0">This rate is currently displayed from Platypus. A live operational provider link has not yet been configured for this service type.</p></section>
+{% endif %}
+{% endblock %}
